@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="gb2312"?>
+<AllObjects>
+<objbox xml_path="/WorkShop/AllNode/Windows/Window" group="0">
+<rect left="0" top="0" right="536" bottom="164"/>
+<code>
+<![CDATA[
+class_name="CWndSearch";
+super_class="CWnd";
+var = "wnd_search";
+caption = "Search";
+parent="hwnd";
+generate_code = 1;
+
+/***messages need to response***/
+on_msg[0]=1;    //WM_CREATE
+on_msg[1]=1;    //WM_CLOSE
+on_msg[2]=0;    //WM_PAINT
+on_msg[3]=1;    //WM_SIZE
+on_msg[4]=1;    //WM_COMMAND
+on_msg[5]=0;    //WM_NOTIFY
+on_msg[6]=0;    //WM_LBUTTONDOWN
+on_msg[7]=0;    //WM_LBUTTONUP
+on_msg[8]=0;    //WM_RBUTTONDOWN
+on_msg[9]=0;    //WM_RBUTTONUP
+on_msg[10]=0;   //WM_HSCROLL & WM_VSCROLL
+on_msg[11]=0;   //WM_MOUSEMOVE
+on_msg[12]=0;   //WM_CHAR
+on_msg[13]=0;   //WM_KEYDOWN
+on_msg[14]=0;   //WM_WINDOWPOSCHANGED
+on_msg[15]=0;	//WM_UNKNOWN
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Static" group="0">
+<rect left="20" top="20" right="116" bottom="48"/>
+<code>
+<![CDATA[
+var="st_1";
+caption = "查找内容:";
+border = 0;
+align = 1;
+
+/******
+align
+1 = Left
+2 = Right
+3 = Center
+******/
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/EditBox_SingleLine" group="0">
+<rect left="124" top="20" right="392" bottom="48"/>
+<code>
+<![CDATA[
+var="eb_text";
+  
+is_rich_edit = 0;  //is rich edit box
+is_plain_text = 1; //rich edit box only
+
+max_size = 0;	//0 is auto
+read_only = 0;
+auto_h_scroll = 1;
+
+edge_type = 1;
+/*****
+0 = static edge
+1 = client edge
+2 = normal border
+*****/
+
+password = 0;
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Button" group="0">
+<rect left="416" top="20" right="524" bottom="48"/>
+<code>
+<![CDATA[
+var="pb_next";
+caption="查找下一个";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/CheckBox" group="0">
+<rect left="16" top="112" right="144" bottom="144"/>
+<code>
+<![CDATA[
+var="ckb_case_sensitive";
+caption = "区分大小写";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/GroupBox" group="0">
+<rect left="168" top="76" right="404" bottom="144"/>
+<code>
+<![CDATA[
+var = "gp_1";
+caption = "方向";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/RadioBox" group="0">
+<rect left="184" top="100" right="276" bottom="128"/>
+<code>
+<![CDATA[
+var="rb_up";
+caption = "向上";
+WS_GROUP = 1;
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/RadioBox" group="0">
+<rect left="296" top="100" right="392" bottom="128"/>
+<code>
+<![CDATA[
+var="rb_down";
+caption = "向下";
+WS_GROUP = 1;
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Button" group="0">
+<rect left="416" top="68" right="524" bottom="96"/>
+<code>
+<![CDATA[
+var="pb_cancel";
+caption="取消";
+]]>
+</code>
+</objbox>
+</AllObjects>

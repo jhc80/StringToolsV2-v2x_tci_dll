@@ -1,0 +1,14 @@
+class WebCamera{
+	bool IsValid();
+	status_t SetVideoWindowVisible(bool v);
+	status_t Stop();
+	int GetPixelHeight();
+	int GetPixelWidth();
+	status_t TakePictureBmp();
+	int_ptr_t,int GetFrameData();
+	status_t Start();
+	status_t SetActiveDevice(int index);
+	string[] GetAllDeviceNames();
+}
+
+

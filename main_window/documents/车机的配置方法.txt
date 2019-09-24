@@ -1,0 +1,23 @@
+(1) 打开串口的log
+    打开 /lib/systemd/system/fiv45.service
+    然后打开下面一行的注释：
+    StandardOutput=tty
+(2) 关闭 systemd的重启机制
+    打开 /lib/systemd/system/fiv45.service
+    然后注释掉 Restart=on-failure 这一行，防止 systemd重启进程
+    
+(3) 把fiv的log重定向到串口
+    把/opt/app/ve5/fiv45/logging.so 删除，或者重命名成 logging.so.old
+    
+(4) 打开系统的coredump , 方法如下：
+    1.  修改 /etc/sysctl.d/99-sysctl.conf文件，在最后尾追加一行   
+        kernel.core_pattern = /var/local/corefile/core.%p.%e.%s.%t
+    2.  修改 /etc/systemd/system.conf ,在最后追加一行 
+        DefaultLimitCORE=infinity
+    3.  执行命令  
+        mkdir /var/local/corefile && sync && sync
+    4.  重启 ，如果有某个进程异常退出会在/var/local/corefile下生成core dump文件，
+        注意core dump文件比较大， 多次生成的话有可能把分区占满。
+
+
+

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="gb2312"?>
+<AllObjects>
+<objbox xml_path="/WorkShop/AllNode/Controls/Menu" group="0">
+<rect left="40" top="120" right="120" bottom="220"/>
+<code>
+<![CDATA[
+var="menu_file";
+name = "&File";
+is_pop = 0;	//是否弹出菜单
+
+var_item[i] = "mitem_open";
+str_item[i++] = "&Load file";
+
+var_item[i] = "mitem_save_as";
+str_item[i++] = "Save &As";
+
+var_item[i] = "mitem_clear";
+str_item[i++] = "&Clear";
+
+
+var_item[i] = "mitem_exit";
+str_item[i++] = "E&xit";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/MenuBar" group="0">
+<rect left="40" top="95" right="310" bottom="110"/>
+<code>
+<![CDATA[
+var="menu_bar";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Menu" group="0">
+<rect left="125" top="120" right="215" bottom="220"/>
+<code>
+<![CDATA[
+var="menu_vm";
+name = "&Vm";
+is_pop = 0;	//是否弹出菜单
+
+var_item[i] = "mitem_run";
+str_item[i++] = "&Run  Ctrl+Enter";
+
+var_item[i] = "mitem_stop";
+str_item[i++] = "&Stop";
+
+var_item[i] = "mitem_property";
+str_item[i++] = "&Property";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Menu" group="0">
+<rect left="220" top="120" right="310" bottom="220"/>
+<code>
+<![CDATA[
+var="menu_help";
+name = "&Help";
+is_pop = 0;	//是否弹出菜单
+
+var_item[i] = "mitem_help";
+str_item[i++] = "&Help";
+
+var_item[i] = "mitem_about";
+str_item[i++] = "&About";
+]]>
+</code>
+</objbox>
+</AllObjects>

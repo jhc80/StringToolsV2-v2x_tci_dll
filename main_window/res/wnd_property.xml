@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="gb2312"?>
+<AllObjects>
+<objbox xml_path="/WorkShop/AllNode/Windows/Window" group="0">
+<rect left="0" top="0" right="380" bottom="360"/>
+<code>
+<![CDATA[
+class_name="CWndProperty";
+var = "wnd_property";
+caption = "[]";
+parent="hwnd";
+generate_code = 1;
+
+/***messages need to response***/
+on_msg[0]=1;    //WM_CREATE
+on_msg[1]=1;    //WM_CLOSE
+on_msg[2]=0;    //WM_PAINT
+on_msg[3]=1;    //WM_SIZE
+on_msg[4]=1;    //WM_COMMAND
+on_msg[5]=1;    //WM_NOTIFY
+on_msg[6]=0;    //WM_LBUTTONDOWN
+on_msg[7]=0;    //WM_LBUTTONUP
+on_msg[8]=0;    //WM_RBUTTONDOWN
+on_msg[9]=0;    //WM_RBUTTONUP
+on_msg[10]=0;   //WM_HSCROLL & WM_VSCROLL
+on_msg[11]=0;   //WM_MOUSEMOVE
+on_msg[12]=0;   //WM_CHAR
+on_msg[13]=0;   //WM_KEYDOWN
+on_msg[14]=0;   //WM_WINDOWPOSCHANGED
+on_msg[15]=0;	//WM_UNKNOWN
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Button" group="0">
+<rect left="295" top="335" right="375" bottom="355"/>
+<code>
+<![CDATA[
+var="pb_cancel";
+caption="Cancel";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Button" group="0">
+<rect left="210" top="335" right="290" bottom="355"/>
+<code>
+<![CDATA[
+var="pb_ok";
+caption="Ok";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Button" group="0">
+<rect left="125" top="335" right="205" bottom="355"/>
+<code>
+<![CDATA[
+var="pb_defaut";
+caption="Default";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/EditBox_MultiLine" group="0">
+<rect left="5" top="30" right="375" bottom="330"/>
+<code>
+<![CDATA[
+var="eb_code";
+
+max_size = 10*1024*1024;	//0 is auto
+read_only = 0;
+auto_h_scroll = 1;
+auto_v_scroll = 1;
+h_scroll_bar = 1;
+v_scroll_bar = 1;
+want_return = 1;
+edge_type = 1;
+/*****
+0 = static edge
+1 = client edge
+2 = normal border
+*****/
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/ToolBar" group="0">
+<rect left="5" top="5" right="375" bottom="24"/>
+<code>
+<![CDATA[
+var="toolbar";
+img_width = 16;
+img_height = 16;
+color_depth = 16;
+img_nums = 10;
+mask_color = RGB(192,192,192);
+img_id = "IDB_BITMAP_TOOLBAR_PROPERTY";
+
+img_index = 2;
+////////////////////////////////
+//如果要添加分隔符请把tbb_var置空
+////////////////////////////////
+tbb_var[i] = "tbb_load";
+tbb_tooltip[i] = "Load code from file";
+tbb_img[i++] = img_index ++;
+
+tbb_var[i] = "tbb_save";
+tbb_tooltip[i] = "Save code";
+tbb_img[i++] = img_index ++;
+
+tbb_var[i] = "tbb_file";
+tbb_tooltip[i] = "Insert file code";
+tbb_img[i++] = img_index ++;
+
+tbb_var[i] = "tbb_path";
+tbb_tooltip[i] = "Insert path code";
+tbb_img[i++] = img_index ++;
+
+tbb_var[i] = "tbb_text";
+tbb_tooltip[i] = "Insert test code";
+tbb_img[i++] = img_index ++;
+]]>
+</code>
+</objbox>
+</AllObjects>

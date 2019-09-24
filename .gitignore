@@ -1,0 +1,10 @@
+release
+debug
+window.ncb
+window.opt
+window.plg
+window.aps
+window.exe
+*.dll
+*.vscode*
+

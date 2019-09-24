@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="gb2312"?>
+<AllObjects>
+<objbox xml_path="/WorkShop/AllNode/Controls/Menu" group="0">
+<rect left="72" top="88" right="180" bottom="200"/>
+<code>
+<![CDATA[
+var="menu_file";
+name = "F&ile";
+is_pop = 0;	//是否弹出菜单
+
+var_item[i] = "mitem_open";
+str_item[i++] = "&Open";
+
+var_item[i] = "mitem_save_as";
+str_item[i++] = "Save &As";
+
+var_item[i] = "mitem_property";
+str_item[i++] = "&Property";
+
+
+var_item[i] = "mitem_exit";
+str_item[i++] = "E&xit";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/MenuBar" group="0">
+<rect left="76" top="48" right="616" bottom="63"/>
+<code>
+<![CDATA[
+var="menu_bar";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Menu" group="0">
+<rect left="84" top="248" right="208" bottom="400"/>
+<code>
+<![CDATA[
+var="menu_edit";
+name = "E&dit";
+is_pop = 0;	//是否弹出菜单
+
+var_item[i] = "mitem_cut";
+str_item[i++] = "Cu&t";
+
+
+var_item[i] = "mitem_copy";
+str_item[i++] = "&Copy";
+
+var_item[i] = "mitem_paste";
+str_item[i++] = "&Paste";
+
+var_item[i] = "mitem_delete";
+str_item[i++] = "&Delete";
+
+var_item[i] = "mitem_clear";
+str_item[i++] = "Clea&r";
+
+str_item[i++] = "-----";
+
+var_item[i] = "mitem_select_all";
+str_item[i++] = "Select A&ll";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Menu" group="0">
+<rect left="536" top="76" right="608" bottom="144"/>
+<code>
+<![CDATA[
+var="menu_help";
+name = "Help";
+is_pop = 0;	//是否弹出菜单
+
+var_item[i] = "mitem_help";
+str_item[i++] = "&Help";
+
+
+var_item[i] = "mitem_about";
+str_item[i++] = "&About";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Menu" group="0">
+<rect left="196" top="88" right="284" bottom="216"/>
+<code>
+<![CDATA[
+var="menu_vm";
+name = "&VM";
+is_pop = 0;	//是否弹出菜单
+
+var_item[i] = "mitem_start";
+str_item[i++] = "&Start";
+
+
+var_item[i] = "mitem_stop";
+str_item[i++] = "S&top";
+]]>
+</code>
+</objbox>
+<objbox xml_path="/WorkShop/AllNode/Controls/Menu" group="0">
+<rect left="328" top="104" right="432" bottom="152"/>
+<code>
+<![CDATA[
+var="menu_view";
+name = "V&iew";
+is_pop = 0;	//是否弹出菜单
+
+var_item[i] = "mitem_text_window";
+str_item[i++] = "Text Window";
+
+var_item[i] = "mitem_image_window";
+str_item[i++] = "Image Window";
+]]>
+</code>
+</objbox>
+</AllObjects>

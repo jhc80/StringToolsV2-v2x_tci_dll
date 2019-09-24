@@ -1,0 +1,231 @@
+# Microsoft Developer Studio Generated Dependency File, included by window.mak
+
+.\Canvas.cpp : \
+	".\assert.h"\
+	".\Canvas.h"\
+	".\common.h"\
+	".\mem_tool.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	{$(INCLUDE)}"\richedit.h"\
+	
+
+.\CmdExe.cpp : \
+	".\assert.h"\
+	".\CmdExe.h"\
+	".\common.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	
+
+.\comnctls.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\comnctls.h"\
+	".\filebase.h"\
+	".\mem.h"\
+	".\mem_tool.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	".\Wnd.h"\
+	
+
+.\dirmgr.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\dirmgr.h"\
+	".\filebase.h"\
+	".\mem.h"\
+	".\mem_tool.h"\
+	".\MemStk.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	
+
+.\Encoder.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\Encoder.h"\
+	".\filebase.h"\
+	".\mem.h"\
+	".\mem_tool.h"\
+	".\memfile.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	
+
+.\file.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\file.h"\
+	".\filebase.h"\
+	".\mem_tool.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	
+
+.\filebase.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\filebase.h"\
+	".\mem.h"\
+	".\mem_tool.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	
+
+.\MainForm.cpp : \
+	".\assert.h"\
+	".\Canvas.h"\
+	".\common.h"\
+	".\comnctls.h"\
+	".\filebase.h"\
+	".\MainForm.h"\
+	".\mem.h"\
+	".\mem_tool.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	".\WinMisc.h"\
+	".\Wnd.h"\
+	
+
+.\mem.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\filebase.h"\
+	".\mem.h"\
+	".\mem_tool.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	
+
+.\mem_tool.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\mem_tool.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	
+
+.\memfile.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\filebase.h"\
+	".\mem_tool.h"\
+	".\memfile.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	
+
+.\MemStk.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\filebase.h"\
+	".\mem.h"\
+	".\mem_tool.h"\
+	".\MemStk.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	
+
+.\Misc.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\Misc.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	
+
+.\NotaPad.CPP : \
+	".\common.h"\
+	".\NotePad.h"\
+	".\StdAfx.h"\
+	
+
+.\StdAfx.cpp : \
+	".\StdAfx.h"\
+	
+
+.\syslog.cpp : \
+	".\common.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	
+
+.\window.cpp : \
+	".\assert.h"\
+	".\Canvas.h"\
+	".\common.h"\
+	".\comnctls.h"\
+	".\Encoder.h"\
+	".\filebase.h"\
+	".\MainForm.h"\
+	".\mem.h"\
+	".\mem_tool.h"\
+	".\NotePad.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	".\Wnd.h"\
+	
+
+.\window.rc : \
+	".\RES\misc.bmp"\
+	".\RES\window.ICO"\
+	".\RES\XPStyle.manifest"\
+	
+
+.\WinMisc.cpp : \
+	".\common.h"\
+	".\StdAfx.h"\
+	".\WinMisc.h"\
+	
+
+.\Wnd.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\filebase.h"\
+	".\mem_tool.h"\
+	".\NotePad.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	".\Wnd.h"\
+	".\wndmap.h"\
+	
+
+.\WndMap.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\mem_tool.h"\
+	".\NotePad.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	".\wndmap.h"\
+	
+
+.\Xml.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\file.h"\
+	".\filebase.h"\
+	".\mem.h"\
+	".\mem_tool.h"\
+	".\memfile.h"\
+	".\MemStk.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	".\Xml.h"\
+	".\XmlReader.h"\
+	
+
+.\XmlReader.cpp : \
+	".\assert.h"\
+	".\common.h"\
+	".\filebase.h"\
+	".\mem.h"\
+	".\mem_tool.h"\
+	".\memfile.h"\
+	".\MemStk.h"\
+	".\StdAfx.h"\
+	".\syslog.h"\
+	".\XmlReader.h"\
+	
