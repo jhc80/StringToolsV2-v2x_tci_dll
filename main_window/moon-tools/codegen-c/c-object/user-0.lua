@@ -2,7 +2,7 @@
 idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "Z:\\tmp\\basic_dos";
+save_path = "";
 
 --代码生成的一些选项--
 code_switch={
@@ -28,7 +28,7 @@ end
 
 --如何转换成函数名--
 function function_name(var_type,name)
-    return string.lowser(var_type.name).."_"
+    return string.lower(var_type.name).."_"
         ..to_lower_underline_case(name);
 end
 
