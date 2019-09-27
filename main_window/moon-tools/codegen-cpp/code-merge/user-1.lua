@@ -5,8 +5,11 @@ from_folders = {
 
 --要合并的目标文件夹，可以多个--
 to_folders = {
-"D:\\mydisk\\Program\\VC6\\Projects\\StringToolsV2\\main_window\\moon-tools\\message-peer\\file-server",
+"Z:\\tmp\\basic_dos"
 };
+
+--是否在合并完成后删除源文件--
+delete_source_file = false;
 
 --[[
 代码的自动合并，同名的文件将会根据规则自动完成合并

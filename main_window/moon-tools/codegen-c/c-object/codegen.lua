@@ -3,9 +3,8 @@ require("idl_helper")
 require("c_base_codegen")
 
 function name_to_include_file(name)
-	return class_name(name)..".h";
+	return to_file_name(name)..".h";
 end
-
 
 function code_begin_marker(name)
     if not code_switch.code_mark then
@@ -157,10 +156,10 @@ function code_all_includes(idl_class)
             table.insert(all_names_sorted,name);
         end
     end
-    
-    add_name("cruntime");
-    add_name("log_buffer");
-        
+
+    printfnl("#include \"cruntime.h\"");
+    printfnl("#include \"log_buffer.h\"");
+
 	local all_bases = IdlHelper.Class.GetAllBases(idl_class);
 	
 	if all_bases then
@@ -211,17 +210,17 @@ function code_h(idl_class)
 	printnl("{");
 	    
     code_begin_marker("Members");
- 
+  	
+    local c_base_code = g_c_base_codegen:Code_ClassHeader();
+    
+    if string.len(c_base_code) > 0 then        
+        print(c_base_code);
+		printnl("");
+    end
+
 	if idl_class.variables then
 		code_variables_define(idl_class.variables);
 	end
-	
-    local c_base_code = g_c_base_codegen:Code_ClassHeader();
-    
-    if string.len(c_base_code) > 0 then
-        printnl("");
-        print(c_base_code);
-    end
 
     code_end_marker("Members");
    

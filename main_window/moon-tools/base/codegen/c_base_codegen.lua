@@ -119,7 +119,7 @@ function CBaseCodeGen:Code_Print(configs)
     local pb = PrintBuffer.new();  
     self:for_each_base(function(base)    
         pb:Print(string.format(
-            "    %s(&self->%s,_level);",
+            "    %s(&self->%s,_buf);",
             function_name(base,"print"),
             base_class_name(base.name),
             base_class_name(base.name)

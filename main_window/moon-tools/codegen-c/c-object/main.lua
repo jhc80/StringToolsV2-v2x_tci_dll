@@ -29,7 +29,6 @@ if not all_idl_classes then return end
 local save_str = "";
 
 for _,idl_class in ipairs(all_idl_classes) do    
-    code_switch = clone_table(ori_code_switch);
     set_code_switch_by_hint(idl_class.hint,code_switch);
     
     g_idl_class = idl_class;
@@ -40,12 +39,12 @@ for _,idl_class in ipairs(all_idl_classes) do
     if save_path and save_path ~= "" then
         local cpp_name = FileManager.ToAbsPath(
             save_path.."/"..
-            class_name(idl_class.name)..".c"            
+            to_file_name(idl_class.name)..".c"            
         );
 
         local h_name = FileManager.ToAbsPath(
             save_path.."/"..
-            class_name(idl_class.name)..".h"
+            to_file_name(idl_class.name)..".h"
         );
                 
         App.ClearBuffer();

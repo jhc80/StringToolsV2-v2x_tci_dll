@@ -2,7 +2,7 @@
 idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "";
+save_path = "z:\\tmp\\gen";
 
 --代码生成的一些选项--
 code_switch={
@@ -13,6 +13,11 @@ code_switch={
 --如何转成c的类名的方法--
 function class_name(name)
     return to_lower_underline_case(name);
+end
+
+--如何转换成文件名--
+function to_file_name(name)
+	return "x_"..class_name(name);
 end
 
 --如何转成c的类型名字
