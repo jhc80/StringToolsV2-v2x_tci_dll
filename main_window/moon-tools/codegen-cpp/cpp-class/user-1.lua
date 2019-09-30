@@ -2,7 +2,7 @@
 idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "z:\\tmp";
+save_path = "";
 
 --代码生成的一些选项--
 code_switch={
@@ -136,7 +136,7 @@ basic_type_table={
     {"fsize_t","%lld","Int64","int64","valueint","Number","CONFIG_TYPE_INT64"},
 	{"int_ptr_t","%d","Int32","int","valueint","Number","CONFIG_TYPE_INT"},
 	{"intptr_t","%d","Int32","int","valueint","Number","CONFIG_TYPE_INT"},
-	{"char","%d","Int8","int","valueint","Number","CONFIG_TYPE_INT"},
+	{"char","%c","Int8","int","valueint","Number","CONFIG_TYPE_INT"},
 	{"short","%d","Int16","int","valueint","Number","CONFIG_TYPE_INT"},
 	{"long","%d","Int32","int","valueint","Number","CONFIG_TYPE_INT"},
 	{"uint_t","%d","UInt32","int","valueint","Number","CONFIG_TYPE_INT"},

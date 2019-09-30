@@ -156,9 +156,8 @@ function code_all_includes(idl_class)
             table.insert(all_names_sorted,name);
         end
     end
-
-    printfnl("#include \"cruntime.h\"");
-    printfnl("#include \"log_buffer.h\"");
+	
+	common_include_h();
 
 	local all_bases = IdlHelper.Class.GetAllBases(idl_class);
 	
@@ -1624,8 +1623,7 @@ function code_cpp(idl_class)
         name_to_include_file(idl_class.name)
     ));
     
-    printnl("#include \"syslog.h\"");
-    printnl("#include \"mem_tool.h\"");    
+	common_include_c();
     printnl("");
     
     code_cpp_init_basic(idl_class);

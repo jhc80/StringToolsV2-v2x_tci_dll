@@ -2,8 +2,7 @@ require("common")
 
 function code_basic_cpp(names)
 	printfnl("#include \"%s.h\"",to_file_name(names.class_name));
-	printfnl("#include \"mem_tool.h\"");
-	printfnl("#include \"syslog.h\"");
+	common_include_c();
 	printfnl("");
 	printfnl("int %s_comp_node(%s *self,double node1, double node2);",names.class_name_lower,names.c_class_name);
 	printfnl("");

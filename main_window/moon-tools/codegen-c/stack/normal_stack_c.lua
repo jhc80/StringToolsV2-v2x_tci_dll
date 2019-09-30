@@ -2,8 +2,7 @@ require("common")
 
 function code_normal_cpp(names)
 	printfnl("#include \"%s.h\"",to_file_name(names.class_name));
-	printfnl("#include \"mem_tool.h\"");
-	printfnl("#include \"syslog.h\"");
+	common_include_c();
 	printfnl("");
 	printfnl("status_t %s_copy_node(%s *self,%s *dst, %s *src);",names.class_name_lower,names.c_class_name,names.c_node_class_name,names.c_node_class_name);
 	printfnl("%s * %s_clone_node(%s *self,%s *node);",names.c_node_class_name,names.class_name_lower,names.c_class_name,names.c_node_class_name);

@@ -11,7 +11,19 @@ end
 
 --如何生成文件名--
 function to_file_name(name)
-    return to_lower_underline_case(name);
+    return "c_"..to_lower_underline_case(name);
+end
+
+--h文件中的通用include
+function common_include_h()
+    printfnl("#include \"cruntime.h\"");
+    printfnl("#include \"%s.h\"",to_file_name("log_buffer"));
+end
+
+--c文件中的通用include
+function common_include_c()
+    printnl("#include \"syslog.h\"");
+    printnl("#include \"mem_tool.h\"");    
 end
 
 --代码生成的一些选项--

@@ -2,7 +2,7 @@
 idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "z:\\tmp\\gen";
+save_path = "";
 
 --代码生成的一些选项--
 code_switch={
@@ -37,7 +37,7 @@ end
 
 --如何转成成员变量长度的名字--
 function member_name_len(name)
-	return member_name(name).."_size";
+	return member_name(name).."Size";
 end
 
 --如何生成getter函数的名字

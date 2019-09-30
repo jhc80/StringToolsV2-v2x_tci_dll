@@ -82,6 +82,16 @@ function setter_array_elem_name(name)
     return this_function_name("set_"..
         to_lower_underline_case(name).."_elem");
 end
+
+function common_include_h()
+    printfnl("#include \"cruntime.h\"");
+    printfnl("#include \"%s.h\"",to_file_name("log_buffer"));
+end
+
+function common_include_c()
+    printnl("#include \"syslog.h\"");
+    printnl("#include \"mem_tool.h\"");    
+end
 -------------------------------------
 --定义基本数据类型的映射表--
 basic_type_table={

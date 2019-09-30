@@ -2,8 +2,8 @@
 local_port = 30001;
 
 --远程发送的ip和端口号--
-remote_ip = "127.0.0.1";
-remote_port = 30002;
+remote_ip = "192.168.161.100";
+remote_port = 34567;
 
 --发送完成后自动清空--
 clear_after_send = true;

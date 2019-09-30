@@ -1,7 +1,8 @@
 function code_cpp(names)
 	printfnl("#include \"%s.h\"",to_file_name(names.class_name));
-	printfnl("#include \"syslog.h\"");
-	printfnl("#include \"mem_tool.h\"");
+	
+	common_include_c();
+	
 	printfnl("");
 	printfnl("status_t %s_init(%s *self)",names.entry_class_name,names.c_entry_class_name);
 	printfnl("{");

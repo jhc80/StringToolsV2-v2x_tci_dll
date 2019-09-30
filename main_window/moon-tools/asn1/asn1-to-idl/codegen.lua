@@ -35,6 +35,13 @@ function get_enum_init_value(enum_name)
     end    
 end
 
+function get_class_hint()
+	local str="[CodeSwitch code_mark=true]";
+	if name_space ~= "" then
+		str = str..EOL.."[NameSpace "..name_space.."]";		
+	end
+	return str;
+end
 --转换成员类型的名字--
 function class_member_type_name(member)
 
@@ -141,6 +148,7 @@ function code_choice(member)
 
     if switch.choice then
         printfnl("[Asn1Choice]");
+		printfnl(get_class_hint());
         printfnl("class %s{",class_name(member.Identifier));
         printfnl("    %s present = %s;",choice_enum_name(member.Identifier),def_present);
         
@@ -165,6 +173,8 @@ end
 
 --sequence 类型的代码生成
 function code_sequence(member,level)   
+	printfnl("[Asn1Sequence]");
+	printfnl(get_class_hint());
     printfnl("class %s{",class_name(member.Identifier));
     for_each_member(member,function(m)
         print("    ");

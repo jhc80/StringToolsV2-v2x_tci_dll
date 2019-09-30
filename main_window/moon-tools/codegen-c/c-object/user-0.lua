@@ -2,7 +2,7 @@
 idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "z:\\tmp\\gen";
+save_path = "";
 
 --代码生成的一些选项--
 code_switch={
@@ -12,12 +12,12 @@ code_switch={
 ------------------------
 --如何转成c的类名的方法--
 function class_name(name)
-    return to_lower_underline_case(name);
+    return "c_"..to_lower_underline_case(name);
 end
 
 --如何转换成文件名--
 function to_file_name(name)
-	return "x_"..class_name(name);
+	return class_name(name);
 end
 
 --如何转成c的类型名字
@@ -81,6 +81,16 @@ end
 function setter_array_elem_name(name)
     return this_function_name("set_"..
         to_lower_underline_case(name).."_elem");
+end
+
+function common_include_h()
+    printfnl("#include \"cruntime.h\"");
+    printfnl("#include \"%s.h\"",to_file_name("log_buffer"));
+end
+
+function common_include_c()
+    printnl("#include \"syslog.h\"");
+    printnl("#include \"mem_tool.h\"");    
 end
 -------------------------------------
 --定义基本数据类型的映射表--

@@ -4,8 +4,9 @@ function code_normal_h(names)
 	printfnl("#ifndef __C_%s_H",string.upper(to_file_name(names.class_name)));
 	printfnl("#define __C_%s_H",string.upper(to_file_name(names.class_name)));
 	printfnl("");
-	printfnl("#include \"cruntime.h\"");
-	printfnl("#include \"log_buffer.h\"");
+	
+	common_include_h();
+	
 	printfnl("#include \"%s.h\"",to_file_name(names.node_class_name));
 	printfnl("");
 	printfnl("%s{",names.c_class_name);

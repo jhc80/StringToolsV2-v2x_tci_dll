@@ -2,8 +2,9 @@ require("common")
 
 function code_normal_cpp(names)
 	printfnl("#include \"%s.h\"",to_file_name(names.class_name));
-	printfnl("#include \"syslog.h\"");
-	printfnl("#include \"mem_tool.h\"");
+	
+	common_include_c();
+	
 	printfnl("");
 	printfnl("status_t %s_init_basic(%s *self)",names.class_name_lower,names.c_class_name);
 	printfnl("{");
