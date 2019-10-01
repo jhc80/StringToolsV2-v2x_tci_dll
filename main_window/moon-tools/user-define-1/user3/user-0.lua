@@ -1,13 +1,12 @@
 App.ClearScreen();
 
-local mf = new_memfile("Z:\\tmp\\123.gif");
+App.ClearScreen();
 
-local gif = XImageGIF.new();
+local hwnd_desktop = Win32.GetDesktopWindow();
 
-gif:Decode(mf);
-local n = gif:GetNumFrames();
+local hdc_desktop = Win32.GetDC(hwnd_desktop);
 
-local gif1 = XImageGIF.new();
-gif1:SetFrame(n-1);
-gif1:SetRetreiveAllFrames(true);
-gif1:Decode(mf);
+local img = XImage.new();
+img:CreateFromHdc(hdc_desktop);
+
+printnl(img:GetWidth(),img:GetHeight());
