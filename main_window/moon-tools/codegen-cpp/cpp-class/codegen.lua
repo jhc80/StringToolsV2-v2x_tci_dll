@@ -91,7 +91,8 @@ function for_each_variables(variables,callback)
         info.c_json_value = c_json_value;
         info.c_json_type = c_json_type;
         info.is_weak_ptr = is_weak_ptr;		
-		
+		info.is_no_setter = IdlHelper.Var.IsNoSetter(var);
+		info.is_no_getter = IdlHelper.Var.IsNoGetter(var);
 		var_type.is_struct = is_struct;
 		
         callback(info);
@@ -1306,6 +1307,7 @@ end
 --生成所有函数的getter的cpp代码--
 function code_all_getter_cpp(idl_class)
     for_each_variables(idl_class.variables,function(info)    
+		if info.is_no_getter then return end
         info.idl_class = idl_class;
 
         code_begin_extra(getter_name(info.var.name,info));
@@ -1340,6 +1342,7 @@ end
 --生成所有函数的getter声明--
 function code_all_getter_declaration_h(idl_class)
     for_each_variables(idl_class.variables,function(info)    
+		if info.is_no_getter then return end
         info.idl_class = idl_class;
         print("    ");
         code_getter_declaration(info);
@@ -1888,6 +1891,7 @@ end
 --生成所有函数的setter代码--
 function code_all_setter_cpp(idl_class)
     for_each_variables(idl_class.variables,function(info)    
+		if info.is_no_setter then return end
         info.idl_class = idl_class;
         
         if not info.is_array then
@@ -1971,6 +1975,7 @@ end
 --生成所有函数的setter在头文件中的声明--
 function code_all_setter_declaration_h(idl_class)
     for_each_variables(idl_class.variables,function(info)    
+		if info.is_no_setter then return end
         info.idl_class = idl_class;
         
         if not info.is_array then

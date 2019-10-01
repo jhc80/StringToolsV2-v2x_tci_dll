@@ -95,10 +95,13 @@ IdlHelper.Class.FindHintSwitch = function(var,the_str)
     if not var.hint then return false end
     local ret = false;
     for_each_hint(var.hint,function(mem,str)    
-        if mem:NextString() == the_str then
-            ret = true;
-            return true;
-        end    
+		mem:Seek(0);
+		while not mem:IsEnd() do
+			if mem:NextString() == the_str then
+				ret = true;
+				return true;
+			end    
+		end
     end);    
     return ret;
 end
@@ -137,6 +140,10 @@ IdlHelper.Type.IsStruct = function(type)
 	return IdlHelper.Class.FindHintSwitch(type,"struct");
 end
 
+IdlHelper.Var.IsNoSetter = function(var)
+	return IdlHelper.Class.FindHintSwitch (var,"noset");
+end
 
-
-
+IdlHelper.Var.IsNoGetter = function(var)
+	return IdlHelper.Class.FindHintSwitch (var,"noget");
+end

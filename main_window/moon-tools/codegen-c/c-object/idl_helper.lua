@@ -28,6 +28,22 @@ IdlHelper.Class.GetAllBases=function(idl_class)
 	return flag and all or nil;	
 end
 
+IdlHelper.Class.FindHintSwitch = function(var,the_str)
+    if not var then return false end
+    if not var.hint then return false end
+    local ret = false;
+    for_each_hint(var.hint,function(mem,str)    
+		mem:Seek(0);
+		while not mem:IsEnd() do
+			if mem:NextString() == the_str then
+				ret = true;
+				return true;
+			end    
+		end
+    end);    
+    return ret;
+end
+
 IdlHelper.Type.IsString=function(type)
     if type.is_string then
         return true;
@@ -63,14 +79,15 @@ IdlHelper.Type.GetPrintFormat=function(type)
 end
 
 IdlHelper.Var.IsOptional = function(var)
-    if not var then return false end
-    if not var.hint then return false end
-    local ret = false;
-    for_each_hint(var.hint,function(mem,str)    
-        if mem:NextString() == "optional" then
-            ret = true;
-            return true;
-        end    
-    end);    
-    return ret;
+	return IdlHelper.Class.FindHintSwitch (var,"optional");
 end
+
+IdlHelper.Var.IsNoSetter = function(var)
+	return IdlHelper.Class.FindHintSwitch (var,"noset");
+end
+
+IdlHelper.Var.IsNoGetter = function(var)
+	return IdlHelper.Class.FindHintSwitch (var,"noget");
+end
+
+
