@@ -2,7 +2,7 @@ require("common")
 require("user")
 require("code_utils")
 require("task_h")
-require("task_cpp")
+require("task_c")
 
 mem_text = load_from_file_or_editor(idl_source);
 
@@ -25,9 +25,11 @@ if not all_idl_classes then return end
 
 function create_names(task_name)
     return {
-        c_class_name = c_class_name(task_name),
-        file_name_upper = string.upper(task_name),
+        c_class_name = c_class_name(task_name),        
         file_name = to_file_name(task_name),
+		file_name_upper = string.upper(to_file_name(task_name)),
+		class_name = task_name,
+		class_name_lwr = string.lower(task_name),
     }
 end
 
@@ -55,6 +57,7 @@ for _,idl_class in ipairs(all_idl_classes) do
 
     App.ClearBuffer();
     code_cpp(names);
-    save_current_file(".cpp");
+    save_current_file(".c");
+
 end
 

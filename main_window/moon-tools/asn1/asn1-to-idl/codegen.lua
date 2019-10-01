@@ -36,7 +36,7 @@ function get_enum_init_value(enum_name)
 end
 
 function get_class_hint()
-	local str="[CodeSwitch code_mark=true]";
+	local str="[CodeSwitch code_mark=true raw_asn1=true copy_comp_print=true]";
 	if name_space ~= "" then
 		str = str..EOL.."[NameSpace "..name_space.."]";		
 	end

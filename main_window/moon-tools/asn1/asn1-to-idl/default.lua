@@ -7,16 +7,16 @@ save_path = "";
 
 -- 打印的选项 --
 switch={
-    enum = true,
-    bit_string = true,
-    bit_string_typedef = true,
-    string_typedef = true,
-    choice = true,
-    choice_enum = true,
+    enum = false,
+    bit_string = false,
+    bit_string_typedef = false,
+    string_typedef = false,
+    choice = false,
+    choice_enum = false,
     sequence = true,
-    basic_type = true,
-    container = true,
-    container_files = true,
+    basic_type = false,
+    container = false,
+    container_files = false,
 }
 
 --生成文件的命名空间--

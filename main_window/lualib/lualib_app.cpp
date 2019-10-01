@@ -66,7 +66,7 @@ static int app_cleartextbuf(lua_State *L)
     GLOBAL_PRINT_BUFFER(buf);   
     //wait at least one sync timer fired
     buf->SetTextSynced(false);
-    while(!buf->IsTextSynced())
+    while(!buf->IsTextSynced() && lua_thread->IsRunning())
     {
         crt_msleep(1);
     }
@@ -433,8 +433,9 @@ static status_t app_userstopped(lua_State *L)
 
 static status_t app_waitbuffer(lua_State *L)
 {
-    GLOBAL_PRINT_BUFFER(buf);   
-    while(!buf->IsTextSynced())
+    GLOBAL_PRINT_BUFFER(buf);
+    GLOBAL_LUA_THREAD(lua_thread);
+    while(!buf->IsTextSynced() && lua_thread->IsRunning())
     {
         crt_msleep(1);
     }
