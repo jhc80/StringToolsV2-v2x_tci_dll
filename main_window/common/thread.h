@@ -11,7 +11,7 @@ public:
     status_t Sleep(int ms);
     status_t Stop();
     bool IsRunning();
-    status_t WaitComplete();
+    status_t WaitComplete(int timeout=10000);
     bool IsComplete();
     virtual status_t Run() = 0;
     virtual status_t Cancel();

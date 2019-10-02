@@ -81,8 +81,8 @@ int CTaskRunner::Schedule()
         CClosure *closure = m_ClosureList.GetElem(i);
         CLOSURE_PARAM_PTR(struct closure_extra_info *,info,MAX_PARAMS-1);
 
-        if(info->cur_delay == 0)
-            has_zero_delay_tasks = 1;
+        if(info->total_delay == 0)
+            has_zero_delay_tasks ++;
 
         info->cur_delay += interval;
         if(info->cur_delay >= info->total_delay)
