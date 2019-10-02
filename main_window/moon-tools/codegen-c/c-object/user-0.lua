@@ -12,12 +12,12 @@ code_switch={
 ------------------------
 --如何转成c的类名的方法--
 function class_name(name)
-    return "c_"..to_lower_underline_case(name);
+    return to_lower_underline_case(name);
 end
 
 --如何转换成文件名--
 function to_file_name(name)
-	return class_name(name);
+	return "c_"..class_name(name);
 end
 
 --如何转成c的类型名字
@@ -118,6 +118,7 @@ basic_type_table={
 	{"double","%f","Double"},
 	{"bool","%d","Boolean"},
 	{"void","%x","Int32"},
+	{"bool_t","%d","Int32"},
 };
 
 

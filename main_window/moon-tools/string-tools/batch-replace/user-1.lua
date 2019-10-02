@@ -1,8 +1,9 @@
 --替换表，例如{"Hello","world"},--
 replace_table={
-{"constant-position","sumo"},
-{"ConstantPosition","Sumo"},
-{"CONSTANT_POSITION","SUMO"},
+{"CFileBase::","filebase_"},
+{"CFileBase","struct file_base"},
+{"this","self"},
+{"IsSpChar","IsSplitChar"},
 };
 
 --是否大小写敏感--

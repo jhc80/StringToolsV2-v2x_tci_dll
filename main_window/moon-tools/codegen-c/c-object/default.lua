@@ -118,6 +118,7 @@ basic_type_table={
 	{"double","%f","Double"},
 	{"bool","%d","Boolean"},
 	{"void","%x","Int32"},
+	{"bool_t","%d","Int32"},
 };
 
 
