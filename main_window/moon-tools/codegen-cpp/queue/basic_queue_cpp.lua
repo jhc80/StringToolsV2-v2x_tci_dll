@@ -95,7 +95,7 @@ function code_basic_cpp(names)
     printfnl("status_t %s::GetHead(%s *node)",names.c_class_name,names.node_class_name);
     printfnl("{");
     printfnl("    ASSERT(node);");
-    printfnl("    if(this->IsEmpty())return NULL;   ");
+    printfnl("    if(this->IsEmpty())return ERROR;   ");
     printfnl("    *node = this->m_Data[this->m_Head];");
     printfnl("    return OK;");
     printfnl("}");
@@ -112,7 +112,7 @@ function code_basic_cpp(names)
     printfnl("status_t %s::GetTail(%s *node)",names.c_class_name,names.node_class_name);
     printfnl("{");
     printfnl("    ASSERT(node);");
-    printfnl("    if(this->IsEmpty())return NULL;   ");
+    printfnl("    if(this->IsEmpty())return ERROR;   ");
     printfnl("    return this->GetElem(GetLen()-1,node);");
     printfnl("}");
     printfnl("/////////////////////////////////////////////////////");

@@ -1,7 +1,7 @@
 --替换表，例如{"Hello","world"},--
 replace_table={
-{"CFileBase::","filebase_"},
-{"CFileBase","struct file_base"},
+{"","filebase_"},
+{"CPartFile","struct part_file"},
 {"this","self"},
 {"IsSpChar","IsSplitChar"},
 };

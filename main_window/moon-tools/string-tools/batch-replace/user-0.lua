@@ -1,13 +1,6 @@
 --替换表，例如{"Hello","world"},--
 replace_table={
 {"this","self"},
-{"CMem::","mem_"},
-{"mBuf","buffer"},
-{"mSelfAlloc","is_self_alloc"},
-{"mOffset","offset"},
-{"mSize","size"},
-{"mMaxSize","max_size"},
-{"mIsConst","is_const"},
 {"MALLOC","X_MALLOC"},
 {"FREE","X_FREE"},
 };

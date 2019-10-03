@@ -1,5 +1,5 @@
 --要制作列表的目录--
-the_folder = "Z:\\tmp\\rrr";
+the_folder = "Z:\\v2x\\sources\\CICV\\vechile-test\\pc-client\\asn1\\asn1";
 
 --要保存的列表文件，如果为空就不保存--
 save_file = "";
