@@ -212,6 +212,10 @@ function code_h(idl_class)
 	    
     code_begin_marker("Members");
   	
+	if code_switch.weak_ref then
+		printnl("    C_WEAK_REF_ID_DEFINE();");
+	end
+	
     local c_base_code = g_c_base_codegen:Code_ClassHeader();
     
     if string.len(c_base_code) > 0 then        
@@ -384,7 +388,11 @@ function code_cpp_init_basic(idl_class)
         printnl("    int i = 0;");        
         printnl("");
     end
-    
+
+  	if code_switch.weak_ref then
+		printnl("    C_WEAK_REF_ID_CLEAR(self);");
+	end
+
     print(g_c_base_codegen:Code_InitBasic());     
     print(get_temp_code());
     
@@ -451,7 +459,11 @@ function code_cpp_init(idl_class)
         printnl("    int i = 0;");        
         printnl("");
     end
-     
+
+  	if code_switch.weak_ref then
+		printnl("    C_WEAK_REF_ID_INIT(self);");
+	end
+
     printnl(string.format(
         "    %s(self);",
         this_function_name("init_basic")

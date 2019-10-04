@@ -8,6 +8,7 @@ save_path = "";
 code_switch={
     copy_comp_print = true,
     code_mark = false,
+	weak_ref = false,
 }
 ------------------------
 --如何转成c的类名的方法--
