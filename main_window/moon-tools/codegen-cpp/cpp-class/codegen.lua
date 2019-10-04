@@ -247,7 +247,7 @@ function code_all_includes(idl_class)
     code_begin_marker("Inlcudes");
     
     if code_switch.lib_config then
-        add_include("lib_config",true);
+        add_include("libconfig",true);
     end
 
     if code_switch.cjson then

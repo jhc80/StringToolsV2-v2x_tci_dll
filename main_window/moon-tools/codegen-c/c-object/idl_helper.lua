@@ -90,4 +90,23 @@ IdlHelper.Var.IsNoGetter = function(var)
 	return IdlHelper.Class.FindHintSwitch (var,"noget");
 end
 
+IdlHelper.Type.GetLibConfigType=function(type)
+	for _,b in ipairs(basic_type_table) do	
+		if type.name == b[1] then
+			return b[4];
+		end
+	end	
+	return "<??>";
+end
+
+IdlHelper.Type.GetLibConfigDefineType=function(type)
+	for _,b in ipairs(basic_type_table) do	
+		if type.name == b[1] then
+			return b[5];
+		end
+	end	
+	return "<??>";
+end
+
+
 

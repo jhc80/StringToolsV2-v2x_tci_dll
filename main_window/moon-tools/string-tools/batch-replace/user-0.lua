@@ -1,8 +1,6 @@
 --替换表，例如{"Hello","world"},--
 replace_table={
-{"this","self"},
-{"MALLOC","X_MALLOC"},
-{"FREE","X_FREE"},
+{"}",""}
 };
 
 --是否大小写敏感--

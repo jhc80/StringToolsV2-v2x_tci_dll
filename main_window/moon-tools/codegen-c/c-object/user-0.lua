@@ -1,14 +1,15 @@
 --idl源文件，如果为空，则从文本框读取--
-idl_source="";
+idl_source="Z:\\tmp\\1.idl";
 
 --如果不为空就保存到文件--
-save_path = "";
+save_path = "Z:\\tmp\\config";
 
 --代码生成的一些选项--
 code_switch={
     copy_comp_print = true,
     code_mark = false,
-	weak_ref = true,
+	weak_ref = false,
+	lib_config = false,
 }
 ------------------------
 --如何转成c的类名的方法--
@@ -18,7 +19,7 @@ end
 
 --如何转换成文件名--
 function to_file_name(name)
-	return class_name(name);
+	return "c_"..class_name(name);
 end
 
 --如何转成c的类型名字
@@ -96,30 +97,30 @@ end
 -------------------------------------
 --定义基本数据类型的映射表--
 basic_type_table={
-	{"int","%d","Int32"},
-	{"int8_t","%d","Int32"},
-	{"int16_t","%d","Int32"},
-	{"int32_t","%d","Int32"},
-	{"int64_t","%lld","Int64"},
-    {"fsize_t","%lld","Int64"},
-	{"int_ptr_t","%d","Int32"},
-	{"intptr_t","%d","Int32"},
-	{"char","%d","Int32"},
-	{"short","%d","Int32"},
-	{"long","%d","Int32"},
-	{"uint_t","%d","Int32"},
-	{"uint8_t","%d","Int32"},
-	{"uint16_t","%d","Int32"},
-	{"uint32_t","%d","Int32"},
-	{"uint64_t","%lld","Int64"},
-	{"uchar","%d","Int32"},
-	{"ushort","%d","Int32"},
-	{"ulong","%ld","Int32"},
-	{"float","%f","Double"},
-	{"double","%f","Double"},
-	{"bool","%d","Boolean"},
-	{"void","%x","Int32"},
-	{"bool_t","%d","Int32"},
+	{"int","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"int8_t","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"int16_t","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"int32_t","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"int64_t","%lld","Int64","int64","CONFIG_TYPE_INT64"},
+    {"fsize_t","%lld","Int64","int64","CONFIG_TYPE_INT64"},
+	{"int_ptr_t","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"intptr_t","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"char","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"short","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"long","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"uint_t","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"uint8_t","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"uint16_t","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"uint32_t","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"uint64_t","%lld","Int64","int64","CONFIG_TYPE_INT64"},
+	{"uchar","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"ushort","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"ulong","%ld","Int32","int","CONFIG_TYPE_INT"},
+	{"float","%f","Double","int","CONFIG_TYPE_INT"},
+	{"double","%f","Double","int","CONFIG_TYPE_INT"},
+	{"bool","%d","Boolean","int","CONFIG_TYPE_INT"},
+	{"void","%x","Int32","int","CONFIG_TYPE_INT"},
+	{"bool_t","%d","Int32","int","CONFIG_TYPE_INT"},
 };
 
 

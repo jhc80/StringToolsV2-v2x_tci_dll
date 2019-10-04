@@ -105,7 +105,15 @@ end
 function this_pointer()
     return c_class_name(g_idl_class.name).." *self";
 end
-
+----------------------------------------------
+function ptab(level)
+    local str = "";
+    for i=1,level,1 do
+        str = str.."    ";
+    end
+    return str;
+end               
+---------------------------------------------
 --头文件中变量的定义--
 function code_variables_define(variables)
 	for_each_variables(variables,function(info)		
@@ -159,6 +167,10 @@ function code_all_includes(idl_class)
         end
     end
 	
+	if code_switch.lib_config then
+		printnl("#include <libconfig.h>");
+	end
+	
 	common_include_h();
 
 	local all_bases = IdlHelper.Class.GetAllBases(idl_class);
@@ -180,7 +192,7 @@ function code_all_includes(idl_class)
             "#include \"%s\"",
             name_to_include_file(name)
         ));    
-    end
+    end	
     
 end
 
@@ -285,6 +297,19 @@ function code_h(idl_class)
     code_end_marker("Setters_H");
     
 	printnl("");
+	
+	if code_switch.lib_config then
+        printfnl("status_t %s(%s,const config_setting_t *_settings);",
+			this_function_name("LoadConfig"),this_pointer());			
+        printfnl("status_t %s(%s,const char *_filename,const char *_path);",
+			this_function_name("LoadConfigFromFile"),this_pointer());			
+        printfnl("status_t %s(%s,config_setting_t *_settings);",
+			this_function_name("SaveConfig"),this_pointer());
+        printfnl("status_t %s(%s,const char *filename,const char *root_name);",
+			this_function_name("SaveConfigToFile"),this_pointer());
+		printnl("");
+    end
+	
 	printnl("#endif");
 end
 
@@ -1665,9 +1690,529 @@ function code_cpp(idl_class)
     printnl("");
     code_all_setter_cpp(idl_class);
     
+    if code_switch.lib_config then
+        code_cpp_load_config_2(idl_class);        
+        printnl("");        
+        code_cpp_load_config_1(idl_class);
+        printnl("");        
+        code_cpp_save_config_2(idl_class);        
+        printnl("");        
+        code_cpp_save_config_1(idl_class);
+        printnl("");                
+    end
+	
     if code_switch.code_mark then
         printnl("/*@@ Insert Function Here @@*/");
     end    
 end
+-----------------------------libconfig-------------------------------------
+
+--生成libconfig_loopup_xxx的函数名字--
+function libconfig_lookup_name(info)
+    local tail = IdlHelper.Type.GetLibConfigType(info.var_type);
+    if info.is_string then
+        tail = "string";
+    end
+    return "config_setting_lookup_"..tail;
+end
+
+--生成config_setting_set_xxx的代码--
+function libconfig_set_func_name(info)
+    local tail = IdlHelper.Type.GetLibConfigType(info.var_type);
+    if info.is_string then
+        tail = "string";
+    end
+    return "config_setting_set_"..tail;
+end
+
+--生成类型的宏定义--
+function libconfig_define_type(info)
+    if info.is_array then
+        return "CONFIG_TYPE_ARRAY";
+    end
+
+    if info.is_string then
+        return "CONFIG_TYPE_STRING";
+    end
+    
+    if info.is_object then
+        return "CONFIG_TYPE_GROUP";
+    end
+    return IdlHelper.Type.GetLibConfigDefineType(info.var_type);
+end
+
+--生成config_setting_set_xxx_elem的代码--
+function libconfig_set_elem_func_name(info)
+    return libconfig_set_func_name(info).."_elem";
+end
+
+--生成config_setting_get_xxx的代码 --
+function libconfig_get_func_name(info)
+    local tail = IdlHelper.Type.GetLibConfigType(info.var_type);
+    if info.is_string then
+        tail = "string";
+    end
+    return "config_setting_get_"..tail;
+end
+
+--生成 libconfig 临时变量初值的代码--
+function libconfig_c_type_name(info)
+    if info.is_string then
+        return "const char*","NULL";
+    end
+
+    if info.is_object then
+        return c_class_name(info.var_type),"NULL";
+    end
+
+    local t = IdlHelper.Type.GetLibConfigType(info.var_type);
+
+    if t == "float" then
+        return "double","0";
+    end
+    
+    if t == "bool" then
+        return "int","0";
+    end
+    return t,"0";
+end
+
+--生成LoadConfig的代码--
+function code_cpp_load_config_1(idl_class)
+	printfnl("status_t %s(%s,const config_setting_t *_settings)",
+		this_function_name("LoadConfig"),this_pointer());		
+	
+    printnl("{");
+    printnl("    ASSERT(_settings);");
+    
+    code_begin_marker("LoadConfig");
+
+    function pc_not_array_basic_type(info)
+        local c_type,init_value = libconfig_c_type_name(info);
+
+        printfnl("    %s _tmp_%s = %s;",
+            c_type, string.lower(info.var.name),init_value
+        );
+
+        printfnl("    if(%s(_settings,\"%s\",&_tmp_%s))",
+            libconfig_lookup_name(info),
+            info.var.name,
+            string.lower(info.var.name)
+        );
+
+        printnl("    {");
+
+        printfnl("        %s(self,%s_tmp_%s);",
+            setter_name(info.var.name,info),
+            info.is_optional and "&" or "",
+            string.lower(info.var.name)
+        );
+		
+        printnl("    }");
+    end
+
+    function pc_not_array_string(info)
+        pc_not_array_basic_type(info);
+    end
+
+    function pc_not_array_object(info)            
+        printfnl("    const config_setting_t *_%s = config_setting_lookup((config_setting_t*)_settings,\"%s\");",
+            string.lower(info.var.name),
+            info.var.name
+        );
+        printfnl("    if(_%s)",string.lower(info.var.name));
+        printfnl("    {");
+        printfnl("        %s _tmp_%s;",
+            c_class_name(info.var_type.name),
+            string.lower(info.var.name)
+        );
+
+        printfnl("        %s(&_tmp_%s);",
+			function_name(info.var_type,"Init"),
+			string.lower(info.var.name));
+			
+        printfnl("        %s(&_tmp_%s,_%s);",
+			function_name(info.var_type,"LoadConfig"),
+            string.lower(info.var.name),
+            string.lower(info.var.name)
+        );
+
+        printfnl("        %s(self,&_tmp_%s);",
+			setter_name(info.var.name,info),
+			string.lower(info.var.name));
+        printfnl("        %s(&_tmp_%s);",
+			function_name(info.var_type,"Destroy"),
+			string.lower(info.var.name));
+        printfnl("    }");
+    end
+    
+    function pc_array(info)
+
+        printfnl("    const config_setting_t *_%s = config_setting_lookup((config_setting_t*)_settings,\"%s\");",
+            string.lower(info.var.name),
+            info.var.name
+        );
+
+        printfnl("    if(_%s)",string.lower(info.var.name));
+        printfnl("    {");
+
+        printfnl("        int len = config_setting_length(_%s);",
+            string.lower(info.var.name)
+        );
+        printfnl("        %s(self,len);",alloc_name(info.var.name));
+
+        printfnl("        for(int i = 0; i < len; i++)");
+        printfnl("        {");
+
+        printfnl(
+            "            const config_setting_t *elem = config_setting_get_elem(_%s,i);",
+            string.lower(info.var.name)
+        );
+
+        printfnl("            ASSERT(elem);");
+
+        if info.is_basic_type or info.is_string then
+            printfnl("            %s(self,i,%s(elem));",
+                setter_array_elem_name(info.var.name),
+                libconfig_get_func_name(info)
+            );
+        else
+            printfnl("            %s _tmp_%s;",
+                c_class_name(info.var_type.name),
+                string.lower(info.var.name)
+            );
+
+            printfnl("            %s(&_tmp_%s);",
+				function_name(info.var_type,"Init"),
+				string.lower(info.var.name));
+				
+            printfnl("            %s(&_tmp_%s,elem);",
+				function_name(info.var_type,"LoadConfig"),
+                string.lower(info.var.name)        
+            );
+            printfnl("            %s(self,i,&_tmp_%s);",
+                setter_array_elem_name(info.var.name),
+                string.lower(info.var.name)
+            );
+            printfnl("            %s(&_tmp_%s);",
+				function_name(info.var_type,"Destroy"),
+				string.lower(info.var.name));			
+        end
+
+        printfnl("        }");
+        printfnl("    }");
+
+    end
+
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then
+            return
+        end
+
+        if info.is_array then
+            pc_array(info);
+            printnl("");    
+        else
+            if info.is_basic_type  then
+                pc_not_array_basic_type(info);
+            elseif info.is_string then
+                pc_not_array_string(info);
+            else
+                pc_not_array_object(info);
+            end
+        end
+    end);  
+
+    code_end_marker("LoadConfig");
+    printnl("    return OK;")
+    printnl("}");
+end
+
+--生成LoadConfig的代码--
+function code_cpp_load_config_2(idl_class)
+    printnl(string.format(
+        "status_t %s(%s,const char *_filename,const char *_path)",
+        this_function_name("LoadConfigFromFile"),this_pointer()
+    ));
+    printnl("{");
+    printnl("    ASSERT(_filename && _path);");
+    printnl("");
+    
+    code_begin_marker("LoadConfigFromFile");
+        
+    printnl("    config_t conf;");
+    printnl("    config_init(&conf);");
+    printnl("");
+
+    printnl("    if(!config_read_file(&conf, _filename))");
+
+    printnl("    {");
+
+    printnl("        XLOG(LOG_MODULE_USER,LOG_LEVEL_ERROR,");
+    printnl("            \"error: load config file %s fail!\",");
+    printnl("            _filename");
+    printnl("        );");
+
+    printnl("        XLOG(LOG_MODULE_USER,LOG_LEVEL_ERROR,");
+    printnl("            \"%s at line %d\",");
+    printnl("            config_error_text(&conf),");
+    printnl("            config_error_line(&conf)");
+    printnl("        );");
+
+    printnl("        return ERROR;");
+    printnl("    }");
+
+    printnl("");
+
+    printfnl("    status_t ret = ERROR;")
+    printfnl("    const config_setting_t *settings = config_lookup(&conf,_path);");
+    printfnl("    if(settings)");
+    printnl("    {");
+    printfnl("        ret = %s(self,settings);",this_function_name("LoadConfig"));
+    printnl("    }");
+
+    printnl("    config_destroy(&conf);");
+    code_end_marker("LoadConfigFromFile");
+    printnl("    return ret;");
+    printnl("}");
+end
+
+--生成save_config的 代码--
+function code_cpp_save_config_1(idl_class)
+    printfnl(
+        "status_t %s(%s,config_setting_t *_settings)",
+        this_function_name("SaveConfig"),this_pointer()
+    );
+    printnl("{");
+    printnl("    ASSERT(_settings);");
+    printnl("");
+    
+    code_begin_marker("SaveConfig");
+
+    function pc_not_array_basic_type(info)
+        local tab = 1;
+        
+        if info.is_optional then
+            printfnl("%sif(%s)",ptab(tab),member_name(info.var.name));
+            printfnl("%s{",ptab(tab));
+            tab = tab + 1;
+        end
+
+        printfnl("%sconfig_setting_t *p_%s = config_setting_add(_settings,\"%s\",%s);",
+            ptab(tab),
+            string.lower(info.var.name),
+            info.var.name,
+            libconfig_define_type(info)
+        );    
+
+        printfnl("%sASSERT(p_%s);",ptab(tab),string.lower(info.var.name));
+        
+        printfnl("%s%s(p_%s,%sself->%s);",ptab(tab),
+            libconfig_set_func_name(info),
+            string.lower(info.var.name),
+            info.is_optional and "*" or "",
+            member_name(info.var.name)
+        );
+
+        if info.is_optional then
+            tab = tab - 1;
+            printfnl("%s}",ptab(tab));            
+        end
+
+    end
+
+    function pc_not_array_string(info)
+        local tab = 1;
+        local dot_or_arrow = ".";
+        
+        if info.is_optional then            
+            dot_or_arrow = "->";
+            printfnl("%sif(this->%s)",ptab(tab),
+                member_name(info.var.name)
+            );
+            printfnl("%s{",ptab(tab));            
+            tab = tab + 1;
+        end
+        
+        printfnl("%sconfig_setting_t *p_%s = config_setting_add(_settings,\"%s\",%s);",
+            ptab(tab),
+            string.lower(info.var.name),
+            info.var.name,
+            libconfig_define_type(info)
+        );    
+
+        printfnl("%sASSERT(p_%s);",ptab(tab),string.lower(info.var.name));
+
+        
+        printfnl("%sif(self->%s)",ptab(tab),
+            member_name(info.var.name)
+        );
+        printfnl("%s{",ptab(tab));
+        
+        tab = tab+1;
+                
+        printfnl("%s%s(p_%s,self->%s);",ptab(tab),
+            libconfig_set_func_name(info),
+            string.lower(info.var.name),
+            member_name(info.var.name)
+        );         
+        
+        tab = tab - 1;
+        printfnl("%s}",ptab(tab));                        
+
+        if info.is_optional then            
+            tab = tab - 1;
+            printfnl("%s}",ptab(tab));                        
+        end        
+    end
+
+    function pc_not_array_object(info)        
+        local tab = 1;
+        local dot_or_arrow = "&";
+        
+        if info.is_optional then            
+            dot_or_arrow = "";
+            printfnl("%sif(self->%s)",ptab(tab),
+                member_name(info.var.name)
+            );
+            printfnl("%s{",ptab(tab));            
+            tab = tab + 1;
+        end
+        
+        printfnl("%sconfig_setting_t *p_%s = config_setting_add(_settings,\"%s\",%s);",
+            ptab(tab),
+            string.lower(info.var.name),
+            info.var.name,
+            libconfig_define_type(info)
+        );    
+
+        printfnl("%sASSERT(p_%s);",ptab(tab),string.lower(info.var.name));
+    
+        printfnl("%s%s(%sself->%s,p_%s);",ptab(tab),
+			function_name(info.var_type,"SaveConfig"),
+			dot_or_arrow,member_name(info.var.name),
+			string.lower(info.var.name)
+        );
+    
+        if info.is_optional then            
+            tab = tab - 1;
+            printfnl("%s}",ptab(tab));                        
+        end          
+    end
+    
+    function pc_array(info)
+        local tab = 1;
+
+        printfnl("%sif(self->%s)",ptab(tab),member_name(info.var.name));
+        printfnl("%s{",ptab(tab));
+        tab = tab+1;
+        printfnl("%sconfig_setting_t *p_%s = config_setting_add(_settings,\"%s\",%s);",
+            ptab(tab),
+            string.lower(info.var.name),
+            info.var.name,
+            libconfig_define_type(info)
+        );
+
+        printfnl("%sfor(int i = 0; i < %s(self); i++)",ptab(tab),
+            getter_array_len_name(info.var.name)
+        );
+        printfnl("%s{",ptab(tab));
+        tab = tab + 1;
+
+        if info.is_basic_type then        
+            printfnl("%s%s(p_%s,-1,%s(self,i));",ptab(tab),
+                libconfig_set_elem_func_name(info),
+                string.lower(info.var.name),
+                getter_array_elem_name(info.var.name)
+            );
+        elseif info.is_string then
+            printfnl("%sif(%s(self,i))",ptab(tab),
+                getter_array_elem_name(info.var.name)
+            );
+            printfnl("%s{",ptab(tab));
+            tab = tab + 1;
+            printfnl("%s%s(p_%s,-1,%s(self,i));",ptab(tab),
+                libconfig_set_elem_func_name(info),
+                string.lower(info.var.name),
+                getter_array_elem_name(info.var.name)
+            ); 
+            tab = tab - 1;
+            printfnl("%s}",ptab(tab));
+        elseif info.is_object then
+            info.is_array = false;
+            printfnl("%sconfig_setting_t *_p_elem = config_setting_add(p_%s,NULL,%s);",
+                ptab(tab),
+                string.lower(info.var.name),                
+                libconfig_define_type(info)
+            );
+            info.is_array = true;
+            
+            printfnl("%sASSERT(_p_elem);",ptab(tab));
+            printfnl("%s%s(%s(self,i),_p_elem);",ptab(tab),
+				function_name(info.var_type,"SaveConfig"),
+                getter_array_elem_name(info.var.name)
+            );
+            
+        end        
+
+        tab = tab - 1;
+        printfnl("%s}",ptab(tab));
+
+        tab = tab-1;
+        printfnl("%s}",ptab(tab));
+    end
+
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then  return end
+        
+        if info.is_array then
+            pc_array(info);
+            printnl("");    
+        else
+            if info.is_basic_type  then
+                pc_not_array_basic_type(info);
+                printnl("");    
+            elseif info.is_string then
+                pc_not_array_string(info);
+                printnl("");    
+            else
+                pc_not_array_object(info);
+                printnl("");    
+            end
+        end
+    end);  
+
+    code_end_marker("SaveConfig");
+    
+    printnl("    return OK;");
+    printnl("}");
+
+end
+
+--生成save_config的代码--
+function code_cpp_save_config_2(idl_class)
+
+    printnl(string.format(
+        "status_t %s(%s,const char *filename, const char *root_name)",
+        this_function_name("SaveConfigToFile"),this_pointer()
+    ));
+    printnl("{");
+    printnl("    ASSERT(filename && root_name);");
+    printfnl("    config_t conf;");
+    printfnl("    config_init(&conf);");    
+    
+    printfnl("    config_setting_t *settings = config_setting_add(config_root_setting(&conf),root_name,CONFIG_TYPE_GROUP);");
+    printnl("    ASSERT(settings);");
+       
+    printfnl("    %s(self,settings);",this_function_name("SaveConfig")); 
+   
+    printfnl("    int ret = config_write_file(&conf,filename);");    
+    printfnl("    config_destroy(&conf);");
+    printnl("    return ret;");
+    printnl("}");
+
+end
+
+
 
 

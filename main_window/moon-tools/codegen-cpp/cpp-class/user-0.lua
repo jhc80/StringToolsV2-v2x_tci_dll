@@ -1,5 +1,5 @@
 --idl源文件，如果为空，则从文本框读取--
-idl_source="";
+idl_source="Z:\\tmp\\1.idl";
 
 --如果不为空就保存到文件--
 save_path = "";
@@ -11,7 +11,7 @@ code_switch={
     task_container = false,
 	bson = false,
 	cjson = false,
-	lib_config = false,
+	lib_config = true,
     c_struct = false,
     raw_asn1 = false,
     code_mark = false,
