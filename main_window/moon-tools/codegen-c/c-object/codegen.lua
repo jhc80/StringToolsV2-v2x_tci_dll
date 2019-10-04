@@ -881,13 +881,29 @@ function code_cpp_print(idl_class)
         ));                 
     end
     
-    function pc_not_array_object(info)
+    function pc_not_array_object(info)	
+		local tab = 1;
+		
+		if info.is_optional then
+			temp_code_nl(string.format(
+				"%sif(self->%s)",ptab(tab),
+				member_name(info.var.name)
+			));
+			temp_code_nl(string.format(
+				"%s{",ptab(tab)
+			));
+			tab = tab + 1;
+		end
+		
+
+
         temp_code_nl(string.format(
-            "    log_buffer_log(_buf,\"%s = {\");",
+            "%slog_buffer_log(_buf,\"%s = {\");",ptab(tab),
             info.var.name                    
         ));
 
-        temp_code_nl("    log_buffer_inc_level(_buf,1);");    
+        temp_code_nl(string.format(
+			"%slog_buffer_inc_level(_buf,1);",ptab(tab)));    
         
         local addr = "&";
         if info.is_optional then
@@ -895,15 +911,24 @@ function code_cpp_print(idl_class)
         end
         
         temp_code_nl(string.format(
-            "    %s(%sself->%s,_buf);",
+            "%s%s(%sself->%s,_buf);",ptab(tab),
             function_name(info.var_type,"print"),
             addr,
             member_name(info.var.name)                    
         ));        
-        
-        
-        temp_code_nl("    log_buffer_inc_level(_buf,-1);");
-        temp_code_nl("    log_buffer_log(_buf,\"},\");");
+                
+        temp_code_nl(string.format(
+			"%slog_buffer_inc_level(_buf,-1);",ptab(tab)));
+			
+        temp_code_nl(string.format(
+			"%slog_buffer_log(_buf,\"},\");",ptab(tab)));
+			
+		if info.is_optional then
+			tab = tab - 1;
+			temp_code_nl(string.format(
+				"%s}",ptab(tab)
+			));			
+		end			
     end
     
     function pc_not_array_string(info)   
@@ -1792,7 +1817,7 @@ end
 --生成类型的宏定义--
 function libconfig_define_type(info)
     if info.is_array then
-        return "CONFIG_TYPE_ARRAY";
+        return "CONFIG_TYPE_LIST";
     end
 
     if info.is_string then
