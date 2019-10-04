@@ -298,7 +298,9 @@ function code_h(idl_class)
     
 	printnl("");
 	
-	if code_switch.lib_config then
+	if code_switch.lib_config then	
+		code_begin_marker("LibConfig");
+
         printfnl("status_t %s(%s,const config_setting_t *_settings);",
 			this_function_name("LoadConfig"),this_pointer());			
         printfnl("status_t %s(%s,const char *_filename,const char *_path);",
@@ -307,6 +309,8 @@ function code_h(idl_class)
 			this_function_name("SaveConfig"),this_pointer());
         printfnl("status_t %s(%s,const char *filename,const char *root_name);",
 			this_function_name("SaveConfigToFile"),this_pointer());
+			
+		code_end_marker("LibConfig");
 		printnl("");
     end
 	
@@ -1743,13 +1747,21 @@ function code_cpp(idl_class)
     code_all_setter_cpp(idl_class);
     
     if code_switch.lib_config then
-        code_cpp_load_config_2(idl_class);        
+		code_begin_extra(this_function_name("LoadConfigFromFile"));
+        code_cpp_load_config_2(idl_class); 
+		code_end_extra(this_function_name("LoadConfigFromFile"));
         printnl("");        
+		code_begin_extra(this_function_name("LoadConfig"));
         code_cpp_load_config_1(idl_class);
+		code_end_extra(this_function_name("LoadConfig"));
         printnl("");        
+		code_begin_extra(this_function_name("SaveConfigToFile"));
         code_cpp_save_config_2(idl_class);        
+		code_end_extra(this_function_name("SaveConfigToFile"));
         printnl("");        
+		code_begin_extra(this_function_name("SaveConfig"));
         code_cpp_save_config_1(idl_class);
+		code_end_extra(this_function_name("SaveConfig"));
         printnl("");                
     end
 	
@@ -1835,9 +1847,7 @@ function code_cpp_load_config_1(idl_class)
 		this_function_name("LoadConfig"),this_pointer());		
 	
     printnl("{");
-    printnl("    ASSERT(_settings);");
-    
-    code_begin_marker("LoadConfig");
+    printnl("    ASSERT(_settings);");    
 
     function pc_not_array_basic_type(info)
         local c_type,init_value = libconfig_c_type_name(info);
@@ -1978,7 +1988,6 @@ function code_cpp_load_config_1(idl_class)
         end
     end);  
 
-    code_end_marker("LoadConfig");
     printnl("    return OK;")
     printnl("}");
 end
@@ -1992,9 +2001,7 @@ function code_cpp_load_config_2(idl_class)
     printnl("{");
     printnl("    ASSERT(_filename && _path);");
     printnl("");
-    
-    code_begin_marker("LoadConfigFromFile");
-        
+            
     printnl("    config_t conf;");
     printnl("    config_init(&conf);");
     printnl("");
@@ -2027,7 +2034,7 @@ function code_cpp_load_config_2(idl_class)
     printnl("    }");
 
     printnl("    config_destroy(&conf);");
-    code_end_marker("LoadConfigFromFile");
+
     printnl("    return ret;");
     printnl("}");
 end
@@ -2042,8 +2049,6 @@ function code_cpp_save_config_1(idl_class)
     printnl("    ASSERT(_settings);");
     printnl("");
     
-    code_begin_marker("SaveConfig");
-
     function pc_not_array_basic_type(info)
         local tab = 1;
         
@@ -2236,8 +2241,6 @@ function code_cpp_save_config_1(idl_class)
             end
         end
     end);  
-
-    code_end_marker("SaveConfig");
     
     printnl("    return OK;");
     printnl("}");

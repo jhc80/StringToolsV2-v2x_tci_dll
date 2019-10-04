@@ -14,7 +14,7 @@ code_switch={
 	lib_config = true,
     c_struct = false,
     raw_asn1 = false,
-    code_mark = false,
+    code_mark = true,
 }
 
 --命名空间，如果为空，表示没有namesapce
