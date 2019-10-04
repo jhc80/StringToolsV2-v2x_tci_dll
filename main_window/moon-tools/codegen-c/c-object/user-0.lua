@@ -85,6 +85,12 @@ function setter_array_elem_name(name)
         to_lower_underline_case(name).."_elem");
 end
 
+--如何生成optional成员的Create方法名--
+function create_optional_name(name)
+	return this_function_name(
+	    "create_"..to_lower_underline_case(name));
+end
+
 function common_include_h()
     printfnl("#include \"cruntime.h\"");
     printfnl("#include \"%s.h\"",to_file_name("log_buffer"));

@@ -1207,6 +1207,8 @@ function code_setter_body_object_not_array(info)
         printnl("        return OK;");
         printnl("");
         
+		printfnl("    %s(self);",create_optional_name(info.var.name));
+		printfnl("    ASSERT(self->%s);",member_name(info.var.name));
         printnl(string.format(
           "    return %s(self->%s,_%s);",
           function_name(info.var_type,"copy"),
@@ -1220,7 +1222,7 @@ function code_setter_body_object_not_array(info)
             string.lower(info.var.name)
         ));
         
-        printnl(string.format(
+		printnl(string.format(
           "    return %s(&self->%s,_%s);",
           function_name(info.var_type,"copy"),
           member_name(info.var.name),
@@ -1334,12 +1336,24 @@ function code_setter_body_array(info,need_class_prefix)
         ));
     end
     
-    if info.is_basic_type or info.is_pointer then        
+    if  info.is_pointer then        
         temp_code_nl(string.format(        
-        "    self->%s = _%s;",
-        member_name(info.var.name),
-        string.lower(info.var.name)
+			"    self->%s = _%s;",
+			member_name(info.var.name),
+			string.lower(info.var.name)
         ));        
+	elseif info.is_basic_type then
+		 temp_code_nl(string.format( 
+			"    ASSERT(_len <= %s(self));",
+			getter_array_len_name(info.var.name)
+		));
+			
+		 temp_code_nl(string.format(        
+			"    memcpy(self->%s,_%s,sizeof(%s)*_len);",
+			member_name(info.var.name),
+			string.lower(info.var.name),
+			info.var_type.name
+        ));    
     else    
         need_i = true;
         temp_code_nl("    for(i = 0; i < _len; i++)");
@@ -1576,6 +1590,29 @@ function code_alloc_body_unknown_array(info,need_class_prefix)
     printnl("}");
 end
 
+--生成optional对象的create函数声明--
+function code_create_optional_declaration(info)
+    print("status_t ");    
+    print(create_optional_name(info.var.name));
+    printf("(%s)",this_pointer());
+end
+
+--生成optional对象的create函数体--
+function code_create_optional_body(info)    
+    printnl("");
+    printnl("{");
+    printfnl("    if(self->%s) return OK;",member_name(info.var.name));
+
+    printfnl("    X_MALLOC(self->%s,%s,1);",
+        member_name(info.var.name),
+        c_class_name(info.var_type.name)
+    );
+    printfnl("    %s(self->%s);",
+		function_name(info.var_type,"Init"),
+		member_name(info.var.name));
+    printnl("    return OK;");
+    printnl("}");
+end
 
 --生成所有函数的setter代码--
 function code_all_setter_cpp(idl_class)
@@ -1597,6 +1634,15 @@ function code_all_setter_cpp(idl_class)
                 code_end_extra(setter_name(info.var.name));
                 printnl("");                
             elseif info.is_object then
+			
+                if info.is_optional then
+                    code_begin_extra(setter_name(info.var.name,info).."-Create");
+                    code_create_optional_declaration(info,true);
+                    code_create_optional_body(info);
+                    code_end_extra(setter_name(info.var.name,info).."-Create");
+                    printnl("");  
+                end
+				
                 code_begin_extra(setter_name(info.var.name));
                 code_setter_declaration_object_not_array(info,true);                
                 code_setter_body_object_not_array(info);
@@ -1641,6 +1687,12 @@ function code_all_setter_declaration_h(idl_class)
                 code_setter_declaration_basic_not_array(info);
                 printnl(";");
             elseif info.is_object then
+			
+				if info.is_optional then
+					code_create_optional_declaration(info);
+					printnl(";");
+				end
+			
                 code_setter_declaration_object_not_array(info);                
                 printnl(";");             
             end
@@ -1859,7 +1911,10 @@ function code_cpp_load_config_1(idl_class)
         printfnl("        int len = config_setting_length(_%s);",
             string.lower(info.var.name)
         );
-        printfnl("        %s(self,len);",alloc_name(info.var.name));
+		
+		if not info.array_size then
+			printfnl("        %s(self,len);",alloc_name(info.var.name));
+		end
 
         printfnl("        for(int i = 0; i < len; i++)");
         printfnl("        {");
