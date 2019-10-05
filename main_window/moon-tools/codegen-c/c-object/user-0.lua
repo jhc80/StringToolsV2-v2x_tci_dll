@@ -1,8 +1,8 @@
 --idl源文件，如果为空，则从文本框读取--
-idl_source="Z:\\tmp\\1.idl";
+idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "Z:\\tmp\\config";
+save_path = "";
 
 --代码生成的一些选项--
 code_switch={
@@ -19,7 +19,7 @@ end
 
 --如何转换成文件名--
 function to_file_name(name)
-	return "c_"..class_name(name);
+	return class_name(name);
 end
 
 --如何转成c的类型名字

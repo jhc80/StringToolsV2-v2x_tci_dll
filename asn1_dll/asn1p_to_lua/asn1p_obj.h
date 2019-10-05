@@ -4,7 +4,7 @@
 #include "cruntime.h"
 
 struct asn1p_obj{
-    C_HASH_ENTRY_DEFINE(struct asn1p_obj);
+    struct asn1p_obj *_h_next;
     const void *m_obj;
     int m_obj_id;
 };

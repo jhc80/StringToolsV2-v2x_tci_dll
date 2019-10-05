@@ -4,7 +4,7 @@
 
 status_t asn1p_obj_init_basic(struct asn1p_obj *self)
 {
-    C_HASH_ENTRY_CLEAR(self);
+    self->_h_next = NULL;
     self->m_obj = NULL;
     self->m_obj_id = 0;
     return OK;
