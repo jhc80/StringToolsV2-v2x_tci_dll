@@ -2,7 +2,7 @@
 idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "";
+save_path = "Z:\\tmp\\test";
 
 --代码生成的一些选项--
 code_switch={
@@ -19,7 +19,7 @@ end
 
 --如何转换成文件名--
 function to_file_name(name)
-	return class_name(name);
+	return "c_"..class_name(name);
 end
 
 --如何转成c的类型名字
@@ -122,11 +122,11 @@ basic_type_table={
 	{"uchar","%d","Int32","int","CONFIG_TYPE_INT"},
 	{"ushort","%d","Int32","int","CONFIG_TYPE_INT"},
 	{"ulong","%ld","Int32","int","CONFIG_TYPE_INT"},
-	{"float","%f","Double","int","CONFIG_TYPE_FLOAT"},
-	{"double","%f","Double","int","CONFIG_TYPE_FLOAT"},
-	{"bool","%d","Boolean","int","CONFIG_TYPE_INT"},
+	{"float","%f","Double","float","CONFIG_TYPE_FLOAT"},
+	{"double","%f","Double","float","CONFIG_TYPE_FLOAT"},
+	{"bool","%d","Boolean","bool","CONFIG_TYPE_BOOL"},
 	{"void","%x","Int32","int","CONFIG_TYPE_INT"},
-	{"bool_t","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"bool_t","%d","Int32","bool","CONFIG_TYPE_BOOL"},
 };
 
 

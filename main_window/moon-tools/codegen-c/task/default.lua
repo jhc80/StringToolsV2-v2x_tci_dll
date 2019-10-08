@@ -11,7 +11,7 @@ end
 
 --如何生成文件名--
 function to_file_name(name)
-    return to_lower_underline_case(name);
+    return "c_"..to_lower_underline_case(name);
 end
 
 -----------------------------------------------------

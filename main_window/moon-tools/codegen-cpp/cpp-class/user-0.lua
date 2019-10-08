@@ -1,8 +1,8 @@
 --idl源文件，如果为空，则从文本框读取--
-idl_source="Z:\\tmp\\1.idl";
+idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "";
+save_path = "z:\\tmp\\test";
 
 --代码生成的一些选项--
 code_switch={
@@ -11,10 +11,10 @@ code_switch={
     task_container = false,
 	bson = false,
 	cjson = false,
-	lib_config = true,
+	lib_config = false,
     c_struct = false,
     raw_asn1 = false,
-    code_mark = true,
+    code_mark = false,
 }
 
 --命名空间，如果为空，表示没有namesapce
