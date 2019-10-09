@@ -2,11 +2,11 @@
 idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "Z:\\tmp\\test";
+save_path = "Z:\\tmp";
 
 --代码生成的一些选项--
 code_switch={
-    copy_comp_print = true,
+    copy_comp_print = false,
     code_mark = false,
 	weak_ref = false,
 	lib_config = false,
