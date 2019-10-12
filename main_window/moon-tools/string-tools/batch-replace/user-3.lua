@@ -3,7 +3,7 @@ replace_table={
 {"MALLOC","X_MALLOC"},
 {"FREE","X_FREE"},
 {"this","self"},
-{"CFile::","file_"},
+{"CThread::","thread_"},
 };
 
 --是否大小写敏感--

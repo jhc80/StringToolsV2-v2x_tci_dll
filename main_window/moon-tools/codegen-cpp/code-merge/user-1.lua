@@ -5,7 +5,7 @@ from_folders = {
 
 --要合并的目标文件夹，可以多个--
 to_folders = {
-"Z:\\tmp\\basic_dos"
+"Z:\\v2x\\sources\\HuaWei_ETSI_V2\\Sources"
 };
 
 --是否在合并完成后删除源文件--

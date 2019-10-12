@@ -1,5 +1,5 @@
 --要制作列表的目录--
-the_folder = "Z:\\temp\\new_gb_asn1\\asn1-to-lua";
+the_folder = "Z:\\v2x\\sources\\HuaWei_ETSI_V2\\Sources\\its_asn1";
 
 --要保存的列表文件，如果为空就不保存--
 save_file = "";

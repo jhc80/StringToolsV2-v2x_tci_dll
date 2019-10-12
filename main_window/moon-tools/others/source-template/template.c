@@ -38,3 +38,12 @@ C_END_CLOSURE_FUNC(on_search_dir)
 struct closure c;
 closure_init(&c);
 closure_set_func(&c,on_search_dir);
+############################################
+C_BEGIN_CLOSURE_FUNC(on_timer)
+{
+    return OK;
+}
+C_END_CLOSURE_FUNC(on_timer)
+
+struct task_timer *pt = tasktimer_new(&g_globals.taskmgr,1000,0);
+closure_set_func(&pt->callback,on_timer);

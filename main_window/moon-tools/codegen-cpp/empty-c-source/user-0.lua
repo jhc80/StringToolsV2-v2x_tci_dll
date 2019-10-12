@@ -1,5 +1,5 @@
 --保存路径，为空的话直接打印
-save_path="z:\\tmp\\gen";
+save_path="z:\\tmp\\";
 
 --如何把一个字符串转成文件名
 function to_file_name(name)

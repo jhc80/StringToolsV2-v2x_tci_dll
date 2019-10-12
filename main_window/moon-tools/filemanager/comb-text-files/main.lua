@@ -17,11 +17,21 @@ for_each_line(mem_text,function(line)
 
     if file then
         printfnl("add %s",filename);
-        big_file:Puts(begin_file(str));
-        big_file:Puts(EOL);
+		local tag = begin_file(str);
+		if tag then
+			big_file:Puts(tag);
+			big_file:Puts(EOL);
+		end
+		
         big_file:WriteFile(file);
-        big_file:Puts(end_file(str));
-        big_file:Puts(EOL);
+		big_file:Puts(EOL);
+        
+		local tag = end_file(str);
+		if tag then			
+			big_file:Puts(tag);
+			big_file:Puts(EOL);
+		end
+		
         file:Destroy();
     end
 end);
