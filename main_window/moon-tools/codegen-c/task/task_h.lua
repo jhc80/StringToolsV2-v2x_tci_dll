@@ -14,6 +14,7 @@ function code_h(names)
 	printfnl("    int step;");
 	printfnl("};");
 	printfnl("");
+	printfnl("void* %s_get_this_pointer(%s *self);",names.class_name_lwr,names.c_class_name);
 	printfnl("status_t %s_init_basic(%s *self);",names.class_name_lwr,names.c_class_name);
 	printfnl("status_t %s_init(%s *self,struct taskmgr *mgr);",names.class_name_lwr,names.c_class_name);
 	printfnl("status_t %s_destroy(%s *self);",names.class_name_lwr,names.c_class_name);

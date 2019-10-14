@@ -244,7 +244,13 @@ function code_h(idl_class)
     printnl("};");
     
 	printnl("");		
-	    
+
+    printnl(string.format(
+        "void* %s(%s);",
+        this_function_name("get_this_pointer"),
+        this_pointer()
+    ));
+	
     printnl(string.format(
         "status_t %s(%s);",
         this_function_name("init_basic"),
@@ -334,6 +340,16 @@ function get_init_value(info)
     return init_value;
 end
 
+function code_cpp_get_this_pointer(idl_class)
+	printnl(string.format(
+        "void* %s(%s)",
+        this_function_name("get_this_pointer"),
+        this_pointer()
+    ));    
+    printnl("{");
+	printnl("    return (void*)self;");
+	printnl("}");
+end
 --生成InitBasic函数的代码--
 function code_cpp_init_basic(idl_class)
 	printnl(string.format(
@@ -1750,6 +1766,8 @@ function code_cpp(idl_class)
 	common_include_c();
     printnl("");
     
+	code_cpp_get_this_pointer(idl_class);
+    printnl("");
     code_cpp_init_basic(idl_class);
     printnl("");
     code_cpp_init(idl_class);

@@ -1,6 +1,6 @@
 --包含的字符串表--
 string_table={
-  "class"
+  "C_TASK"
 };
 
 --逻辑关系,只支持and和or两种--

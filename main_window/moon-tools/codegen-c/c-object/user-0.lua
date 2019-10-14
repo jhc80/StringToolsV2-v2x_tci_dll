@@ -2,7 +2,7 @@
 idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "Z:\\tmp\\gen";
+save_path = "z:\\tmp";
 
 --代码生成的一些选项--
 code_switch={
@@ -19,7 +19,7 @@ end
 
 --如何转换成文件名--
 function to_file_name(name)
-	return class_name(name);
+	return "c_"..class_name(name);
 end
 
 --如何转成c的类型名字
@@ -93,7 +93,7 @@ end
 
 function common_include_h()
     printfnl("#include \"cruntime.h\"");
-    printfnl("#include \"%s.h\"","c_log_buffer");
+    printfnl("#include \"%s.h\"",to_file_name("log_buffer"));
 end
 
 function common_include_c()

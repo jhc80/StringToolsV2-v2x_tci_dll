@@ -4,7 +4,7 @@ split_chars=" \t\r\n!@#$%^=&*()|+-\\*/{}[];.\":\',?/<>~";
 --选项 1:不包括符合，2:包括符合, 3:包括符合和空字符
 option = 3;
 
-prefix = "thread_";
+prefix = "tasklinkrpc_";
 
 function is_camel_case_string(mem)
 	local lower_case = 0;

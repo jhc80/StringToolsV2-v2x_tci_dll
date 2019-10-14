@@ -1,9 +1,6 @@
 --替换表，例如{"Hello","world"},--
 replace_table={
-{"","filebase_"},
-{"CPartFile","struct part_file"},
-{"this","self"},
-{"IsSpChar","IsSplitChar"},
+{"mem","memfile"}
 };
 
 --是否大小写敏感--
