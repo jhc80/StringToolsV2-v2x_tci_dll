@@ -42,7 +42,7 @@ printfnl("            err_str = \"none\"; ");
 printfnl("        break;");
 printfnl("    }");
 printfnl("    XLOG(LOG_MODULE_USER,LOG_LEVEL_ERROR,");
-printfnl("        \"task_test(%%d): exit with error \\\"%%s\\\"\",");
+printfnl("        \"%s(%%d): exit with error \\\"%%s\\\"\",",names.class_name_lwr);
 printfnl("        task_get_id(&self->base_task),err_str);");
 printfnl("    return OK;");
 printfnl("}");

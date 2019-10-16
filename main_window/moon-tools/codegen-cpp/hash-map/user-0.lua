@@ -2,7 +2,7 @@
 idl_source="";
 
 --保存的路径， 如果为空则输出到文本框--
-save_path="";
+save_path="z:\\tmp\\gen";
 
 --命名空间，如果为空，表示没有namesapce
 name_space="";

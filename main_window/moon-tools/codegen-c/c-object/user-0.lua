@@ -19,7 +19,7 @@ end
 
 --如何转换成文件名--
 function to_file_name(name)
-	return "c_"..class_name(name);
+	return class_name(name);
 end
 
 --如何转成c的类型名字
