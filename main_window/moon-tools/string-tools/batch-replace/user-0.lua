@@ -1,6 +1,8 @@
 --替换表，例如{"Hello","world"},--
 replace_table={
-{"huawei","sumo"}
+{"ego.","ego->"},
+{"bd->","v->"},
+{"addr.","addr->"},
 };
 
 --是否大小写敏感--

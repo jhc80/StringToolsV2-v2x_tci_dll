@@ -115,8 +115,9 @@ function code_cpp(names)
 	printfnl("{");
 	printfnl("    %s *tmp = %s_clone_node(self,hashentry);",names.c_node_class_name,names.class_name_lower);
 	printfnl("    if(!%s_put_ptr(self,tmp))",names.class_name_lower);
-	printfnl("    {");
+	printfnl("    {");	
 	printfnl("        %s_destroy(tmp);",names.node_class_name_lower);
+	printfnl("        X_FREE(tmp);");
 	printfnl("        return ERROR;");
 	printfnl("    }");
 	printfnl("    return OK;");
