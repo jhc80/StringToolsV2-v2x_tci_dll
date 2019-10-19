@@ -265,7 +265,6 @@ static int stream_copy(lua_State *L)
     lua_pushboolean(L,_ret_0);
     return 1;
 }
-
 static int stream_getasstring(lua_State *L)
 {
     CStream *pstream = get_stream(L,1);

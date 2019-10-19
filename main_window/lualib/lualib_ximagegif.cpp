@@ -3,7 +3,7 @@
 #include "syslog.h"
 #include "lualib_ximage.h"
 #include "lualib_filebase.h"
-#include "globals.h"
+#include "lua_helper.h"
 
 static bool ximagegif_is_userdata_valid(lua_userdata *ud)
 {
@@ -224,9 +224,6 @@ status_t to_ximage_array(lua_State *L, int index, CxImage **imgs, int *imgs_size
 
 static status_t ximagegif_encode_v1(lua_State *L)
 {
-    GLOBAL_LUA_THREAD(thread);
-    ASSERT(thread->IsInThisThread());
-
     CxImageGIF *pximagegif = get_ximagegif(L,1);
     ASSERT(pximagegif);
     CFileBase *fp = get_filebase(L,2);
@@ -243,7 +240,7 @@ static status_t ximagegif_encode_v1(lua_State *L)
     BOOL ret0 = pximagegif->Encode(
         fp,pimages,size,
         blocalcolormap,blocaldispmeth,
-        &thread->m_IsRunning
+        how_to_get_lua_running_flag()
     );
 
     lua_pushboolean(L,ret0);
