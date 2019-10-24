@@ -2,4 +2,4 @@
 remove_tail = true;
 
 --是否删除头部的空格--
-remove_head = false;
+remove_head = true;

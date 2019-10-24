@@ -2,7 +2,7 @@
 idl_source="";
 
 --保存的路径， 如果为空则输出到文本框--
-save_path="";
+save_path="z:\\tmp";
 
 --如何转换字符串到类的名字--
 function c_class_name(str)
@@ -17,7 +17,7 @@ end
 --h文件中的通用include
 function common_include_h()
     printfnl("#include \"cruntime.h\"");
-    printfnl("#include \"%s.h\"",to_file_name("log_buffer"));
+    printfnl("#include \"%s.h\"",to_file_name("c_log_buffer"));
 end
 
 --c文件中的通用include

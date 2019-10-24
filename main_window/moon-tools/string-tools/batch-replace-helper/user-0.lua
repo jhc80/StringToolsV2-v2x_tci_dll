@@ -2,7 +2,7 @@ App.ClearScreen();
 
 --自动生成各种case的替换表
 local rep_table={
-	{"HashMap","HashTable"},
+	{"SensorImage","GnssEvent"},
 }
 
 for _,v in ipairs(rep_table) do
