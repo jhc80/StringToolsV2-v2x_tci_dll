@@ -236,6 +236,15 @@ function batch_replace_in_files(file_table, rep_table,case_sensitive, word_only)
 	end
 end
 
+function replace_string(str, src_str,dst_str,case_sensitive,word_only)
+	local mem = new_memfile();
+	mem:Puts(str);
+	replace_in_file(mem,src_str,dst_str,case_sensitive,word_only);
+	local ret = file_to_string(mem);
+	mem:Destroy();
+	return ret;
+end
+
 --转成大写驼峰是命名，比如 hello_world 会被转成
 --HelloWorld
 function to_big_camel_case(str)

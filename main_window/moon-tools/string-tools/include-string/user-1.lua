@@ -1,13 +1,13 @@
 --包含的字符串表--
 string_table={
-  ".d",".o",".cpp"
+  ".h"
 };
 
 --逻辑关系,只支持and和or两种--
-logic_op = "or";
+logic_op = "and";
 
 --条件取反--
-reverse_op = true;
+reverse_op = false;
 
 --大小写敏感--
 case_sensitive = true;

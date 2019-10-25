@@ -3,7 +3,7 @@ split_chars=" \t\r\n!@#$%^=&*()|+-\\*/{}[];.\":\',?/<>~";
 
 --提取哪些单词--
 which_words={
-  2
+  1
 };
 
 --从尾部开始--
@@ -14,5 +14,5 @@ delete = false;
 
 --如何合并这些单词,对delete模式不起作用--
 function how_to_combine(all,line)
-    printfnl("ret.%s = w:Get%s",all[1],to_big_camel_case(all[1]));
+    printfnl("%s",all[1]);
 end

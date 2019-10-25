@@ -1,5 +1,5 @@
 --要制作列表的目录--
-the_folder = "Z:\\v2x\\sources\\HuaWei_ETSI_V2\\Sources\\its_asn1";
+the_folder = "Z:\\tmp\\v2x-lib";
 
 --要保存的列表文件，如果为空就不保存--
 save_file = "";
@@ -15,7 +15,7 @@ unix_style = false;
 
 --过滤器，返回false就不会出现在列表中--
 function file_name_filter(info)
-	return info.ext=="h" or info.ext=="c";
+	return not info.is_dir;
 end
 
 --如何打印的函数--

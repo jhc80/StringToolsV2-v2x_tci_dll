@@ -15,6 +15,7 @@ function code_basic_cpp(names)
 	printfnl("}");
 	printfnl("status_t %s_init(%s *self,int init_size)",names.class_name_lower,names.c_class_name);
 	printfnl("{");
+	printfnl("    ASSERT(init_size > 0);");
 	printfnl("    %s_init_basic(self);",names.class_name_lower);
 	printfnl("    X_MALLOC(self->data,double,init_size);");
 	printfnl("    self->size = init_size;");
@@ -179,7 +180,7 @@ function code_basic_cpp(names)
 	printfnl("    int i;");
 	printfnl("    ASSERT(stk);");
 	printfnl("    %s_destroy(self);",names.class_name_lower);
-	printfnl("    %s_init(self,%s_get_len(stk));",names.class_name_lower,names.class_name_lower);
+	printfnl("    %s_init(self,stk->size);",names.class_name_lower);
 	printfnl("    for(i = 0; i < %s_get_len(stk); i++)",names.class_name_lower);
 	printfnl("    {");
 	printfnl("        %s_push(self,%s_get_elem(stk,i));",names.class_name_lower,names.class_name_lower);
