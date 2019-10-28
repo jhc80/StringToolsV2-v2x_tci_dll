@@ -162,7 +162,7 @@ function code_cpp(names)
 	printfnl("        while(p)");
 	printfnl("        {            ");
 	printfnl("            next = p->next;");
-	printfnl("            closure_set_param_pointer(callback,0,p);");
+	printfnl("            closure_set_param_pointer(callback,0,%s_get(p));",names.entry_class_name);
 	printfnl("            _contine = closure_run(callback);");
 	printfnl("            if(closure_get_param_pointer(callback,0) == NULL)");
 	printfnl("            {");
@@ -182,7 +182,7 @@ function code_cpp(names)
 	printfnl("");
 	printfnl("        p = self->data[i];");
 	printfnl("        next = p->next;");
-	printfnl("        closure_set_param_pointer(callback,0,p);");
+	printfnl("        closure_set_param_pointer(callback,0,%s_get(p));",names.entry_class_name);
 	printfnl("        _contine = closure_run(callback);");
 	printfnl("        if(closure_get_param_pointer(callback,0) == NULL)");
 	printfnl("        {");
