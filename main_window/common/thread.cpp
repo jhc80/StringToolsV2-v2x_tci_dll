@@ -55,15 +55,17 @@ bool CThread::IsComplete()
 status_t CThread::WaitComplete(int timeout)
 {
     int t = 0;
+    int sleep_time = 10;
     while(!IsComplete())
     {
-        crt_msleep(10);
-        t += 10;
+        crt_msleep(sleep_time);
+        t += sleep_time;
         if(t > timeout)
         {
             XLOG(LOG_MODULE_COMMON,LOG_LEVEL_WARNING,
                 "thread WaitComplete timeout: %d",t 
             );
+            sleep_time = 1000;
         }
     }
     return OK;

@@ -22,6 +22,7 @@ public:
 
     status_t Copy(CTaskRunner *p);
     status_t Print(CFileBase *_buf);
+    int GetLen();
 };
 
 #endif

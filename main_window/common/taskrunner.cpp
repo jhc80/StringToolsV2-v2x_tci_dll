@@ -100,3 +100,7 @@ int CTaskRunner::Schedule()
     return has_zero_delay_tasks;
 }
 
+int CTaskRunner::GetLen()
+{
+    return m_ClosureList.GetLen();
+}
