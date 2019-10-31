@@ -2,7 +2,7 @@ App.ClearScreen();
 
 --自动生成各种case的替换表
 local rep_table={
-	{"gac","gbc"},
+	{"guc","gbc"},
 }
 
 for _,v in ipairs(rep_table) do

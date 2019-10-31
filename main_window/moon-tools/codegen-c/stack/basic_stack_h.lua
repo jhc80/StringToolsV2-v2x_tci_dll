@@ -9,7 +9,7 @@ function code_basic_h(names)
 	
 	printfnl("");
 	printfnl("%s{",names.c_class_name);
-	printfnl("    double *data;");
+    printfnl("    %s *data;",names.node_class_name);
 	printfnl("    int top,size;");
 	printfnl("};");
 	printfnl("");
@@ -21,19 +21,19 @@ function code_basic_h(names)
 	printfnl("int %s_get_len(%s *self);",names.class_name_lower,names.c_class_name);
 	printfnl("status_t %s_clear(%s *self);",names.class_name_lower,names.c_class_name);
 	printfnl("status_t %s_auto_resize(%s *self);",names.class_name_lower,names.c_class_name);
-	printfnl("status_t %s_push(%s *self,double node);",names.class_name_lower,names.c_class_name);
-	printfnl("double %s_pop(%s *self);",names.class_name_lower,names.c_class_name);
-	printfnl("double %s_get_elem(%s *self,int index);",names.class_name_lower,names.c_class_name);
-	printfnl("int %s_bsearch_pos(%s *self,double node, int order, int *find_flag);",names.class_name_lower,names.c_class_name);
-	printfnl("status_t %s_insert_elem(%s *self,int index, double node);",names.class_name_lower,names.c_class_name);
-	printfnl("status_t %s_del_elem(%s *self,int index);",names.class_name_lower,names.c_class_name);
-	printfnl("status_t %s_insert_ordered(%s *self,double node, int order, int unique);",names.class_name_lower,names.c_class_name);
-	printfnl("int %s_search_pos(%s *self,double node);",names.class_name_lower,names.c_class_name);
-	printfnl("double %s_get_top(%s *self);",names.class_name_lower,names.c_class_name);
-	printfnl("status_t %s_set_elem(%s *self,int index, double node);",names.class_name_lower,names.c_class_name);
-	printfnl("status_t %s_sort(%s *self,int order);",names.class_name_lower,names.c_class_name);
-	printfnl("status_t %s_copy(%s *self,%s *stk);",names.class_name_lower,names.c_class_name,names.c_class_name);
-	printfnl("status_t %s_print(%s *self,struct log_buffer *buf);",names.class_name_lower,names.c_class_name);
-	printfnl("");
+printfnl("status_t %s_push(%s *self,%s node);",names.class_name_lower,names.c_class_name,names.node_class_name);
+printfnl("%s %s_pop(%s *self);",names.node_class_name,names.class_name_lower,names.c_class_name);
+printfnl("%s %s_get_elem(%s *self,int index);",names.node_class_name,names.class_name_lower,names.c_class_name);
+printfnl("int %s_bsearch_pos(%s *self,%s node, int order, int *find_flag);",names.class_name_lower,names.c_class_name,names.node_class_name);
+printfnl("status_t %s_insert_elem(%s *self,int index, %s node);",names.class_name_lower,names.c_class_name,names.node_class_name);
+printfnl("status_t %s_del_elem(%s *self,int index);",names.class_name_lower,names.c_class_name);
+printfnl("status_t %s_insert_ordered(%s *self,%s node, int order, int unique);",names.class_name_lower,names.c_class_name,names.node_class_name);
+printfnl("int %s_search_pos(%s *self,%s node);",names.class_name_lower,names.c_class_name,names.node_class_name);
+printfnl("%s %s_get_top(%s *self);",names.node_class_name,names.class_name_lower,names.c_class_name);
+printfnl("status_t %s_set_elem(%s *self,int index, %s node);",names.class_name_lower,names.c_class_name,names.node_class_name);
+printfnl("status_t %s_sort(%s *self,int order);",names.class_name_lower,names.c_class_name);
+printfnl("status_t %s_copy(%s *self,%s *stk);",names.class_name_lower,names.c_class_name,names.c_class_name);
+printfnl("status_t %s_print(%s *self,struct log_buffer *buf);",names.class_name_lower,names.c_class_name);
+printfnl("");
 	printfnl("#endif");
 end

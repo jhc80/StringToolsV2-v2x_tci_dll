@@ -1,3 +1,4 @@
+
 --分隔符--
 split_chars=" \t\r\n!@#$%^=&*()|+-\\*/{}[];.\":\',?/<>~";
 
@@ -18,7 +19,8 @@ end
 
 --替换表--
 replace_table={
-    {"struct task_test","%s","names.c_class_name"},
-    {"TASK_TEST","%s","names.file_name_upper"},
-    {"tasktest","%s","names.class_name_lwr"},
+    {"struct basic_stack","%s","names.c_class_name"},
+    {"BASIC_STACK","%s","names.class_name"},
+    {"basic_stack","%s","names.class_name_lower"},
+    {"double","%s","names.node_class_name"},
 };
