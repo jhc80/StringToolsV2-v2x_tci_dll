@@ -2,12 +2,12 @@
 idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "z:\\tmp";
+save_path = "z:\\tmp\\gen";
 
 --代码生成的一些选项--
 code_switch={
-    copy_comp_print = false,
-    weak_ref = true,
+    copy_comp_print = true,    
+    weak_ref = false,
     task_container = false,
 	bson = false,
 	cjson = false,
@@ -22,7 +22,7 @@ name_space="";
 ------------------------------
 --如何把一个字符串转成文件名
 function to_file_name(name)
-	return "l_"..to_lower_underline_case(name);
+	return to_lower_underline_case(name);
 end
 
 --如何转成c++的类名的方法--

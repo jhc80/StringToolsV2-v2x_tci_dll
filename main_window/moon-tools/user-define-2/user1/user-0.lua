@@ -2,5 +2,5 @@ App.ClearScreen();
 
 for_each_line(mem_text_file,function(line)
 	local str = line:CStr();
-    printfnl("aux_source_directory(${ETSI_NEW_NET_LAYER_PATH}/%s SRC_V2X_SERVICE)",str);
+    printfnl("%d",string.len(str));
 end);

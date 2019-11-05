@@ -1,5 +1,5 @@
 --要制作列表的目录--
-the_folder = "Z:\\v2x\\sources\\HuaWei_ETSI_V2\\Sources\\1609_facility_r4.0_feature_huawei\\standard_ETSI\\v2x-lib\\src\\communication\\NetLayer";
+the_folder = "Z:\\v2x\\sources\\JiangHuai\\sources\\simulator\\test-scene\\scene1.2";
 
 --要保存的列表文件，如果为空就不保存--
 save_file = "";
@@ -8,14 +8,14 @@ save_file = "";
 recursive = true;
 
 --是否显示全路径--
-full_path = false;
+full_path = true;
 
 --是否以unix的方式显示路径名字--
-unix_style = true;
+unix_style = false;
 
 --过滤器，返回false就不会出现在列表中--
 function file_name_filter(info)
-	return info.is_dir;
+	return info.ext == "lua";
 end
 
 --如何打印的函数--

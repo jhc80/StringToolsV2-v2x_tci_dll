@@ -2,7 +2,7 @@
 idl_source="";
 
 --保存的路径， 如果为空则输出到文本框--
-save_path="";
+save_path="z:\\tmp\\";
 
 --如何转换字符串到类的名字--
 function c_class_name(str)
@@ -11,7 +11,7 @@ end
 
 --如何生成文件名--
 function to_file_name(name)
-    return "c_"..to_lower_underline_case(name);
+    return to_lower_underline_case(name);
 end
 
 --h文件中的通用include
