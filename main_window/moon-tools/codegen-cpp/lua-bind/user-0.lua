@@ -2,7 +2,7 @@
 idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "z:\\tmp";
+save_path = "";
 
 --命名空间，如果为空，表示没有namesapce
 name_space="";
