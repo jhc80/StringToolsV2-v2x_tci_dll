@@ -1,8 +1,8 @@
 --idl源文件，如果为空，则从文本框读取--
-idl_source="";
+idl_source="z:\\tmp\\gen\\ws_all.idl";
 
 --如果不为空就保存到文件--
-save_path = "z:\\tmp\\";
+save_path = "z:\\tmp\\gen\\";
 
 --代码生成的一些选项--
 code_switch={

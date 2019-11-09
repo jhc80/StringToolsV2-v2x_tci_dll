@@ -1,3 +1,4 @@
 App.ClearScreen();
+local str="glo_sa_19";
 
-printnl(to_small_camel_case("CruleWorld"));
+print();
