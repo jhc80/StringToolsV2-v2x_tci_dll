@@ -157,7 +157,7 @@ status_t CTaskPeerClient::OnGotPackageData(LINKRPC_HEADER *header,CMem *header_d
         XLOG(LOG_MODULE_MESSAGEPEER,LOG_LEVEL_INFO,
             "%s",tmp.GetFrom()->CStr()
         );
-        this->Stop(ERROR_PEER_ALREADY_EXIST);
+        this->Stop(ERROR_INIT_CHECK_FAIL);
         return ERROR;
     }
     ASSERT(this->iHostPeer.get());
@@ -209,8 +209,8 @@ CPeerMessageStk * CTaskPeerClient::GetSendingQueue()
 const char * CTaskPeerClient::ErrorToString(int err)
 {
     const char *ori_str = NULL;
-    if(err == ERROR_PEER_ALREADY_EXIST)
-        ori_str = "peer already exist";
+    if(err == ERROR_INIT_CHECK_FAIL)
+        ori_str = "peer init check fail.";
     else
         ori_str = CTaskLinkRpc::ErrorToString(err);
 

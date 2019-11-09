@@ -381,11 +381,16 @@ CLuaVm* CLuaThread::GetLuaVm()
 status_t CLuaThread::MainLoop()
 {
     SetIsMainLoopRunning(true);
+	
 	while(m_IsRunning)
 	{
-        m_TaskRunner.Schedule();
-		m_TaskMgr.Schedule();
-		crt_msleep(10);
+		bool need_sleep=true;
+        if(m_TaskRunner.Schedule())
+			need_sleep = false;
+		if(m_TaskMgr.Schedule())
+			need_sleep = false;		
+		if(need_sleep)
+			crt_msleep(5);
 	}
     SetIsMainLoopRunning(false);
 	return OK;
