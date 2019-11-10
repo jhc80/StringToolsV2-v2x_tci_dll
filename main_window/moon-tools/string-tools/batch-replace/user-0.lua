@@ -1,6 +1,6 @@
 --替换表，例如{"Hello","world"},--
 replace_table={
-{"d","DD"}
+{"lua","js"}
 };
 
 --是否大小写敏感--

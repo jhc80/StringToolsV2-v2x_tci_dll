@@ -1,8 +1,8 @@
 --idl源文件，如果为空，则从文本框读取--
-idl_source="";
+idl_source="Z:\\tmp\\1.idl";
 
 --如果不为空就保存到文件--
-save_path = "z:\\gen";
+save_path = "z:\\tmp\\gen";
 
 --如何转成c++的类名的方法--
 function c_class_name(name)

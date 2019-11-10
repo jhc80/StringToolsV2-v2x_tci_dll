@@ -2,7 +2,7 @@
 idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "z:\\tmp\\gen";
+save_path = "";
 
 --如何转成c++的类名的方法--
 function c_class_name(name)

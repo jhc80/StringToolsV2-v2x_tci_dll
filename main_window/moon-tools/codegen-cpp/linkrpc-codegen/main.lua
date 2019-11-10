@@ -2,6 +2,7 @@ require("common")
 require("user")
 require("codegen");
 require("codegen_lua");
+require("codegen_js");
 
 function make_file_name(idl_class,ext,postfix)
     if not postfix then postfix="" end
@@ -104,6 +105,8 @@ for _,idl_class in ipairs(all_idl_classes) do
     local lua_name = make_file_name(idl_class,"lua");
     local message_h_name = make_file_name(idl_class,"h","_messages");
     local message_lua_name = make_file_name(idl_class,"lua","_messages");
+	local js_name = make_file_name(idl_class,"js");
+	local message_js_name = make_file_name(idl_class,"js","_messages");
 
     if save_path and save_path ~= "" then
         App.ClearBuffer();
@@ -131,6 +134,14 @@ for _,idl_class in ipairs(all_idl_classes) do
         end
 
         App.ClearBuffer();
+        code_js(idl_class);        
+        if App.SaveBuffer(js_name) then
+            save_str = save_str .. "save to "..js_name..EOL;
+        else
+            save_str = save_str .. "fail to save "..js_name..EOL;
+        end
+
+        App.ClearBuffer();
         code_message_define_h(idl_class);        
         if App.SaveBuffer(message_h_name) then
             save_str = save_str .. "save to "..message_h_name..EOL;
@@ -145,6 +156,14 @@ for _,idl_class in ipairs(all_idl_classes) do
         else
             save_str = save_str .. "fail to save "..message_lua_name..EOL;
         end
+		
+        App.ClearBuffer();
+        code_js_message_define(idl_class);        
+        if App.SaveBuffer(message_js_name) then
+            save_str = save_str .. "save to "..message_js_name..EOL;
+        else
+            save_str = save_str .. "fail to save "..message_js_name..EOL;
+        end		
     else
         printfnl("////////////////%s///////////////",message_h_name);
         code_message_define_h(idl_class);
