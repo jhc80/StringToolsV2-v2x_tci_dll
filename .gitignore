@@ -8,4 +8,5 @@ window.aps
 *.o
 *.d
 *.obj
+user-*.lua
 

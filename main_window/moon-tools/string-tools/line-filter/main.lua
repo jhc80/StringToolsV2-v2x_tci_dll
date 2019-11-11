@@ -8,8 +8,8 @@ App.ClearScreen();
 require("user");
 
 for_each_line(mem_text_file,
-	function(line,line_file)
-		if need_this_line(line, line_file) then
+	function(line)
+		if need_this_line(line) then
 			printnl(line:CStr());
 		end
 	end
