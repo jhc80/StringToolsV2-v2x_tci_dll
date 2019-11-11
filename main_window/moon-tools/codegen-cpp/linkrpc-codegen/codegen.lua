@@ -508,7 +508,7 @@ function code_cpp(idl_class)
         else
             printnl(begin_cpp_extra("Function",not_service_func_name(info.name)));
             code_not_service_function(idl_class,info);
-            printnl(end_cpp_extra("Function",not_service_func_name(info.name)));
+            printnl(end_cpp_extra("Function",not_service_func_name(info.name)));			
         end        
         
         printnl("");

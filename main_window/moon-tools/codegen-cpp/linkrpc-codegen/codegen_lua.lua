@@ -63,7 +63,7 @@ function code_lua_header(idl_class)
 end
 
 --生成lua函数的声明代码--
-function code_lua_service_function_declaration(idl_class, info)
+function code_lua_service_function_declaration(idl_class, info,is_async)
     local func_name;
     if info.is_service then
         func_name = string.upper_first_char(
@@ -71,7 +71,7 @@ function code_lua_service_function_declaration(idl_class, info)
         );
     else
         func_name = string.upper_first_char(
-            not_service_func_name(info.name)
+            not_service_func_name(info.name,is_async)
         );
     end
     
@@ -86,14 +86,20 @@ function code_lua_service_function_declaration(idl_class, info)
             func_name
         );    
         
+		local param_num = 0;
+		if is_async then
+			printf("thread");
+			param_num = param_num + 1;
+		end
+		
         for_each_params(info.params,function(p,index)        
-            if p.index > 1 then
+            if p.index + param_num > 1  then
                 print(", ");
             end
             printf("_%s",to_lower_underline_case(p.name));
         end);
         
-        if not info.is_void then
+        if not info.is_void and not is_async then
             if info.params then
                 print(", ");
             end
@@ -135,6 +141,39 @@ function code_lua_not_service_function(idl_class,info)
     printnl("end");
 end
 
+--生成不是lua service的Async函数代码--
+function code_lua_not_service_async_function(idl_class,info)    
+    code_lua_service_function_declaration(idl_class,info,true);   
+	printnl("");
+	local func_name = string.upper_first_char(
+        not_service_func_name(info.name)
+    );
+	
+	printfnl("    local ret = {};");
+	printfnl("    local done = false;");
+	printfnl("    ");
+	printf("    self:%s(",func_name);
+	
+	for_each_params(info.params,function(p,index) 
+		printf("_%s,",to_lower_underline_case(p.name));
+	end);
+	
+	printnl("function(res,val)");
+	printfnl("        ret.res = res;");
+	printfnl("        ret.val = val;");
+	printfnl("        done = true;");
+	printfnl("    end);");
+	printfnl("    ");
+	printfnl("    while not done and not thread:IsDead() do");
+	printfnl("        thread:Sleep(1);");
+	printfnl("    end");
+	printfnl("    ");
+	printfnl("    return ret;");
+	
+    printnl("end");
+end
+
+
 --生成lua service function 的函数体--
 function code_lua_service_function(idl_class,info)
     code_lua_service_function_declaration(idl_class,info);
@@ -166,6 +205,13 @@ function code_lua(idl_class)
             printnl(begin_lua_extra("Method",not_service_func_name(info.name)));
             code_lua_not_service_function(idl_class,info);
             printnl(end_lua_extra("Method",not_service_func_name(info.name)));
+			
+			if not info.is_void then
+				printnl("");
+				printnl(begin_lua_extra("Method",not_service_func_name(info.name,true)));
+				code_lua_not_service_async_function(idl_class,info);
+				printnl(end_lua_extra("Method",not_service_func_name(info.name,true)));
+			end
         end                
         printnl("");
     end);        

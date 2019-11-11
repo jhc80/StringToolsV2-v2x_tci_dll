@@ -76,7 +76,7 @@ function code_js_header(idl_class)
 end
 
 --生成js函数的声明代码--
-function code_js_service_function_declaration(info)
+function code_js_service_function_declaration(info,is_async)
     local func_name;
     if info.is_service then
         func_name = string.lower_first_char(
@@ -84,15 +84,17 @@ function code_js_service_function_declaration(info)
         );
     else
         func_name = string.lower_first_char(
-            not_service_func_name(info.name)
+            not_service_func_name(info.name,is_async)
         );
     end
     
     if info.is_service then
         printf("%s(_context,_param)",func_name);    
     else
-        printf("%s(",func_name);    
-        
+		if is_async then
+			print("async ");
+		end
+        printf("%s(",func_name); 
         for_each_params(info.params,function(p,index)        
             if p.index > 1 then
                 print(", ");
@@ -100,7 +102,7 @@ function code_js_service_function_declaration(info)
             printf("_%s",to_lower_underline_case(p.name));
         end);
         
-        if not info.is_void then
+        if not info.is_void and not is_async then
             if info.params then
                 print(", ");
             end
@@ -143,6 +145,35 @@ function code_js_not_service_function(idl_class,info)
     printnl("}");
 end
 
+--生成不是js service的函数ASync代码--
+function code_js_not_service_async_function(idl_class,info)
+	code_js_service_function_declaration(info,true);   
+	printnl("");
+	printnl("{");
+	
+	local func_name = string.lower_first_char(
+            not_service_func_name(info.name)
+    );
+		
+	printfnl("   return new Promise((resolve,reject)=>{        ");
+	printf("        this.%s(",func_name);
+	
+	for_each_params(info.params,function(p,index)        
+		printf("_%s,",to_lower_underline_case(p.name));
+	end);
+		
+	printfnl("(res,val)=>{");
+	printfnl("            let ret={result:res,value:val};");
+	printfnl("            if(Common.Success(ret))");
+	printfnl("                resolve(ret);");
+	printfnl("            else");
+	printfnl("                reject(ret);");
+	printfnl("        });");
+	printfnl("    });");
+	
+	printnl("}");
+end
+
 --生成js service function 的函数体--
 function code_js_service_function(idl_class,info)
     code_js_service_function_declaration(info);
@@ -175,6 +206,13 @@ function code_js(idl_class)
             printnl(begin_js_extra("Method",not_service_func_name(info.name)));
             code_js_not_service_function(idl_class,info);
             printnl(end_js_extra("Method",not_service_func_name(info.name)));
+		
+			printnl("");		
+			if not info.is_void then
+				printnl(begin_cpp_extra("Function",not_service_func_name(info.name,true)));
+				code_js_not_service_async_function(idl_class,info);
+				printnl(end_cpp_extra("Function",not_service_func_name(info.name,true)));						
+			end
         end        
         
         printnl("");

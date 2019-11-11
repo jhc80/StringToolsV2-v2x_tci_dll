@@ -15,8 +15,12 @@ function service_func_name(name)
 end
 
 --如何生成不是service 的函数名字--
-function not_service_func_name(name)
-    return to_big_camel_case(name);
+function not_service_func_name(name,is_async)
+    local name = to_big_camel_case(name);
+	if is_async then
+		name = name.."_Async";
+	end
+	return name;
 end
 
 --如何生成包装参数的类,不带C开头的--
