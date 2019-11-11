@@ -134,7 +134,8 @@ for _,idl_class in ipairs(all_idl_classes) do
         end
 
         App.ClearBuffer();
-        code_js(idl_class);        
+        code_js(idl_class);   
+
         if App.SaveBuffer(js_name) then
             save_str = save_str .. "save to "..js_name..EOL;
         else
@@ -177,8 +178,14 @@ for _,idl_class in ipairs(all_idl_classes) do
         printfnl("////////////////%s///////////////",lua_name);
         code_lua(idl_class);
 
+        printfnl("////////////////%s///////////////",js_name);
+        code_js(idl_class);
+
         printfnl("////////////////%s///////////////",message_lua_name);
         code_lua_message_define(idl_class);
+		
+        printfnl("////////////////%s///////////////",message_js_name);
+        code_js_message_define(idl_class);
     end
     ::continue::    
 end

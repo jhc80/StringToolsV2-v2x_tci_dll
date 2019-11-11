@@ -159,8 +159,8 @@ function code_lua_not_service_async_function(idl_class,info)
 	end);
 	
 	printnl("function(res,val)");
-	printfnl("        ret.res = res;");
-	printfnl("        ret.val = val;");
+	printfnl("        ret.result = res;");
+	printfnl("        ret.value = val;");
 	printfnl("        done = true;");
 	printfnl("    end);");
 	printfnl("    ");

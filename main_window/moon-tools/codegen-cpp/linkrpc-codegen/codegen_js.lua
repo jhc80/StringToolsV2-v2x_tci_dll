@@ -154,7 +154,11 @@ function code_js_not_service_async_function(idl_class,info)
 	local func_name = string.lower_first_char(
             not_service_func_name(info.name)
     );
-		
+
+	local async_func_name = string.lower_first_char(
+            not_service_func_name(info.name,true)
+    );
+	
 	printfnl("   return new Promise((resolve,reject)=>{        ");
 	printf("        this.%s(",func_name);
 	
@@ -164,10 +168,10 @@ function code_js_not_service_async_function(idl_class,info)
 		
 	printfnl("(res,val)=>{");
 	printfnl("            let ret={result:res,value:val};");
-	printfnl("            if(Common.Success(ret))");
+	printfnl("            if(Common.Success(res))");
 	printfnl("                resolve(ret);");
 	printfnl("            else");
-	printfnl("                reject(ret);");
+	printfnl("                reject(\"%s rejected: \"+res);",async_func_name);
 	printfnl("        });");
 	printfnl("    });");
 	
