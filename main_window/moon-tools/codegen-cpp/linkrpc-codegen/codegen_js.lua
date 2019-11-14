@@ -213,9 +213,9 @@ function code_js(idl_class)
 		
 			printnl("");		
 			if not info.is_void then
-				printnl(begin_cpp_extra("Function",not_service_func_name(info.name,true)));
+				printnl(begin_js_extra("Method",not_service_func_name(info.name,true)));
 				code_js_not_service_async_function(idl_class,info);
-				printnl(end_cpp_extra("Function",not_service_func_name(info.name,true)));						
+				printnl(end_js_extra("Method",not_service_func_name(info.name,true)));						
 			end
         end        
         
