@@ -52,6 +52,25 @@ bool CThread::IsComplete()
     return m_Handle == 0;
 }
 
+status_t CThread::WaitCompleteTimeout(int timeout)
+{
+    int t = 0;
+    int sleep_time = 10;
+    while(!IsComplete())
+    {
+        crt_msleep(sleep_time);
+        t += sleep_time;
+        if(t > timeout)
+        {
+            XLOG(LOG_MODULE_COMMON,LOG_LEVEL_WARNING,
+                "thread WaitComplete timeout: %d",t 
+            );
+            break;
+        }
+    }
+    return OK;
+}
+
 status_t CThread::WaitComplete(int timeout)
 {
     int t = 0;

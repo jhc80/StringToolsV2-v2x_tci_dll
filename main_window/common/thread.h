@@ -12,6 +12,7 @@ public:
     status_t Stop();
     bool IsRunning();
     status_t WaitComplete(int timeout=10000);
+    status_t WaitCompleteTimeout(int timeout=10000);
     bool IsComplete();
     virtual status_t Run() = 0;
     virtual status_t Cancel();
