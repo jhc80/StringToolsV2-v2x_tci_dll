@@ -29,12 +29,12 @@ int asn1p_paramlist_to_lua(struct asn1p_paramlist_s *paramlist)
                 lua_inc_level(1);
                 asn1p_ref_to_lua(paramlist->params[i].governor);
                 lua_inc_level(-1);
-                lua_log("}");
+                lua_log("},");
             }
 
             if(paramlist->params[i].argument)
             {
-                lua_log("argument = \"%s\"",paramlist->params[i].argument);
+                lua_log("argument = \"%s\",",paramlist->params[i].argument);
             }
 
             lua_inc_level(-1);
