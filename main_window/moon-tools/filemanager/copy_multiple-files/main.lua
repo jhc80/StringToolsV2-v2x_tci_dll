@@ -74,6 +74,10 @@ while mem_text_file:ReadLine(line_file) do
         end
     end
     
+	if add_prefix ~= "" then
+		in_file = add_prefix..in_file;
+	end
+	
     if out_file then           
         
         if auto_rename then
