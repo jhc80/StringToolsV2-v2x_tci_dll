@@ -41,7 +41,6 @@ local pbuf = PrintBuffer.new();
 for_each_module(asn1_table,function(module)
     for_each_member(module,function(m)
         if m.meta_type == AMT_TYPE then
-        
             local h_file_name = FileManager.ToAbsPath(
                 save_path.."/"..to_lua_h_filename(m.Identifier)
             );
@@ -71,7 +70,6 @@ for_each_module(asn1_table,function(module)
                 else
                     pbuf:Log("fail to save %s!!",c_file_name);
                 end
-                               
             end
         end
     end);           

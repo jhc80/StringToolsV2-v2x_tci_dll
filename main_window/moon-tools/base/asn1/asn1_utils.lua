@@ -196,4 +196,12 @@ function extract_all_inner_members(asn1_table)
     return all;
 end
 
+--把减号替换成下划线，使名字中不能包含非法字符--
+function asn_valid_name(str)
+    return string.gsub(str,"-","_");
+end
+
+
+
+
 

@@ -30,7 +30,7 @@ local function is_container(obj)
 end
     
 function ASN1_Helper:GenerateFlatHashTable()   
-   local function generate_flat_hash_table_recursive(tab,map)
+    local function generate_flat_hash_table_recursive(tab,map)
         for k,v in pairs(tab) do            
             if type(v) == "table" then
                 if v.__id__ and not is_only_id_obj(v) then
@@ -121,8 +121,8 @@ function ASN1_Helper:RebuildReferenceTypes()
                     c_type = expr_type_to_c_type(ref_type.expr_type),
 				}
 			else
-				printnl("can not find reference type of "..ref_name);
-				return false;
+                printfnl("WARNING: can not find reference type of %s __id__=%d",ref_name,v.__id__);
+                App.Sleep(50);
 			end
 		end
 	end
@@ -132,7 +132,7 @@ end
 
 --must be after rebuild reference types
 function ASN1_Helper:RebuildContainerEntryTypes()
-   	for k,v in pairs(self.m_flat_map) do        
+    for k,v in pairs(self.m_flat_map) do        
         if is_container(v) then
             if not v.members then return end
             if not v.members[1] then return end

@@ -20,7 +20,7 @@ end
 
 --生成c源码的文件名--
 function to_lua_c_filename(name)
-    return name.."_to_lua.c";
+    return convert_invalid_chars(name).."_to_lua.c";
 end
 
 --生成成员变量的名字--
@@ -30,7 +30,7 @@ end
 
 --生成c源码的头文件名--
 function to_lua_h_filename(name)
-    return name.."_to_lua.h";
+    return convert_invalid_chars(name).."_to_lua.h";
 end
 
 --生成enum类型的成员名字--
