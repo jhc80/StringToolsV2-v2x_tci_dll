@@ -173,6 +173,16 @@ function for_each_return_type(ret_types,callback,name_prefix)
     end
 end
 
+--只遍历第一个返回值
+function for_first_return_type(ret_types,callback)
+	local flag = false;
+	for_each_return_type(ret_types,function(info)
+		if not flag then
+			flag = true;
+			callback(info);
+		end
+	end);
+end
 
 --把函数参数重新变成在参数中的字符串--
 function param_to_def_string(param)
@@ -226,6 +236,25 @@ end
 --得到this指针的函数
 function this_pointer()
     return c_class_name(g_idl_class.name).." *self";
+end
+
+--查找virtual函数--
+function has_virtual_function(functions, name)
+	local found = nil;
+	for_each_functions(functions,function(info)
+		if IdlHelper.Func.IsVirtual(info.func) then
+			if to_lower_underline_case(info.name) == name and not found then
+				found = info.func;
+			end
+		end
+	end);
+	return found;
+end
+
+--是否是特殊保留的虚函数名--
+function is_special_virtual_func(func)
+	local name = to_lower_underline_case(func.name);
+	return name == "destroy" or name == "get_this_pointer";
 end
 
 --得到在函数声明中定义的参数列表
@@ -499,7 +528,14 @@ function code_h(idl_class)
         this_pointer()
     ));
     
-    
+    if has_virtual_function(idl_class.functions,"destroy") then
+		printnl(string.format(
+			"status_t %s(%s);",
+			this_function_name("base_destroy"),
+			this_pointer()
+		));		
+	end
+	
 	printnl(string.format(
         "status_t %s(%s);",
         this_function_name("destroy"),
@@ -538,8 +574,12 @@ function code_h(idl_class)
     code_all_setter_declaration_h(idl_class);
     code_end_marker("Setters_H");
     
+	printnl("");	
+	code_begin_marker("VirtualFunctions");
+	code_h_virtual_func_declarations(idl_class);
+	code_end_marker("VirtualFunctions");
 	printnl("");
-	
+
 	if code_switch.lib_config then	
 		code_begin_marker("LibConfig");
 
@@ -583,6 +623,14 @@ function code_cpp_get_this_pointer(idl_class)
         this_pointer()
     ));    
     printnl("{");
+	
+	if has_virtual_function(idl_class.functions,"get_this_pointer") then		
+		printfnl("    if(self->get_this_pointer)");
+		printfnl("    {");
+		printfnl("        return self->get_this_pointer(self);");
+		printfnl("    }");		
+	end
+	
 	printnl("    return (void*)self;");
 	printnl("}");
 end
@@ -765,11 +813,33 @@ function code_cpp_init(idl_class)
     printnl("}");
 end
 
---生成Destroy的代码--
-function code_cpp_destroy(idl_class)
+--生成VirtualDestroy的代码--
+function code_cpp_virtual_destroy(idl_class)
 	printnl(string.format(
         "status_t %s(%s)",
         this_function_name("destroy"),
+        this_pointer()
+    ));    
+    printnl("{");
+	
+	printfnl("    if(self->destroy)")
+	printnl("    {");
+	printnl("        return self->destroy(self);");
+	printnl("    }");
+	printfnl("    return %s(self);",this_function_name("base_destroy"));
+	printnl("}");
+end
+
+--生成Destroy的代码--
+function code_cpp_destroy(idl_class)
+	local func_name = "destroy";
+	if  has_virtual_function(idl_class.functions,"destroy") then
+		func_name="base_destroy";
+	end
+
+	printnl(string.format(
+        "status_t %s(%s)",
+        this_function_name(func_name),
         this_pointer()
     ));    
     printnl("{");
@@ -2014,8 +2084,13 @@ function code_cpp(idl_class)
     printnl("");
     code_cpp_init(idl_class);
     printnl("");
-    code_cpp_destroy(idl_class);
+    code_cpp_destroy(idl_class);	
     printnl("");
+	
+	if has_virtual_function(idl_class.functions,"destroy") then
+		code_cpp_virtual_destroy(idl_class);		
+	end
+	
     if code_switch.copy_comp_print then
         code_cpp_copy(idl_class);
         printnl("");
@@ -2031,6 +2106,9 @@ function code_cpp(idl_class)
     printnl("");
     code_all_setter_cpp(idl_class);
     
+	code_cpp_virtual_func_body(idl_class);
+	printnl("");
+	
     if code_switch.lib_config then
 		code_begin_extra(this_function_name("LoadConfigFromFile"));
         code_cpp_load_config_2(idl_class); 
@@ -2553,9 +2631,68 @@ function code_cpp_save_config_2(idl_class)
     printfnl("    config_destroy(&conf);");
     printnl("    return ret;");
     printnl("}");
-
 end
 
+--生成头文件中虚函数的声明--
+function code_h_virtual_func_declarations(idl_class)
+	for_each_functions(idl_class.functions,function(info)
+		if IdlHelper.Func.IsVirtual(info.func) and not is_special_virtual_func(info.func) then				
+				code_ret_value(info.ret_type);
+				printf(" %s(%s *self",
+					this_function_name(info.name),
+					c_class_name(idl_class.name)
+				);				
+				code_param_def_list(info.params);
+				printfnl(");");		
+		end
+	end);
+end
+
+--生成虚函数body--
+
+function code_cpp_virtual_func_body(idl_class)
+	for_each_functions(idl_class.functions,function(info)
+		if IdlHelper.Func.IsVirtual(info.func) and not is_special_virtual_func(info.func) then				
+				code_begin_extra(this_function_name(info.name));
+				code_ret_value(info.ret_type);
+				printf(" %s(%s *self",
+					this_function_name(info.name),
+					c_class_name(idl_class.name)
+				);				
+				code_param_def_list(info.params);
+				printfnl(")");		
+				
+				printfnl("{");
+				
+				printfnl("    if(self->%s)",to_lower_underline_case(info.name));
+				printfnl("    {");
+				
+				if not info.is_void then
+					print("        return ");
+				else
+					print("        ");
+				end
+				
+				printf("self->%s(self",to_lower_underline_case(info.name));
+				code_param_call_list(info.params);
+				printfnl(");");
+				
+				printfnl("    }");
+				
+				for_first_return_type(info.func.ret_type,function(ret)
+					if ret.is_pointer or ret.is_array then
+						printnl("    return NULL;");
+					else
+						printnl("    return OK;");
+					end
+				end);
+								
+				printfnl("}");
+				code_end_extra(this_function_name(info.name));
+				printnl("");				
+		end
+	end);
+end
 
 
 
