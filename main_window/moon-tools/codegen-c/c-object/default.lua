@@ -107,6 +107,7 @@ basic_type_table={
 	{"int8_t","%d","Int32","int","CONFIG_TYPE_INT"},
 	{"int16_t","%d","Int32","int","CONFIG_TYPE_INT"},
 	{"int32_t","%d","Int32","int","CONFIG_TYPE_INT"},
+	{"status_t","%d","Int32","int","CONFIG_TYPE_INT"},
 	{"int64_t","%lld","Int64","int64","CONFIG_TYPE_INT64"},
     {"fsize_t","%lld","Int64","int64","CONFIG_TYPE_INT64"},
 	{"int_ptr_t","%d","Int32","int","CONFIG_TYPE_INT"},

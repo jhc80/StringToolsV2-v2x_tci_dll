@@ -91,6 +91,127 @@ function for_each_variables(variables,callback)
     end
 end
 
+--遍历idl_class中每一个function的迭代器--
+function for_each_functions(functions, callback)    
+    if not functions then return end
+    local index = 1;
+    
+	for _,func in ipairs(functions) do        
+        local info = {};
+        info.func = func;
+        info.ret_type = func.ret_type;
+        info.name = func.name;
+        info.params = func.params;
+        info.index = index;        
+        info.idl_class = func.idl_class;
+		info.is_void = IdlHelper.Func.IsVoid(func);
+		
+        index = index + 1;
+        if callback(info) then        
+            return true;
+        end        
+    end
+end
+
+--遍历每一个函数参数的迭代器--
+function for_each_params(params, callback)
+    if not params then return end
+    local index = 1;
+    
+    for _, p in ipairs(params) do
+        
+        local info = {};
+        info.param = p;
+        info.name = p.name;  
+        info.type = p.type;
+        info.is_pointer = IdlHelper.Type.IsPointer(p.type);        
+        info.is_array,array_size = IdlHelper.Type.IsArray(p.type);
+        info.is_string = IdlHelper.Type.IsString(p.type);
+        info.is_basic_type = IdlHelper.Type.IsBasicType(p.type);        
+        info.is_object = not info.is_basic_type;
+        info.index = index;
+        index = index + 1;
+        if callback(info) then
+            return true;
+        end        
+    end
+end
+
+--遍历每一个返回值的迭代器--
+function for_each_return_type(ret_types,callback,name_prefix)
+    local index = 1;
+    
+    if not name_prefix then
+        name_prefix = "RetVal";
+    end
+    
+    for _, ret in ipairs(ret_types) do
+        
+        local info = {};
+        info.type = ret;
+		info.is_void = ret.name == "void";
+        info.is_pointer = IdlHelper.Type.IsPointer(ret);        
+        info.is_array,array_size = IdlHelper.Type.IsArray(ret);
+        info.is_string = IdlHelper.Type.IsString(ret);
+        info.is_basic_type = IdlHelper.Type.IsBasicType(ret);        
+        info.is_object = not info.is_basic_type;
+        
+		if info.is_pointer then 
+			info.is_void = false 
+		end
+
+        if ret.var_name then
+            info.name = ret.var_name;
+        else
+            info.name = name_prefix..(index-1);
+            index = index + 1;
+        end
+
+        if callback(info) then
+            return true;
+        end        
+    end
+end
+
+
+--把函数参数重新变成在参数中的字符串--
+function param_to_def_string(param)
+    local str="";
+
+    if param.is_basic_type then
+        str = str..param.type.name;
+        if param.is_pointer or param.is_array then
+            str = str.." *"..param.name;
+        else
+            str = str.." "..param.name;
+        end
+    elseif param.is_string then
+        str = str.."const char *"..param.name;
+    else
+        str = str..c_class_name(param.type.name).." *"..param.name;
+    end
+   
+    if param.is_array then
+         str = str..",int "..param.name.."_len";
+    end
+   
+    return str;    
+end
+
+--把函数参数重新变成在参数中的字符串--
+function param_to_call_string(param)
+    local str="";
+	
+    str = str..param.name;
+   
+    if param.is_array then
+         str = str..","..param.name.."_len";
+    end
+   
+    return str;    
+end
+
+
 --转换一些特殊的类型--
 function covert_special_types(idl_class)
     for_each_variables(idl_class.variables,function(info)        
@@ -102,8 +223,39 @@ function covert_special_types(idl_class)
     end);
 end
 
+--得到this指针的函数
 function this_pointer()
     return c_class_name(g_idl_class.name).." *self";
+end
+
+--得到在函数声明中定义的参数列表
+function code_param_def_list(params)
+	for_each_params(params,function(p)     
+		printf(",%s",param_to_def_string(p));
+	end);
+end
+
+--得到函数调用中的参数列表--
+function code_param_call_list(params)
+	for_each_params(params,function(p)     
+		printf(",%s",param_to_call_string(p));
+	end);
+end
+
+--生成函数返回值的代码
+function code_ret_value(ret_types)
+	for_each_return_type(ret_types,function(info)
+		if info.is_basic_type or info.is_void then
+			print(info.type.name);
+			if info.is_pointer or info.is_array then
+				print("*");
+			end
+		elseif info.is_string then
+			print("const char*");
+		else
+			printf("%s*",c_class_name(info.type.name));
+		end
+	end);
 end
 ----------------------------------------------
 function ptab(level)
@@ -154,6 +306,84 @@ function code_variables_define(variables)
 	end);
 end
 
+--生成所有虚函数指针的定义--
+function code_virtual_func_pointers_def(idl_class)
+	for_each_functions(idl_class.functions, function(info)
+			if IdlHelper.Func.IsVirtual(info.func) then
+				print("    ");
+				code_ret_value(info.ret_type);
+				printf(" (*%s)(%s *base",
+					to_lower_underline_case(info.name),
+					c_class_name(idl_class.name)
+				);				
+				code_param_def_list(info.params);
+				printfnl(");");			
+			end		
+		end);
+end
+
+function code_virtual_functions_init_marco(idl_class)
+		if not IdlHelper.Class.IsVirtualClass(idl_class) then
+			return
+		end
+		printnl("");
+		
+		printfnl("#define %s_INIT_VIRTUAL_FUNCTIONS(prefix) do{\\",
+			string.upper(idl_class.name)
+		);
+		
+		for_each_functions(idl_class.functions,function(info)		
+			if IdlHelper.Func.IsVirtual(info.func) then
+			
+				printfnl("    self->base_%s.%s = prefix##_virtual_%s;\\",
+					string.lower(idl_class.name),
+					string.lower(info.name),
+					string.lower(info.name)
+				);			
+			end
+		end);		
+		printnl("}while(0)\\");
+		
+		printnl("");
+		printfnl("#define %s_VIRTUAL_FUNCTIONS_DEFINE(child_type, prefix)\\",
+			string.upper(idl_class.name)
+		);
+		
+		for_each_functions(idl_class.functions, function(info)
+			if IdlHelper.Func.IsVirtual(info.func) then
+				print("static ");
+				code_ret_value(info.ret_type);
+				printf(" prefix##_virtual_%s(%s *base",
+					to_lower_underline_case(info.name),
+					c_class_name(idl_class.name)
+				);
+				
+				code_param_def_list(info.params);
+				printfnl(")\\");
+				
+				printfnl("{\\");
+				printfnl("    CONTAINER_OF(child_type,self,base,base_%s);\\",
+					string.lower(idl_class.name)
+				);
+				
+				if not info.is_void then
+					print("    return ");
+				else
+					print("    ");
+				end
+				
+				printf("prefix##_%s(self",
+					to_lower_underline_case(info.name)
+				);
+				
+				code_param_call_list(info.params);
+				printnl(");\\");
+				
+				printfnl("}\\");
+			end		
+		end);
+		
+end
 --生成所有的include 代码--
 function code_all_includes(idl_class)
     local all_names = {};
@@ -173,6 +403,8 @@ function code_all_includes(idl_class)
 	
 	common_include_h();
 
+	code_virtual_functions_init_marco(idl_class);
+	
 	local all_bases = IdlHelper.Class.GetAllBases(idl_class);
 	
 	if all_bases then
@@ -195,6 +427,8 @@ function code_all_includes(idl_class)
     end	
     
 end
+
+
 
 --头文件代码生成--
 function code_h(idl_class)
@@ -238,7 +472,9 @@ function code_h(idl_class)
 	if idl_class.variables then
 		code_variables_define(idl_class.variables);
 	end
-
+	
+	code_virtual_func_pointers_def(idl_class);
+	
     code_end_marker("Members");
    
     printnl("};");
@@ -438,6 +674,12 @@ function code_cpp_init_basic(idl_class)
 		printnl("    C_WEAK_REF_ID_CLEAR(self);");
 	end
 
+	for_each_functions(idl_class.functions,function(info)
+		if IdlHelper.Func.IsVirtual(info.func) then
+			printfnl("    self->%s = NULL;",to_lower_underline_case(info.name));
+		end
+	end);
+	
     print(g_c_base_codegen:Code_InitBasic());     
     print(get_temp_code());
     

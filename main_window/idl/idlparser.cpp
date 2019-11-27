@@ -788,6 +788,15 @@ status_t CIdlParser::ParseRetTypeList(CIdlTypeList *type_list)
 
         if(ParseType(&type))
         {
+            m_Lexer.SaveContext(&context);
+            if(m_Lexer.Next() == IDL_TOKEN_STAR)
+            {
+                type.SetIsPointer(true);
+            }
+            else
+            {
+                m_Lexer.RestoreContext(&context);
+            }            
             type_list->Push(&type);
             ret = OK;
         }

@@ -4,6 +4,7 @@ IdlHelper={};
 IdlHelper.Class={};
 IdlHelper.Type={};
 IdlHelper.Var={};
+IdlHelper.Func={};
 
 IdlHelper.Class.GetAllBases=function(idl_class)	
 	if not idl_class.bases then
@@ -90,6 +91,18 @@ IdlHelper.Var.IsNoGetter = function(var)
 	return IdlHelper.Class.FindHintSwitch (var,"noget");
 end
 
+IdlHelper.Func.IsVirtual  = function(func)
+	return IdlHelper.Class.FindHintSwitch(func,"virtual");
+end
+
+IdlHelper.Func.IsVoid = function(func)
+    if not func then return true end
+    if not func.ret_type then return true end
+	if #func.ret_type ~= 1 then return false end
+    return func.ret_type[1].name == "void" and 
+		not IdlHelper.Type.IsPointer(func.ret_type[1]);
+end
+
 IdlHelper.Type.GetLibConfigType=function(type)
 	for _,b in ipairs(basic_type_table) do	
 		if type.name == b[1] then
@@ -108,5 +121,24 @@ IdlHelper.Type.GetLibConfigDefineType=function(type)
 	return "<??>";
 end
 
+IdlHelper.Class.IsVirtualClass = function(idl_class)
+	if not idl_class then return false end
+	
+	if idl_class._is_virtual_class_ ~= nil then 
+		return idl_class._is_virtual_class_;
+	end
+	
+	if idl_class.functions then
+		for _,func in ipairs(idl_class.functions) do
+			if IdlHelper.Func.IsVirtual(func) then
+				idl_class._is_virtual_class_ = true;
+				return true;
+			end
+		end
+	end
+
+	idl_class._is_virtual_class_ = false;
+	return false;
+end
 
 
