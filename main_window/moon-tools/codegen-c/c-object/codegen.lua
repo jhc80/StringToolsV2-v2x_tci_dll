@@ -355,8 +355,7 @@ function code_virtual_functions_init_marco(idl_class)
 		if not IdlHelper.Class.IsVirtualClass(idl_class) then
 			return
 		end
-		printnl("");
-		
+	
 		printfnl("#define %s_INIT_VIRTUAL_FUNCTIONS(prefix) do{\\",
 			string.upper(idl_class.name)
 		);
@@ -431,8 +430,6 @@ function code_all_includes(idl_class)
 	end
 	
 	common_include_h();
-
-	code_virtual_functions_init_marco(idl_class);
 	
 	local all_bases = IdlHelper.Class.GetAllBases(idl_class);
 	
@@ -476,7 +473,11 @@ function code_h(idl_class)
     code_begin_marker("Includes_H");    
     code_all_includes(idl_class);      
     code_end_marker("Includes_H");
-    
+    printnl("");
+	code_begin_marker("VirtualFunctionsDefine");
+	code_virtual_functions_init_marco(idl_class);
+	code_end_marker("VirtualFunctionsDefine");
+	
 	printnl("");
     
 	print(string.format("%s",
@@ -580,6 +581,11 @@ function code_h(idl_class)
 	code_end_marker("VirtualFunctions");
 	printnl("");
 
+	code_begin_marker("InheriteFunctions");
+	code_h_inherited_function_declaration(idl_class);
+	code_end_marker("InheriteFunctions");
+	printnl("");
+
 	if code_switch.lib_config then	
 		code_begin_marker("LibConfig");
 
@@ -632,7 +638,7 @@ function code_cpp_get_this_pointer(idl_class)
 	end
 	
 	printnl("    return (void*)self;");
-	printnl("}");
+	printnl("}");	
 end
 --生成InitBasic函数的代码--
 function code_cpp_init_basic(idl_class)
@@ -807,6 +813,7 @@ function code_cpp_init(idl_class)
     print(g_c_base_codegen:Code_Init());
     print(get_temp_code());        
     
+	code_cpp_virtual_function_init_macro(idl_class);
     code_end_marker("Init");
     
     printnl("    return OK;");
@@ -2077,7 +2084,8 @@ function code_cpp(idl_class)
     
 	common_include_c();
     printnl("");
-    
+    code_cpp_virtual_function_def_macro(idl_class);
+	printnl("");
 	code_cpp_get_this_pointer(idl_class);
     printnl("");
     code_cpp_init_basic(idl_class);
@@ -2107,6 +2115,9 @@ function code_cpp(idl_class)
     code_all_setter_cpp(idl_class);
     
 	code_cpp_virtual_func_body(idl_class);
+	printnl("");
+	
+	code_cpp_inherited_function_body(idl_class);
 	printnl("");
 	
     if code_switch.lib_config then
@@ -2633,17 +2644,22 @@ function code_cpp_save_config_2(idl_class)
     printnl("}");
 end
 
+function code_virtual_function_declaration(idl_class,info)
+	code_ret_value(info.ret_type);
+	printf(" %s(%s *self",
+		this_function_name(info.name),
+		c_class_name(idl_class.name)
+	);				
+	code_param_def_list(info.params);
+	print(")");						
+end
+
 --生成头文件中虚函数的声明--
 function code_h_virtual_func_declarations(idl_class)
 	for_each_functions(idl_class.functions,function(info)
 		if IdlHelper.Func.IsVirtual(info.func) and not is_special_virtual_func(info.func) then				
-				code_ret_value(info.ret_type);
-				printf(" %s(%s *self",
-					this_function_name(info.name),
-					c_class_name(idl_class.name)
-				);				
-				code_param_def_list(info.params);
-				printfnl(");");		
+			code_virtual_function_declaration(idl_class,info);
+			printnl(";");
 		end
 	end);
 end
@@ -2694,5 +2710,95 @@ function code_cpp_virtual_func_body(idl_class)
 	end);
 end
 
+--生成虚函数定义的宏--
+function code_cpp_virtual_function_def_macro(idl_class)
+	local bases = IdlHelper.Class.GetAllBases(idl_class);
+	if not bases then return end
+
+	for _,base in ipairs(bases) do
+		if base.openness == "virtual" then
+			printfnl("%s_VIRTUAL_FUNCTIONS_DEFINE(%s,%s)",
+				string.upper(base.name),
+				c_class_name(idl_class.name),
+				string.lower(idl_class.name)
+			);
+		end		
+	end
+end
+
+--生成虚函数初始化的宏--
+function code_cpp_virtual_function_init_macro(idl_class)
+	local bases = IdlHelper.Class.GetAllBases(idl_class);
+	if not bases then return end
+
+	for _,base in ipairs(bases) do
+		if base.openness == "virtual" then
+			printfnl("    %s_INIT_VIRTUAL_FUNCTIONS(%s);",
+				string.upper(base.name),
+				string.lower(idl_class.name)
+			);
+		end		
+	end
+end
+
+--生成继承的虚函数的头文件声明--
+function code_h_inherited_function_declaration(idl_class)
+	local bases = IdlHelper.Class.GetAllBases(idl_class);
+	if not bases then return end
+	
+	for _,base in ipairs(bases) do
+		if base.openness == "virtual" then			
+			local idl = IdlHelper.Class.FindIdlClass(all_idl_classes,base.name);
+			if idl then
+				local old_name = idl.name;
+				idl.name = idl_class.name;
+				code_h_virtual_func_declarations(idl);
+				idl.name = old_name;
+			end			
+		end		
+	end	
+end
+
+--生成头文件中虚函数的Body--
+function code_cpp_virtual_functions_body(idl_class)
+	for_each_functions(idl_class.functions,function(info)		
+		if IdlHelper.Func.IsVirtual(info.func) and not is_special_virtual_func(info.func) then			
+			code_begin_extra(this_function_name(info.name));			
+			code_virtual_function_declaration(idl_class,info);
+			printnl("");
+			printfnl("{");
+			
+			for_first_return_type(info.func.ret_type,function(ret)
+				if ret.is_pointer or ret.is_array then
+					printnl("    return NULL;");
+				else
+					printnl("    return OK;");
+				end
+			end);		
+			
+			printfnl("}");
+			code_end_extra(this_function_name(info.name));
+			printnl("");
+		end
+	end);	
+end
+
+--生成继承的虚函数的头文件声明--
+function code_cpp_inherited_function_body(idl_class)
+	local bases = IdlHelper.Class.GetAllBases(idl_class);
+	if not bases then return end
+	
+	for _,base in ipairs(bases) do
+		if base.openness == "virtual" then			
+			local idl = IdlHelper.Class.FindIdlClass(all_idl_classes,base.name);
+			if idl then
+				local old_name = idl.name;
+				idl.name = idl_class.name;
+				code_cpp_virtual_functions_body(idl);				
+				idl.name = old_name;
+			end			
+		end		
+	end	
+end
 
 

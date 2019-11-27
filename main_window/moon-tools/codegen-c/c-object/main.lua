@@ -23,7 +23,7 @@ if parser:HasErrors() then
 	return;
 end
 
-local all_idl_classes = string_to_table("{"..lua.."}");
+all_idl_classes = string_to_table("{"..lua.."}");
 if not all_idl_classes then return end
 
 local save_str = "";

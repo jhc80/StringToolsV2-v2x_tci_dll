@@ -149,7 +149,7 @@ function CBaseCodeGen:GetAllBases()
 
 	for _,base in ipairs(self.m_idl_class.bases) do	
 		local tmp = {openness="public"};		
-		if base[1] == "private" or base[1] == "public" then
+		if base[1] == "private" or base[1] == "public" or base[1] == "virtual" then
 			tmp.openness=base[1];
 			tmp.name = base[2];
 		else

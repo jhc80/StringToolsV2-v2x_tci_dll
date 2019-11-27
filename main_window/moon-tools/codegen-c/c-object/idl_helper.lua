@@ -16,7 +16,7 @@ IdlHelper.Class.GetAllBases=function(idl_class)
 	local flag = false;
 	for _,base in ipairs(idl_class.bases) do	
 		local tmp = {openness="public"};		
-		if base[1] == "private" or base[1] == "public" then
+		if base[1] == "private" or base[1] == "public" or base[1] == "virtual" then
 			tmp.openness=base[1];
 			tmp.name = base[2];
 		else
@@ -141,4 +141,10 @@ IdlHelper.Class.IsVirtualClass = function(idl_class)
 	return false;
 end
 
-
+IdlHelper.Class.FindIdlClass=function(all,name)
+	for _,idl_class in ipairs(all) do    
+		if idl_class.name == name then
+			return idl_class;
+		end
+	end
+end
