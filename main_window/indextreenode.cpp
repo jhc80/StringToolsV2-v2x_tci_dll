@@ -241,3 +241,13 @@ status_t CIndexTreeNode::SetCurrentUser(int cur)
     m_CurrentUser = cur;
     return OK;
 }
+
+status_t CIndexTreeNode::GetHelpFile(CMem *path)
+{
+    ASSERT(path);
+    path->SetSize(0);
+    path->Puts(this->GetPath());
+    path->Putc(crt_get_path_splitor());
+    path->Puts("readme.txt");
+    return OK;
+}

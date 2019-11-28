@@ -15,6 +15,7 @@ public:
 public:
     CIndexTreeNode *parent,*child,*next;
 public:
+	status_t GetHelpFile(CMem *path);
 	status_t SetCurrentUser(int cur);
 	int GetCurrentUser();
 	bool HasConfig();

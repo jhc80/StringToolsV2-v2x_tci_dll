@@ -428,6 +428,10 @@ int CMainForm::OnCommand(WPARAM wparam,LPARAM lparam)
 	{
 		g_globals.ShowSearchWindow();
 	}
+    else if(mitem_help->IsMyCommand(wparam))
+    {
+        g_globals.ShowHelp();
+    }
 
 	return OK;
 }

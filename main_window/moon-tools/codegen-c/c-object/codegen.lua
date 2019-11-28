@@ -356,6 +356,7 @@ function code_virtual_functions_init_marco(idl_class)
 			return
 		end
 	
+		code_begin_marker("InitVirtualFunctions");
 		printfnl("#define %s_INIT_VIRTUAL_FUNCTIONS(prefix) do{\\",
 			string.upper(idl_class.name)
 		);
@@ -371,7 +372,7 @@ function code_virtual_functions_init_marco(idl_class)
 			end
 		end);		
 		printnl("}while(0)\\");
-		
+		code_end_marker("InitVirtualFunctions");
 		printnl("");
 		printfnl("#define %s_VIRTUAL_FUNCTIONS_DEFINE(child_type, prefix)\\",
 			string.upper(idl_class.name)
@@ -474,9 +475,9 @@ function code_h(idl_class)
     code_all_includes(idl_class);      
     code_end_marker("Includes_H");
     printnl("");
-	code_begin_marker("VirtualFunctionsDefine");
+	
 	code_virtual_functions_init_marco(idl_class);
-	code_end_marker("VirtualFunctionsDefine");
+
 	
 	printnl("");
     
@@ -501,11 +502,10 @@ function code_h(idl_class)
 
 	if idl_class.variables then
 		code_variables_define(idl_class.variables);
-	end
+	end	
+    code_end_marker("Members");
 	
 	code_virtual_func_pointers_def(idl_class);
-	
-    code_end_marker("Members");
    
     printnl("};");
     
@@ -576,14 +576,9 @@ function code_h(idl_class)
     code_end_marker("Setters_H");
     
 	printnl("");	
-	code_begin_marker("VirtualFunctions");
 	code_h_virtual_func_declarations(idl_class);
-	code_end_marker("VirtualFunctions");
 	printnl("");
-
-	code_begin_marker("InheriteFunctions");
 	code_h_inherited_function_declaration(idl_class);
-	code_end_marker("InheriteFunctions");
 	printnl("");
 
 	if code_switch.lib_config then	

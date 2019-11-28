@@ -508,3 +508,33 @@ CLuaVm* CGlobals::GetLuaVm()
 	else
 		return NULL;
 }
+
+status_t CGlobals::ShowHelp()
+{
+    ASSERT(i_PageText.get());
+    ASSERT(p_CurTreeNode);
+
+    CEditBox eb;
+    eb.Init();
+    eb.AttachWnd(i_PageText->eb_log->hwnd);
+    
+    LOCAL_MEM(path);
+    p_CurTreeNode->GetHelpFile(&path);
+    
+    eb.SetText(L"");
+    if(!CDirMgr::IsFileExist(&path))
+    {
+        LOG("can not find %s",path.CStr());
+        return ERROR;
+    }
+
+    CMem help;
+    help.Init();
+    help.LoadFile(path.CStr());
+    help.Realloc((int)help.GetSize()*4);
+    
+    CEncoder::Utf8ToUnicode(&help);
+    eb.SetText(help.CStrW());
+
+    return OK;
+}
