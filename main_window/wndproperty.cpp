@@ -70,6 +70,7 @@ int  CWndProperty::Destroy()
     DEL(this->tbb_3);
     DEL(this->tbb_4);
     DEL(this->tbb_5);
+    DEL(this->tbb_help);
     DEL(this->tbb_open_folder);
     CWnd::Destroy();
     this->InitBasic();
@@ -168,6 +169,11 @@ int CWndProperty::OnCreate(WPARAM wparam, LPARAM lparam)
     this->tbb_open_folder->SetImgIndex(10);
     this->tbb_open_folder->SetToolTip(L"open this folder");
 
+    NEW(this->tbb_help,CTBButton);
+    this->tbb_help->Init();
+    this->tbb_help->SetImgIndex(11);
+    this->tbb_help->SetToolTip(L"help");
+
 	this->toolbar->AddButton(tbb_load);
 	this->toolbar->AddButton(tbb_save);
 	this->toolbar->AddButton(tbb_file);
@@ -179,7 +185,9 @@ int CWndProperty::OnCreate(WPARAM wparam, LPARAM lparam)
     this->toolbar->AddButton(tbb_3);
     this->toolbar->AddButton(tbb_4);
     this->toolbar->AddButton(tbb_5);
-    	
+    this->toolbar->AddSeparator();
+  	this->toolbar->AddButton(tbb_help);
+
 	this->eb_code->SetTabStops(4*4);
 	this->SetVirtualSize(381,361);
 	
@@ -309,6 +317,11 @@ int CWndProperty::OnCommand(WPARAM wparam, LPARAM lparam)
     else if(tbb_open_folder->IsMyCommand(wparam))
     {
         this->OpenTheFolder();
+    }
+
+    else if(tbb_help->IsMyCommand(wparam))
+    {
+        g_globals.ShowHelp();
     }
     return OK;
 }
