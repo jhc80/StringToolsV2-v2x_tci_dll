@@ -538,3 +538,12 @@ status_t CGlobals::ShowHelp()
 
     return OK;
 }
+
+status_t CGlobals::OpenTheFolder()
+{
+    ASSERT(p_CurTreeNode);
+    LOCAL_MEM(cmd);
+    cmd.Printf("explorer \"%s\"",p_CurTreeNode->GetPathStr());
+    WinExec(cmd.CStr(),SW_SHOW);
+    return OK;
+}

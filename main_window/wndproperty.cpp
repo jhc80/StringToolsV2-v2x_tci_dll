@@ -518,10 +518,5 @@ status_t CWndProperty::ChangeCurrentUser(int index)
 
 status_t CWndProperty::OpenTheFolder()
 {
-    ASSERT(cur_node);
-  
-    LOCAL_MEM(cmd);
-    cmd.Printf("explorer \"%s\"",cur_node->GetPathStr());
-    WinExec(cmd.CStr(),SW_SHOW);
-    return OK;
+    return g_globals.OpenTheFolder();
 }

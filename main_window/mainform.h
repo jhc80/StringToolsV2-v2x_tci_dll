@@ -51,10 +51,16 @@ public:
     CMenu *menu_view;
     CMenu *mitem_text_window;
     CMenu *mitem_image_window;
-
 	CMenu *mitem_find;
     //////////////////////////////////
+    CPopupMenu *menu_context;
+    CMenu *mitem_r_run;
+    CMenu *mitem_r_attrib;
+    CMenu *mitem_r_open_folder;
+    CMenu *mitem_r_help;
+
 public:
+	status_t OnShowContextMenu(MSG *msg);
 	status_t HideEmbeddedUIWindow();
 	status_t ShowEmbeddedUIWindow(int height);
 	status_t OnWndSplitVEvent();

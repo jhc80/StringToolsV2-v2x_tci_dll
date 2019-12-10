@@ -40,6 +40,7 @@ public:
 	CPrintBuffer m_PrintBuffer;
     CScreenBuffer m_ScreenBuffer;
 public:
+	status_t OpenTheFolder();
 	status_t ShowHelp();
 	CLuaVm *GetLuaVm();
 	status_t GetCurLine(CMem *utf8);

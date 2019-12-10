@@ -55,6 +55,11 @@ int CMainForm::InitBasic()
     this->mitem_text_window = NULL;
     this->mitem_image_window = NULL;
 	this->mitem_find = NULL;
+    this->menu_context = NULL;
+    this->mitem_r_run = NULL;
+    this->mitem_r_attrib = NULL;
+    this->mitem_r_open_folder = NULL;
+    this->mitem_r_help = NULL;
     return OK;
 }
 int CMainForm::Init()
@@ -277,6 +282,32 @@ int CMainForm::CreateMenu()
     this->menu_vm->AddItem(mitem_stop);
 
     this->menu_bar->SetToWnd(hwnd);
+
+    NEW(this->menu_context,CPopupMenu);
+    this->menu_context->Init();
+    this->menu_context->SetParent(hwnd);
+    this->menu_context->SetName(L"RightClick");
+    this->menu_context->Create();
+    NEW(this->mitem_r_run,CMenu);
+    this->mitem_r_run->Init();
+    this->mitem_r_run->SetName(L"运行");
+    this->mitem_r_run->Create();
+    NEW(this->mitem_r_attrib,CMenu);
+    this->mitem_r_attrib->Init();
+    this->mitem_r_attrib->SetName(L"属性");
+    this->mitem_r_attrib->Create();
+    NEW(this->mitem_r_open_folder,CMenu);
+    this->mitem_r_open_folder->Init();
+    this->mitem_r_open_folder->SetName(L"打开文件夹");
+    this->mitem_r_open_folder->Create();
+    NEW(this->mitem_r_help,CMenu);
+    this->mitem_r_help->Init();
+    this->mitem_r_help->SetName(L"显示帮助");
+    this->mitem_r_help->Create();
+    this->menu_context->AddItem(mitem_r_run);
+    this->menu_context->AddItem(mitem_r_attrib);
+    this->menu_context->AddItem(mitem_r_open_folder);
+    this->menu_context->AddItem(mitem_r_help);
     return OK;
 }
 int CMainForm::Destroy()
@@ -309,6 +340,12 @@ int CMainForm::Destroy()
     DEL(this->mitem_start);
     DEL(this->mitem_stop);
 	DEL(mitem_find);
+    //////////////////////
+    DEL(this->menu_context);
+    DEL(this->mitem_r_run);
+    DEL(this->mitem_r_attrib);
+    DEL(this->mitem_r_help);
+    DEL(this->mitem_r_open_folder);
     //////////////////////
 	CWnd::Destroy();
     this->InitBasic();
@@ -433,6 +470,25 @@ int CMainForm::OnCommand(WPARAM wparam,LPARAM lparam)
         g_globals.ShowHelp();
     }
 
+    else if(mitem_r_help->IsMyCommand(wparam))
+    {
+        g_globals.ShowHelp();
+    }
+
+    else if(mitem_r_open_folder->IsMyCommand(wparam))
+    {
+        g_globals.OpenTheFolder();
+    }
+
+    else if(mitem_r_run->IsMyCommand(wparam))
+    {
+        g_globals.StartLuaThread();
+    }
+
+    else if(mitem_r_attrib->IsMyCommand(wparam))
+    {
+        this->ShowPropertyWindow();
+    }
 	return OK;
 }
 
@@ -570,6 +626,11 @@ int CMainForm::PreTransMsg(MSG *msg)
         if(msg->hwnd == m_TreeView->hwnd && msg->message == WM_LBUTTONDBLCLK)
         {
             this->ShowPropertyWindow();
+        }
+
+        if(msg->hwnd == m_TreeView->hwnd && msg->message == WM_RBUTTONDOWN)
+        {
+            this->OnShowContextMenu(msg);
         }
 	}
 	
@@ -901,4 +962,31 @@ status_t CMainForm::HideEmbeddedUIWindow()
 	DEL(m_WndSplit_V);
 	DEL(m_WndEmbeddedUI);
 	return OK;
+}
+
+status_t CMainForm::OnShowContextMenu(MSG *msg)
+{
+    ASSERT(msg);
+    ::SetFocus(m_TreeView->hwnd);
+    int xPos = LOWORD(msg->lParam);
+    int yPos = HIWORD(msg->lParam);  
+    
+    TVHITTESTINFO info;
+    memset(&info,0,sizeof(info));
+    info.pt.x = xPos;
+    info.pt.y = yPos;
+    
+    TreeView_HitTest(m_TreeView->hwnd,&info);
+    
+    if(!m_TreeView->IsLeaf(info.hItem))
+        return ERROR;
+
+    if(info.hItem)
+    {
+        ::ClientToScreen(m_TreeView->hwnd,&info.pt);
+        m_TreeView->SetSelect(info.hItem);
+        menu_context->Show(info.pt.x,info.pt.y);
+    }
+
+    return OK;
 }
