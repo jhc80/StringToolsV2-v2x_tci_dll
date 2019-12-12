@@ -7,29 +7,56 @@ App.ClearScreen();
 
 require("user");
 
-function need_this_line(line,line_file)
-    local need = (logic_op=="and") and true or false;
-    for _,str in ipairs(string_table) do
-        line_file:Seek(0);
-        local flag = line_file:SearchStr(str,case_sensitive,word_only) >= 0;        
-        if logic_op == "and" then            
-            need = need and flag;    
-        elseif logic_op == "or" then
-            need = need or flag;
-        end        
-    end
-    
-    if reverse_op then
-        need = not need;
-    end
-    
-    return need;
+function do_single_file(filename)
+	local mf = new_memfile(filename);
+	if not mf then
+		printf("open file %s fail.",filename);
+		return
+	end
+	
+	local out = new_memfile();
+	local line = new_mem();
+	local eol = new_mem();
+	
+	mf:Seek(0);
+	while mf:ReadLineWithEol(line,eol) do
+		if need_this_line(line) then
+			out:Puts(line);
+			out:Puts(eol);
+		end	
+	end
+	
+	local modified = false;
+	if not FileManager.IsFileSame(out,mf) then
+		out:WriteToFile(filename);
+		modified = true;
+	end
+	
+	out:Destroy();
+	line:Destroy();
+	mf:Destroy();
+	eol:Destroy();	
+	
+	return modified;
 end
 
-for_each_line(mem_text_file,
-	function(line,line_file)
-		if need_this_line(line, line_file) then
-			printnl(line:CStr());
+if do_in_files then
+	for_each_line(mem_text_file,
+		function(filename)
+			filename:Trim();
+			if filename:GetSize() >= 0 then
+				if do_single_file(filename:CStr()) then
+					printnl(filename:CStr().."..modified");
+				end
+			end
 		end
-	end
-);
+	);	
+else
+	for_each_line(mem_text_file,
+		function(line,line_file)
+			if need_this_line(line, line_file) then
+				printnl(line:CStr());
+			end
+		end
+	);
+end

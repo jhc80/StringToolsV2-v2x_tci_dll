@@ -376,7 +376,6 @@ function code_cpp(names)
 		printfnl("    if(!m_Root)");
 		printfnl("    {");
 		printfnl("        NEW(m_Root,%s);",names.c_entry_class_name);
-		printfnl("        m_Root->Init();");
 		printfnl("    }");
 		printfnl("    ");
 		printfnl("    m_Root->LoadBson(_bson);");
