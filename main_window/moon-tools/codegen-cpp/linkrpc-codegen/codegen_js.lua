@@ -159,7 +159,7 @@ function code_js_not_service_async_function(idl_class,info)
             not_service_func_name(info.name,true)
     );
 	
-	printfnl("   return new Promise((resolve,reject)=>{        ");
+	printfnl("    return new Promise((resolve,reject)=>{        ");
 	printf("        this.%s(",func_name);
 	
 	for_each_params(info.params,function(p,index)        

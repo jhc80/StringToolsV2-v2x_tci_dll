@@ -84,18 +84,3 @@ basic_type_table={
 };
 
 
---[[ 
-
-一个例子
-[Peer test][StartId 10000]
-[Client TestClient 20000]
-class TestService{
-	[service] int Add(int a, int b);
-	int Sub(int a, int b);
-	[service] void SayHello(string something);	
-	[service] array<Good> GetGood();
-	[service] (int status, array<uint8_t> data) GetData(int size);
-}
-
-]]
-
