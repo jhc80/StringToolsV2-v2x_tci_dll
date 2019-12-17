@@ -126,11 +126,15 @@ function code_js_not_service_function(idl_class,info)
     end
         
     if info.params then
+		printfnl("    //sorted");
         printfnl("    let _param={");
-        for_each_params(info.params,function(p,index)        
+        
+		for_each_params_sorted(info.params,function(p,index)        
             printf("        %s : ",p.name);
             printfnl("_%s,",to_lower_underline_case(p.name));
         end);
+		
+		
         printfnl("    };");
     end
 
@@ -185,8 +189,9 @@ function code_js_service_function(idl_class,info)
     printnl("{");        
         
     if not info.is_void then
+		printnl("    //sorted");
         printnl("    //let _ret={");        
-        for_each_return_type(info.ret_type,function(r)        
+        for_each_return_type_sorted(info.ret_type,function(r)        
             printfnl("    //    %s:",r.name);
         end);     
         printnl("    //};");

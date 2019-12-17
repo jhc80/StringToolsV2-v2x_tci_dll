@@ -65,6 +65,26 @@ function for_each_params(params, callback)
     end
 end
 
+--for_each_params的排序版本，按照name排序
+function for_each_params_sorted(params, callback)
+
+	local tmp = {};
+	for_each_params(params,function(info)
+		table.insert(tmp,info);
+	end);
+	
+	table.sort(tmp,function(e1,e2)
+		return e1.name < e2.name
+	end);
+	
+	for _,info in ipairs(tmp) do
+		if callback(info) then
+            return true;
+        end   
+	end
+end
+
+
 --遍历每一个返回值的迭代器--
 function for_each_return_type(ret_types,callback,name_prefix)
     local index = 1;
@@ -96,6 +116,24 @@ function for_each_return_type(ret_types,callback,name_prefix)
     end
 end
 
+--for_each_return_type的排序版本，按照name排序
+function for_each_return_type_sorted(ret_types,callback,name_prefix)
+
+	local tmp = {};
+	for_each_return_type(ret_types,function(info)
+		table.insert(tmp,info);
+	end,name_prefix);
+	
+	table.sort(tmp,function(e1,e2)
+		return e1.name < e2.name
+	end);
+	
+	for _,info in ipairs(tmp) do
+		if callback(info) then
+            return true;
+        end   
+	end
+end
 
 --把函数参数重新变成在参数中的字符串--
 function param_to_string(param)

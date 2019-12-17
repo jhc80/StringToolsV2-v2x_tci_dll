@@ -23,3 +23,8 @@ class Test{
 	ns1::Obj obj; //变量也是可以带命名空间的
 }
 
+可以直接通过hint使用一些选项开关，例如
+
+[CodeSwitch bson=true,weak_ref=true,code_mark=true]
+class Test{
+}
