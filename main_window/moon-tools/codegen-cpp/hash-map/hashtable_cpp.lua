@@ -174,6 +174,7 @@ function code_cpp(names)
 	printfnl("            //mark param 0 to NULL mean to delete the entry");
 	printfnl("            if(closure->GetParamPointer(0) == NULL) ");
 	printfnl("            {");
+	printfnl("                p->m_RawPtr = NULL;");
 	printfnl("                DEL(p);");
 	printfnl("                pre->next = next;");
 	printfnl("                p = next;");
@@ -196,6 +197,8 @@ function code_cpp(names)
 	printfnl("        _contine = closure->Run();");
 	printfnl("        if(closure->GetParamPointer(0) == NULL)");
 	printfnl("        {");
+	printfnl("            p->m_RawPtr = NULL;");
+	printfnl("            DEL(p);");	
 	printfnl("            this->m_Data[i] = next;");
 	printfnl("            this->m_Size --;");
 	printfnl("        }");

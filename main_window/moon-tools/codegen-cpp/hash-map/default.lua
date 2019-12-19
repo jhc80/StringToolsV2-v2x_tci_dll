@@ -22,11 +22,3 @@ end
 function to_file_name(name)
     return to_lower_underline_case(name);
 end
-
------------------------------------------------------
---[[  IDL 例子 --
-  
- [HashMap of Node]
- class HashTable{}
-
---]]
