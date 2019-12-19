@@ -31,10 +31,4 @@ function common_include_c()
     printnl("#include \"syslog.h\"");
     printnl("#include \"mem_tool.h\"");    
 end
------------------------------------------------------
---[[  IDL 例子 --
-  
- [HashMap of MyNode]
- class MyHashMap{}
 
---]]

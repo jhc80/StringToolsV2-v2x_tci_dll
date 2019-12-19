@@ -13,8 +13,12 @@ function code_cpp(names)
 	printfnl("");
 	printfnl("status_t %s_destroy(%s *self)",names.entry_class_name,names.c_entry_class_name);
 	printfnl("{");
-	printfnl("    %s_destroy(self->raw_ptr);",names.node_class_name_lower);
-	printfnl("    X_FREE(self->raw_ptr);");
+	
+	printfnl("    if(self->raw_ptr)");
+	printfnl("    {");
+	printfnl("        %s_destroy(self->raw_ptr);",names.node_class_name_lower);
+	printfnl("        X_FREE(self->raw_ptr);");
+	printfnl("    }");
 	printfnl("    self->next = NULL;");
 	printfnl("    return OK;");
 	printfnl("}");
@@ -166,6 +170,9 @@ function code_cpp(names)
 	printfnl("            _contine = closure_run(callback);");
 	printfnl("            if(closure_get_param_pointer(callback,0) == NULL)");
 	printfnl("            {");
+	printfnl("                p->raw_ptr = NULL;");
+    printfnl("                %s_destroy(p);",names.entry_class_name);
+	printfnl("                X_FREE(p);");
 	printfnl("                pre->next = next;");
 	printfnl("                p = next;");
 	printfnl("                self->size--;");
