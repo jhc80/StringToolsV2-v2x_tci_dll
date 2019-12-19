@@ -15,7 +15,7 @@ public:
 public:
     int Schedule();
     status_t AddClosure(CClosure *closure,uint32_t delay);
-    status_t AddClosureAndWait(CClosure *closure,int timeout, int *running);
+    status_t AddClosureAndWait(CClosure *closure, int timeout, int *running);
     CTaskRunner();
     virtual ~CTaskRunner();
     status_t InitBasic();
@@ -25,6 +25,7 @@ public:
     status_t Copy(CTaskRunner *p);
     status_t Print(CFileBase *_buf);
     int GetLen();
+    bool IsRunning();
 };
 
 #endif

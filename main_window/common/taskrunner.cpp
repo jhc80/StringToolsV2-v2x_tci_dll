@@ -81,11 +81,13 @@ status_t CTaskRunner::AddClosure(CClosure *closure,uint32_t delay)
     return ret;
 }
 
-status_t CTaskRunner::AddClosureAndWait(CClosure *closure,int timeout, int *running)
+//infinite wait main thread
+status_t CTaskRunner::AddClosureAndWait(CClosure *closure, int timeout, int *running)
 {
     ASSERT(closure);
     ASSERT(closure->IsOnHeap());
     ASSERT(closure->user_data == NULL);
+    ASSERT(timeout < 0);
     ASSERT(m_ThreadId != crt_get_current_thread_id());
 
     struct closure_extra_info *info;
@@ -105,43 +107,39 @@ status_t CTaskRunner::AddClosureAndWait(CClosure *closure,int timeout, int *runn
     ret = OK;
 
     int t = 0;
+    int is_breaked = 0;
+
     while(!info->run_end)
     {
+        if(!IsRunning())
+        {
+            is_breaked = true;
+            break;
+        }
+
         if(running)
         {
             if(!(*running))
             {
-                ret = ERROR;
+                is_breaked = true;
                 break;
             }
         }
 
         t += 10;
-        if(timeout >= 0)
+        if(t > (-timeout))
         {
-            if(t > timeout)
-            {
-                t = 0;
-                XLOG(LOG_MODULE_COMMON,LOG_LEVEL_ERROR,
-                    "taskrunner: wait closure timeout.");
-                ret = ERROR;
-                break;
-            }
-        }
-        else
-        {
-            if(t > (-timeout))
-            {
-                t = 0;
-                XLOG(LOG_MODULE_COMMON,LOG_LEVEL_ERROR,
-                    "taskrunner: wait closure too long time.");
-            }
-        }
-        
+            t = 0;
+            XLOG(LOG_MODULE_COMMON,LOG_LEVEL_ERROR,
+                "taskrunner: wait closure too long time.");
+        }        
         crt_msleep(10);
     }
 
-    FREE(info);
+    if(!is_breaked)
+    {
+        FREE(info);
+    }
     return ret;
 }
 
@@ -201,4 +199,9 @@ static status_t free_extra_info(CClosure *closure)
         closure->user_data = NULL;
     }
     return OK;
+}
+
+bool CTaskRunner::IsRunning()
+{
+    return m_ThreadId != 0;
 }
