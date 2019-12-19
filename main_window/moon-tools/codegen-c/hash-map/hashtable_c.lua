@@ -193,6 +193,9 @@ function code_cpp(names)
 	printfnl("        _contine = closure_run(callback);");
 	printfnl("        if(closure_get_param_pointer(callback,0) == NULL)");
 	printfnl("        {");
+	printfnl("            p->raw_ptr = NULL;");
+    printfnl("            %s_destroy(p);",names.entry_class_name);
+	printfnl("            X_FREE(p);");	
 	printfnl("            self->data[i] = next;");
 	printfnl("            self->size--;");
 	printfnl("        }");
