@@ -1090,11 +1090,27 @@ SOURCE=.\lualib\lualib_mmapfile.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\lualib\lualib_queuefile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\lualib\lualib_queuefile.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\lualib\lualib_screen.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\lualib\lualib_screen.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\lualib\lualib_serial.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\lualib\lualib_serial.h
 # End Source File
 # Begin Source File
 
@@ -1542,6 +1558,14 @@ SOURCE=.\messagepeer\ptrhashtable.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\common\queuefile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\queuefile.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\rect.cpp
 # End Source File
 # Begin Source File
@@ -1567,6 +1591,14 @@ SOURCE=.\screenbuffer.cpp
 # Begin Source File
 
 SOURCE=.\screenbuffer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\serial.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\serial.h
 # End Source File
 # Begin Source File
 

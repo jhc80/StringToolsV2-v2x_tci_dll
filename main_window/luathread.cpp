@@ -41,6 +41,8 @@
 #include "lualib_gifencoder.h"
 #include "lualib_xml.h"
 #include "lualib_xmlnode.h"
+#include "lualib_serial.h"
+#include "lualib_queuefile.h"
 
 extern "C" int _lua_running_flag;
 
@@ -215,6 +217,8 @@ status_t CLuaThread::InitLuaVm()
     luaopen_gifencoder(L);
     luaopen_xml(L);
     luaopen_xmlnode(L);
+    luaopen_serial(L);
+    luaopen_queuefile(L);
 
     const char *work_folder = g_globals.GetWorkFolder();
 
