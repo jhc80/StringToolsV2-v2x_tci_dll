@@ -253,7 +253,11 @@ function code_all_includes(idl_class)
     if code_switch.cjson then
         add_include("cJSON");
     end
-
+    
+	if code_switch.xml then
+        add_include("xml");
+    end
+	
     for _,name in ipairs(all_names_sorted) do    
         add_include(to_file_name(name));        
     end
@@ -390,6 +394,11 @@ function code_h(idl_class)
         printnl("    status_t SaveJson(CFileBase *_file);");
     end
     
+	if code_switch.xml then
+        printnl("    status_t LoadXml(CXmlNode *_root);");
+        printnl("    status_t SaveXml(CFileBase *_xml);");
+    end
+	
     if code_switch.c_struct then
         printfnl("    status_t %s(%s *_ptr);",load_struct_name(idl_class),c_struct_name(idl_class.name));
         printfnl("    status_t %s(%s *_ptr);",save_struct_name(idl_class),c_struct_name(idl_class.name));
@@ -2132,6 +2141,13 @@ function code_cpp(idl_class)
         printnl("");        
     end
 
+    if code_switch.xml then
+        code_cpp_load_xml_1(idl_class);
+        printnl("");        
+        code_cpp_save_xml_1(idl_class);
+        printnl("");        
+    end
+	
     if code_switch.c_struct then
         code_cpp_load_c_struct(idl_class);        
         printnl("");        
@@ -4258,6 +4274,109 @@ function code_cpp_save_asn1_struct(idl_class)
 
     printnl("    return OK;")
     printnl("}");    
-
 end
+-----------------------------------------------------------------------
+--xml
+-----------------------------------------------------------------------
+--生成LoadXml的代码--
+function code_cpp_load_xml_1(idl_class)
+    printnl(string.format(
+        "status_t %s::LoadXml(CXmlNode *_root)",
+        c_class_name(idl_class.name)
+    ));
+    printnl("{");
+    printnl("    ASSERT(_root);");
+    
+    code_begin_marker("LoadXml_1");
+
+    function pc_not_array_basic_type(info)
+     end
+
+    function pc_not_array_string(info)     
+    end
+
+    function pc_not_array_object(info)    
+    end
+    
+    function pc_array(info)
+    end
+
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then
+            return 
+        end
+
+        if info.is_array then
+            pc_array(info);
+            printnl("");    
+        else
+            if info.is_basic_type  then
+                pc_not_array_basic_type(info);
+                printnl("");    
+            elseif info.is_string then
+                pc_not_array_string(info);
+                printnl("");    
+            else
+                pc_not_array_object(info);
+                printnl("");    
+            end
+        end
+    end);  
+
+    code_end_marker("LoadXml_1");
+    printnl("    return OK;")
+    printnl("}");
+end
+
+--生成SaveXml的代码--
+function code_cpp_save_xml_1(idl_class)
+    printnl(string.format(
+        "status_t %s::SaveXml(CFileBase *_xml)",
+        c_class_name(idl_class.name)
+    ));
+    printnl("{");
+    printnl("    ASSERT(_xml);");
+    
+    code_begin_marker("SaveXml_1");
+
+    function pc_not_array_basic_type(info)
+    end
+
+    function pc_not_array_string(info)
+    end
+
+    function pc_not_array_object(info)    
+    end
+    
+    function pc_array(info)
+    end
+
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then
+            return 
+        end
+
+        if info.is_array then
+            pc_array(info);
+            printnl("");    
+        else
+            if info.is_basic_type  then
+                pc_not_array_basic_type(info);
+                printnl("");    
+            elseif info.is_string then
+                pc_not_array_string(info);
+                printnl("");    
+            else
+                pc_not_array_object(info);
+                printnl("");    
+            end
+        end
+    end);  
+
+    code_end_marker("LoadXml_1");
+    printnl("    return OK;")
+    printnl("}");
+end
+-----------------------------------------------------------
+-----------------------------------------------------------
 
