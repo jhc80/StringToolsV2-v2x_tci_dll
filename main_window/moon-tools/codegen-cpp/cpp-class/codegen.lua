@@ -4335,30 +4335,130 @@ function code_cpp_save_xml_1(idl_class)
         c_class_name(idl_class.name)
     ));
     printnl("{");
+	
+	local need_i = false;
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then   return   end
+		if info.is_array then need_i = true end
+	end);
+	
+	if need_i then
+		printfnl("    int i;");
+	end
+	
     printnl("    ASSERT(_xml);");
     
     code_begin_marker("SaveXml_1");
 
     function pc_not_array_basic_type(info)
+		printfnl("    _xml->Log(\"<%s>%s</%s>\",this->%s);",
+			info.var.name,
+			IdlHelper.Type.GetPrintFormat(info.var_type),
+			info.var.name,
+			member_name(info.var.name)
+		);	
     end
 
     function pc_not_array_string(info)
+		local tab = 1;
+		
+		if info.is_optional then
+			printfnl("    if(this->%s)",member_name(info.var.name));
+			printnl("    {");
+			tab = tab+1;
+		end
+		
+		printfnl("%s_xml->Log(\"<%s>%%s</%s>\",this->%sStr());",ptab(tab),
+			info.var.name,
+			info.var.name,
+			getter_name(info.var.name,info)
+		);		
+		
+		if info.is_optional then
+			printnl("    }");
+		end		
     end
 
     function pc_not_array_object(info)    
+		local tab = 1;
+		printfnl("%s_xml->Log(\"<%s>\");",ptab(tab),
+			info.var.name);
+		printfnl("%s_xml->IncLogLevel(1);",ptab(tab));
+		
+		if info.is_optional then
+			printfnl("%sif(this->%s)",ptab(tab),
+				member_name(info.var.name));
+			printfnl("%s{",ptab(tab));
+			tab = tab + 1;
+		end
+		
+		printfnl("%s%s%sSaveXml(_xml);",ptab(tab),
+			member_name(info.var.name),
+			(info.is_optional and "->" or ".")
+		);
+			
+		if info.is_optional then
+			tab = tab - 1;
+			printfnl("%s}",ptab(tab));			
+		end
+		
+		printfnl("%s_xml->IncLogLevel(-1);",ptab(tab));
+		printfnl("%s_xml->Log(\"</%s>\");",ptab(tab),
+			info.var.name);
     end
     
     function pc_array(info)
+		local tab = 1;
+		local array_size = info.array_size;
+		if not array_size then
+			array_size = member_name_len(info.var.name);
+		end
+		
+		printfnl("%s_xml->Log(\"<%s size=\\\"%%d\\\">\",%s);",ptab(tab),
+			info.var.name, array_size);
+		printfnl("%s_xml->IncLogLevel(1);",ptab(tab));
+		
+		printfnl("%sfor(i = 0; i < %s; i++)",ptab(tab),array_size);
+		printfnl("%s{",ptab(tab));
+		tab = tab + 1;
+		
+		if info.is_basic_type then
+			printfnl("%s_xml->Log(\"<e>%s</e>\",this->%s[i]);",ptab(tab),
+				IdlHelper.Type.GetPrintFormat(info.var_type),
+				member_name(info.var.name)
+			);	
+		elseif info.is_string then
+			printfnl("%s_xml->Log(\"<e>%%s</e>\",",ptab(tab));			
+			printfnl("%s(this->%s(i)->StrLen()>0?this->%s(i)->CStr():\"\"));",
+				ptab(tab+1),
+				getter_array_elem_name(info.var.name),
+				getter_array_elem_name(info.var.name)
+			);
+		elseif info.is_object then
+			printfnl("%s_xml->Log(\"<e>\");",ptab(tab));
+			printfnl("%s_xml->IncLogLevel(1);",ptab(tab));
+			
+			printfnl("%s%s[i].SaveXml(_xml);",ptab(tab),
+				member_name(info.var.name));
+			
+			printfnl("%s_xml->IncLogLevel(-1);",ptab(tab));
+			printfnl("%s_xml->Log(\"</e>\");",ptab(tab));
+		end
+		
+		tab = tab - 1;					
+		printfnl("%s}",ptab(tab));
+		
+		printfnl("%s_xml->IncLogLevel(-1);",ptab(tab));
+		printfnl("%s_xml->Log(\"</%s>\");",ptab(tab),
+			info.var.name);
     end
 
     for_each_variables(idl_class.variables,function(info)
-        if info.is_pointer then
-            return 
-        end
+        if info.is_pointer then return end
 
         if info.is_array then
             pc_array(info);
-            printnl("");    
+            printnl(""); 
         else
             if info.is_basic_type  then
                 pc_not_array_basic_type(info);
