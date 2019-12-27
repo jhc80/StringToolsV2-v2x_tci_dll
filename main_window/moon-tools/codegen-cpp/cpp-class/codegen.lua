@@ -4278,6 +4278,9 @@ end
 -----------------------------------------------------------------------
 --xml
 -----------------------------------------------------------------------
+local function xml_get_value_name(info)
+	return "Get"..IdlHelper.Type.GetXmlType(info.var_type).."Value";
+end
 --生成LoadXml的代码--
 function code_cpp_load_xml_1(idl_class)
     printnl(string.format(
@@ -4286,13 +4289,32 @@ function code_cpp_load_xml_1(idl_class)
     ));
     printnl("{");
     printnl("    ASSERT(_root);");
-    
+    printnl("    CXmlNode *px;");
+
     code_begin_marker("LoadXml_1");
 
     function pc_not_array_basic_type(info)
-     end
+		printfnl("    px = _root->GetChildByName(\"%s\");",info.var.name);
+		printfnl("    if(px)");
+		printfnl("    {");		
+		printfnl("        this->%s(px->%s());",
+			setter_name(info.var.name),
+			xml_get_value_name(info)
+		);
+		printfnl("    }");
+    end
 
     function pc_not_array_string(info)     
+		printfnl("    px = _root->GetChildByName(\"%s\");",info.var.name);
+		printfnl("    if(px)");
+		printfnl("    {");		
+		printfnl("        LOCAL_MEM(tmp);");
+		printfnl("        px->GetStringValue(&tmp);");
+		printfnl("        this->%s(&tmp);",
+			setter_name(info.var.name),
+			xml_get_value_name(info)
+		);
+		printfnl("    }");	
     end
 
     function pc_not_array_object(info)    

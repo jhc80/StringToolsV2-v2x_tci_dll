@@ -72,6 +72,10 @@ IdlHelper.Type.GetBsonType=function(type)
 	return "<??>";
 end
 
+IdlHelper.Type.GetXmlType=function(type)
+	return IdlHelper.Type.GetBsonType(type);
+end
+
 IdlHelper.Type.GetLibConfigType=function(type)
 	for _,b in ipairs(basic_type_table) do	
 		if type.name == b[1] then

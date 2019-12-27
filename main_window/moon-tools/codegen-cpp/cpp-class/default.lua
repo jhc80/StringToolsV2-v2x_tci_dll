@@ -149,7 +149,7 @@ basic_type_table={
 	{"ushort","%d","UInt16","int","valueint","Number","CONFIG_TYPE_INT"},
 	{"ulong","%ld","UInt32","int","valueint","Number","CONFIG_TYPE_INT"},
 	{"float","%f","Double","float","valuedouble","Number","CONFIG_TYPE_FLOAT"},
-	{"double","%f","Double","float","valuedouble","Number","CONFIG_TYPE_FLOAT"},
+	{"double","%lf","Double","float","valuedouble","Number","CONFIG_TYPE_FLOAT"},
 	{"bool","%d","Boolean","bool","valueint!=0","Bool","CONFIG_TYPE_BOOL"},
 	{"void","%x","Int32","int","valueint","Number","CONFIG_TYPE_INT"},
     {"status_t","%d","Int32","int","valueint","Number","CONFIG_TYPE_INT"},
