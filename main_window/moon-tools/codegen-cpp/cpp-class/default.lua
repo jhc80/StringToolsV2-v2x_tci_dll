@@ -12,7 +12,6 @@ code_switch={
 	bson = false,
 	cjson = false,
 	lib_config = false,	
-    c_struct = false,
     raw_asn1 = false,
 	xml = false,
     code_mark = false,

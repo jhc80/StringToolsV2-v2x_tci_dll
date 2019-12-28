@@ -165,8 +165,7 @@ function code_variables_define(variables)
         if info.is_weak_ptr then
             print(">");
         end
-   
-    
+
 		local name_prefix="";
 
         if info.is_optional then
@@ -215,6 +214,7 @@ function code_all_includes(idl_class)
     if code_switch.bson then
         add_include("minibson");
     end
+	
     
 	local all_bases = IdlHelper.Class.GetAllBases(idl_class);
 	
@@ -397,6 +397,8 @@ function code_h(idl_class)
 	if code_switch.xml then
         printnl("    status_t LoadXml(CXmlNode *_root);");
         printnl("    status_t SaveXml(CFileBase *_xml);");
+		printnl("    status_t LoadXml(const char *fn, const char *path);");
+		printnl("    status_t SaveXml(const char *fn, const char *node_name);");
     end
 	
     if code_switch.c_struct then
@@ -2146,6 +2148,10 @@ function code_cpp(idl_class)
         printnl("");        
         code_cpp_save_xml_1(idl_class);
         printnl("");        
+		code_cpp_load_xml_2(idl_class);
+        printnl("");        
+        code_cpp_save_xml_2(idl_class);
+        printnl("");        		
     end
 	
     if code_switch.c_struct then
@@ -4539,6 +4545,43 @@ function code_cpp_save_xml_1(idl_class)
     printnl("    return OK;")
     printnl("}");
 end
+
+function code_cpp_load_xml_2(idl_class)
+	printfnl("status_t %s::LoadXml(const char *fn, const char *path)",
+		c_class_name(idl_class.name));
+	printfnl("{");
+	printfnl("    ASSERT(fn && path);");
+	printfnl("");
+	printfnl("    CXml xml;");
+	printfnl("    xml.Init();");
+	printfnl("    ASSERT(xml.LoadXml(fn));");
+	printfnl("");
+	printfnl("    CXmlNode *px = xml.GetNodeByPath(path);");
+	printfnl("    ASSERT(px);");
+	printfnl("");
+	printfnl("    return this->LoadXml(px);");
+	printfnl("}");
+end
+
+function code_cpp_save_xml_2(idl_class)
+	printfnl("status_t %s::SaveXml(const char *fn, const char *node_name)",
+		c_class_name(idl_class.name));
+	printfnl("{");
+	printfnl("    ASSERT(fn && node_name);");
+	printfnl("");
+	printfnl("    CMemFile mf;");
+	printfnl("    mf.Init();");
+	printfnl("    mf.Log(\"<?xml version=\\\"1.0\\\" encoding=\\\"utf-8\\\"?>\");");
+	printfnl("    mf.Log(\"<%%s>\",node_name);");
+	printfnl("    mf.IncLogLevel(1);");
+	printfnl("    this->SaveXml(&mf);");
+	printfnl("    mf.IncLogLevel(-1);");
+	printfnl("    mf.Log(\"</%%s>\",node_name);");
+	printfnl("    ");
+	printfnl("    return mf.WriteToFile(fn) > 0;");
+	printfnl("}");
+end
+
 -----------------------------------------------------------
 -----------------------------------------------------------
 
