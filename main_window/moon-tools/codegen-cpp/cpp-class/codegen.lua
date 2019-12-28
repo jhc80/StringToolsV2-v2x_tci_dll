@@ -4318,9 +4318,49 @@ function code_cpp_load_xml_1(idl_class)
     end
 
     function pc_not_array_object(info)    
+		printfnl("    px = _root->GetChildByName(\"%s\");",info.var.name);
+		printfnl("    if(px)");
+		printfnl("    {");		
+		if info.is_optional then
+			printfnl("        this->%s();",create_optional_name(info.var.name));
+			printfnl("        ASSERT(this->%s);",member_name(info.var.name));
+			printfnl("        %s->LoadXml(px);",member_name(info.var.name));
+		else
+			printfnl("        %s.LoadXml(px);",member_name(info.var.name));
+		end
+		printfnl("    }");	
     end
     
     function pc_array(info)
+		printfnl("    px = _root->GetChildByName(\"%s\");",info.var.name);
+		printfnl("    if(px)");
+		printfnl("    {");				
+		printfnl("        LOCAL_MEM(tmp);");
+		printfnl("        ASSERT(px->GetAttrib(\"size\",&tmp));");
+		printfnl("        int i,size = atoi(tmp.CStr());");
+		printfnl("        this->%s(size);",alloc_name(info.var.name));
+		printfnl("        CXmlNode *child = px->GetChild();");
+		printfnl("        for(i = size-1; i >= 0; i--)");
+		printfnl("        {");
+		
+		if info.is_basic_type then
+			printfnl("            this->%s(i,child->%s());",
+				setter_array_elem_name(info.var.name),
+				xml_get_value_name(info)
+			);
+		elseif info.is_string then
+			printfnl("            child->GetStringValue(&tmp);");
+			printfnl("            this->%s(i,&tmp);", setter_array_elem_name(info.var.name));
+		elseif info.is_object then
+			printfnl("            this->%s(i)->LoadXml(child);",
+				getter_array_elem_name(info.var.name)
+			);
+		end
+		
+		printfnl("            child = child->next;");
+		printfnl("        }");
+				
+		printfnl("    }");	
     end
 
     for_each_variables(idl_class.variables,function(info)
