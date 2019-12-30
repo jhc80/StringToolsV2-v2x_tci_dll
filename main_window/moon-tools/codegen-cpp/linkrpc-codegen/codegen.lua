@@ -229,8 +229,8 @@ function code_h(idl_class)
             status_t InitBasic();
             status_t Init(CTaskMgr *mgr);
             status_t Destroy();    
-            status_t OnSocketConnected();
-            status_t OnSocketDisconnected();
+            virtual status_t OnSocketConnected();
+            virtual status_t OnSocketDisconnected();
             virtual status_t OnRequest(CPeerMessage *msg);
     ]],8),
         class_name,
