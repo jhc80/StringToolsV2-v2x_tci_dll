@@ -4380,13 +4380,10 @@ function code_cpp_load_xml_1(idl_class)
         else
             if info.is_basic_type  then
                 pc_not_array_basic_type(info);
-                printnl("");    
             elseif info.is_string then
                 pc_not_array_string(info);
-                printnl("");    
             else
-                pc_not_array_object(info);
-                printnl("");    
+                pc_not_array_object(info); 
             end
         end
     end);  
@@ -4530,18 +4527,15 @@ function code_cpp_save_xml_1(idl_class)
         else
             if info.is_basic_type  then
                 pc_not_array_basic_type(info);
-                printnl("");    
             elseif info.is_string then
-                pc_not_array_string(info);
-                printnl("");    
+                pc_not_array_string(info);                
             else
                 pc_not_array_object(info);
-                printnl("");    
             end
         end
     end);  
 
-    code_end_marker("LoadXml_1");
+    code_end_marker("SaveXml_1");
     printnl("    return OK;")
     printnl("}");
 end
