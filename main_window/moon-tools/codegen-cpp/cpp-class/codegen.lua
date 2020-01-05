@@ -2188,8 +2188,7 @@ function code_cpp(idl_class)
 end
 
 --生成SaveBson的代码--
-function code_cpp_save_bson_1(idl_class)    
-	code_begin_extra("SaveBson_1");
+function code_cpp_save_bson_1(idl_class)    	
     printnl(string.format(
         "status_t %s::SaveBson(CMiniBson *_bson)",
         c_class_name(idl_class.name)
@@ -2197,6 +2196,7 @@ function code_cpp_save_bson_1(idl_class)
 
     printnl("{");
     printnl("    ASSERT(_bson);");
+	code_begin_marker("SaveBson_1");
 
     function pc_not_array_basic_type(info)
         if info.is_optional then
@@ -2378,15 +2378,13 @@ function code_cpp_save_bson_1(idl_class)
     
     end);
 
+	code_end_marker("SaveBson_1");
     printnl("    return OK;");
-    printnl("}");
-	
-	code_end_extra("SaveBson_1");
+    printnl("}");	
 end
 
 --生成SaveBson的代码--
-function code_cpp_save_bson_2(idl_class)    
-	code_begin_extra("SaveBson_2");
+function code_cpp_save_bson_2(idl_class)    	
     printnl(string.format(
         "status_t %s::SaveBson(CMem *_mem)",
         c_class_name(idl_class.name)
@@ -2402,22 +2400,18 @@ function code_cpp_save_bson_2(idl_class)
     printnl("    _bson.EndDocument();");
     printnl("    _mem->SetSize(_bson.GetDocumentSize());");
     printnl("    return OK;")
-    printnl("}");
-	
-	code_end_extra("SaveBson_2");
+    printnl("}");	
 end
 
 --生成LoadBson的代码--
 function code_cpp_load_bson_1(idl_class)
-    code_begin_extra("LoadBson_1");
-	
     printnl(string.format(
         "status_t %s::LoadBson(CMiniBson *_bson)",
         c_class_name(idl_class.name)
     ));
     printnl("{");
     printnl("    ASSERT(_bson);");
-
+	code_begin_marker("LoadBson_1");
     function pc_not_array_basic_type_optional(info)
         printnl(string.format(
             "    /******%s begin*******/{",
@@ -2665,16 +2659,14 @@ function code_cpp_load_bson_1(idl_class)
         end
     end);  
 
+    code_end_marker("LoadBson_1");
     printnl("    return OK;")
     printnl("}");
 	
-    code_end_extra("LoadBson_1");
 end
 
 --生成LoadBson的代码--
 function code_cpp_load_bson_2(idl_class)
-    code_begin_extra("LoadBson_2");
-	
     printnl(string.format(
         "status_t %s::LoadBson(CFileBase *_file)",
         c_class_name(idl_class.name)
@@ -2688,8 +2680,6 @@ function code_cpp_load_bson_2(idl_class)
     printnl("    _bson.ResetPointer();");
     printnl("    return this->LoadBson(&_bson);");
     printnl("}");
-	
-    code_end_extra("LoadBson_2");
 end
 
 --生成libconfig_loopup_xxx的函数名字--
