@@ -12,7 +12,6 @@ code_switch={
 	bson = false,
 	cjson = false,
 	lib_config = false,	
-    raw_asn1 = false,
 	xml = false,
     code_mark = false,
 }
@@ -83,26 +82,6 @@ end
 --如何转换c结构体的成员名字--
 function c_member_name(name)
 	return name;
-end
-
---生成save c struct的函数名--
-function save_struct_name(info)
-	return "SaveStruct";
-end
-
---生成load c struct的函数名--
-function load_struct_name(info)
-	return "LoadStruct";
-end
-
---生成save raw asn1 的函数名--
-function save_asn1_name(info)
-	return "SaveRawAsn1";
-end
-
---生成load c struct的函数名--
-function load_asn1_name(info)
-	return "LoadRawAsn1";
 end
 -------------------------------------
 --定义了通用的头文件
