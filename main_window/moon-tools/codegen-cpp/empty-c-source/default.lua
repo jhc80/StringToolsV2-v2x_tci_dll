@@ -1,5 +1,8 @@
 --保存路径，为空的话直接打印
-save_path="";
+save_path = "";
+
+--是否生成 __cplusplus 宏
+cplusplus = false; 
 
 --如何把一个字符串转成文件名
 function to_file_name(name)

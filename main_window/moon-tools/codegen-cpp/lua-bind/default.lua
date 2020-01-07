@@ -58,18 +58,3 @@ lua_type_table={
 	{"LUA_BOOLEAN","int","lua_pushboolean","lua_toboolean","Boolean","lua_isboolean"},
 	{"LUA_STRING","const char*","lua_pushstring","lua_tostring","String","lua_isstring"},
 };
-
-
---[[ 一个例子
- 
-[SubClass Test]
-class Base{
-    [static] void SayHello(string hello);
-}
-
-class Test:Base{
-    void Test();
-    int Add(int a, int b);    
-}
-
---]]

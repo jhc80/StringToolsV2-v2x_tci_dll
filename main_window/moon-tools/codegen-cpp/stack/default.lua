@@ -23,15 +23,3 @@ code_switch={
     weak_ref = false,
     task_container = false,
 }
-
------------------------------------------------------
---[[
-idl的一些例子 --
-
-[Stack of Entry]
-class NormalStack{}
-
-[Stack of float,basic]
-class FloatStack{}
-
---]]

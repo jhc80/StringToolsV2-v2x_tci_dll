@@ -161,7 +161,9 @@ function for_each_line(filebase,callback)
     filebase:Seek(0);
     local mem,mem_file = new_mem();
     while filebase:ReadLine(mem_file) do
-        callback(mem,mem_file);
+        if callback(mem,mem_file) then
+			break;
+		end
     end
 end   
 

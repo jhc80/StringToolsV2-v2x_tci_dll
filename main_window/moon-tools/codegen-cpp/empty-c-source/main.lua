@@ -10,9 +10,21 @@ function code_h(str)
     printfnl("#ifndef %s",ifdef_name(str));
     printfnl("#define %s",ifdef_name(str));
     
-    printfnl("");
+	printfnl("");
     printfnl(common_includes_h());
-        
+    
+	if cplusplus then
+		printfnl("#ifdef __cplusplus");
+		printfnl("extern \"C\"{");
+		printfnl("#endif");
+		printfnl("");
+		printfnl("#ifdef __cplusplus");
+		printfnl("}");
+		printfnl("#endif");
+		printfnl("");
+	end
+	
+    
     printfnl("#endif");    
 end
 
@@ -21,7 +33,6 @@ function code_cpp(str)
     printfnl(common_includes_cpp());
     printfnl("");    
 end
-
 
 for_each_line(mem_text_file,function(line)
 	local str = line:CStr();    
@@ -44,13 +55,15 @@ for_each_line(mem_text_file,function(line)
         file_name = FileManager.ToAbsPath(save_path.."/"..to_file_name(str)..".cpp");
         App.ClearBuffer();
     end
+	printnl("");
     code_cpp(str);
     if file_name then
         if App.SaveBuffer(file_name) then
             printfnl("save to %s ok.",file_name);
         else
             printfnl("fail to save %s.",file_name);
-        end
+        end		
     end
+	return true; --only first line
 end);
 

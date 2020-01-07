@@ -22,10 +22,3 @@ code_switch={
     weak_ref = false,
     task_container = false,
 }
------------------------------------------------------
---[[ idl的一些例子 --
-
-[List of Entry]
-class MyLinkedList{}
-
---]]
