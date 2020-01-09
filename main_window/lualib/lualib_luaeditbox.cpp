@@ -112,6 +112,16 @@ static status_t luaeditbox_setmaxtext(lua_State *L)
     lua_pushboolean(L,ret0);
     return 1;
 }
+static status_t editbox_setsel(lua_State *L)
+{
+    CLuaEditBox *peditbox = get_luaeditbox(L,1);
+    ASSERT(peditbox);
+    int s = (int)lua_tointeger(L,2);
+    int e = (int)lua_tointeger(L,3);
+    status_t ret0 = peditbox->SetSel(s,e);
+    lua_pushboolean(L,ret0);
+    return 1;
+}
 
 /****************************************************/
 static const luaL_Reg luaeditbox_funcs_[] = {
@@ -121,6 +131,7 @@ static const luaL_Reg luaeditbox_funcs_[] = {
     {"new",luaeditbox_new},
     {"Create",luaeditbox_create},
     {"SetMaxText",luaeditbox_setmaxtext},
+    {"SetSel",editbox_setsel},
     {NULL,NULL},
 };
 

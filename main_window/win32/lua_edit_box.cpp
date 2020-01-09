@@ -68,3 +68,8 @@ status_t CLuaEditBox::SetMaxText(int max)
     return ::SendMessageW(hwnd,EM_SETLIMITTEXT,(WPARAM)max,0);
 }
 
+status_t CLuaEditBox::SetSel(int s, int e)
+{
+    return ::SendMessageW(hwnd,EM_SETSEL,(WPARAM)s,(LPARAM)e);
+}
+

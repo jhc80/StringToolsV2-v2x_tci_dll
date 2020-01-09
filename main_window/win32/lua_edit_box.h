@@ -8,6 +8,7 @@
 class CLuaEditBox:public CLuaWindowBase{
 
 public:
+    status_t SetSel(int s, int e);
 	status_t SetMaxText(int max);
     CLuaEditBox();
     virtual ~CLuaEditBox();
