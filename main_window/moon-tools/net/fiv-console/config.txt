@@ -1,1 +1,1 @@
-name=Fiv Console
+name=FivConsole

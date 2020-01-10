@@ -26,9 +26,8 @@ local editbox = EditBox.new();
 editbox:SetParent(hwnd);
 
 editbox:AddStyle(
-    ES_MULTILINE|ES_NOHIDESEL |
+    ES_NOHIDESEL |
     WS_VSCROLL|ES_AUTOVSCROLL |
-    ES_AUTOHSCROLL|ES_WANTRETURN |
     WS_BORDER
 );
 
@@ -48,17 +47,39 @@ if as_server  then
 	printfnl("start message center on port %d",port);
 end
 
-local cur_list_file = "/";
+local cur_cmd_line = nil;
 
 function print_list(list)
 	for k,v in ipairs(list) do
-	
 		if v.is_dir then
 			printfnl("<%s>", v.name);
 		else
 			printfnl("%s\t\t\t%d",v.name,v.size);
 		end
 	end
+end
+
+function parse_command_line(cmd_line)
+	cmd_line:Seek(0);
+	local cmd = cmd_line:NextString();
+	local param_str = new_mem(32*1024);
+	cmd_line:ReadLeftStr(param_str,true);
+	return cmd, param_str:CStr();
+end
+
+function do_list_file(thread,file_client,params)	
+	local list = file_client:List(params);
+	if list then
+		App.ClearScreen();
+		print_list(list);
+	end
+end
+
+function do_run(thread,file_client,params)	
+	file_client:RunCommand(params,function(ret,val)
+		App.ClearScreen();
+		print_table(val);
+	end);
 end
 
 function main_thread(thread)
@@ -74,15 +95,16 @@ function main_thread(thread)
 	file_client:Start();
 	
 	while true do
-			if cur_list_file then			
-				local list = file_client:List(cur_list_file);
-				if list then
-					App.ClearScreen();
-					print_list(list);
+			if cur_cmd_line then	
+				local cmd,params = parse_command_line(cur_cmd_line);
+				if cmd == "ls" then
+					do_list_file(thread,file_client,params);
+				elseif cmd == "run" then
+					do_run(thread,file_client,params);
 				else
-					App.ClearScreen();
+					printfnl("unknown command: %s",cmd);
 				end
-				cur_list_file = nil;
+				cur_cmd_line = nil;
 			end
 			thread:Sleep(500);
 	end
@@ -90,12 +112,10 @@ function main_thread(thread)
 end
 
 function on_return_pressed()
-	local text = new_mem();
+	local text = new_mem(32*1024);
 	editbox:GetText(text);
-	text:Seek(0);
-	cur_list_file = text:NextLine();
-	editbox:SetText(cur_list_file);
-	local len = string.len(cur_list_file);
+	cur_cmd_line = text;
+	local len = text:GetSize();
 	editbox:SetSel(len,len);
 end
 
@@ -123,7 +143,6 @@ Win32.SetOnWindowMessage(function(hwnd,message,wparam,lparam)
 		end
     end
 end);
-
 
 
 co = CoThread.new(1);

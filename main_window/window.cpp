@@ -75,7 +75,7 @@ int sys_log_puts_with_nl(int module, int log_level, const char *str, int nl)
 
 static int _sys_log_puts(int module, int log_level, const char *str)
 {
-	return sys_log_puts_with_nl(module,log_level,str,true);
+	return sys_log_puts_with_nl(module,log_level,str,false);
 }
 
 int APIENTRY WinMain(HINSTANCE hInstance,
