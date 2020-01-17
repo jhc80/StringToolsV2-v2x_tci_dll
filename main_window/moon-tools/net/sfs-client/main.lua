@@ -4,7 +4,7 @@ require("bson");
 require("win32");
 require("simple_file_client")
 
-local UI_WND_HEIGHT=150;
+local UI_WND_HEIGHT=100;
 local EVENT_NEW_CLIENT = 1;
 local EVENT_CONNECTED = 1;
 local EVENT_STOP = 2;
@@ -82,6 +82,12 @@ function do_run(thread,file_client,params)
 	end);
 end
 
+function do_get(thread,file_client,params)
+	local remote_file = params;
+	local local_file = "/tmp/"..FileManager.SliceFileName(remote_file,FN_FILENAME);
+	start_pull_thread(file_client,remote_file,local_file);
+end
+
 function main_thread(thread)
 	local file_client = SimpleFileClient.new(thread);
 	if as_server then
@@ -101,6 +107,8 @@ function main_thread(thread)
 					do_list_file(thread,file_client,params);
 				elseif cmd == "run" then
 					do_run(thread,file_client,params);
+				elseif cmd == "get" then
+					do_get(thread,file_client,params);
 				else
 					printfnl("unknown command: %s",cmd);
 				end
@@ -144,10 +152,93 @@ Win32.SetOnWindowMessage(function(hwnd,message,wparam,lparam)
     end
 end);
 
+function parallel_pull_files(thread,file_client,all_pull_files)
+    local pending = 0;
+    while #all_pull_files > 0 do
+        if pending < 20 then
+            local head = all_pull_files[1];
+            table.remove(all_pull_files,1);
+            pending = pending + 1;
+            file_client:PullFile(head.remote_file,head.local_file,function(error)
+                if error then
+                    printfnl("~~ pull file %s fail.~~",head.remote_file);
+                else
+                    printfnl("pull file %s ok.",head.remote_file);
+                end                
+                pending = pending - 1;
+            end);
+        else
+            thread:Sleep(1);
+        end
+    end
+    while pending > 0 and not file_client:IsClosedPermanently() do
+        thread:Sleep(1);
+    end
+end
+
+function pull_thread(thread,file_client,remote_file,local_file)
+	local local_dir = local_file;
+	local remote_dir = nil;
+    local list = file_client:List(remote_file);
+	if list then
+		remote_dir = remote_file;
+	else
+		if FileManager.IsDirExist(local_file) then
+			local name = FileManager.SliceFileName(remote_file,FN_FILENAME);
+			local_file = FileManager.ToAbsPath(local_file.."/"..name);
+		end
+	end
+
+	local all_pull_files = {};
+	function will_pull_file(_remote_file,_local_file)
+		table.insert(all_pull_files,{
+			remote_file = _remote_file,
+			local_file = _local_file,
+		});
+	end
+	
+	function pull_folder(thread,_local_dir,_remote_dir)            
+		local file_list = file_client:List(_remote_dir);
+		if not file_list then
+			return
+		end
+		for _, info in ipairs(file_list) do
+			local next_file = _remote_dir .."/"..info.name;
+			if info.is_dir then          
+				pull_folder(thread,_local_dir,next_file);                    
+			else
+				local _local_file = FileManager.ToAbsPath(
+					_local_dir.."/"..remove_path_prefix(next_file,remote_dir)
+				);
+				will_pull_file(next_file,_local_file);
+			end
+		end
+	end
+	
+	if not remote_dir then
+		will_pull_file(remote_file,local_file);
+	else
+		printfnl("listing folder %s",remote_dir);
+		pull_folder(thread,local_dir,remote_dir);
+	end
+	
+	printfnl("total %d files.",#all_pull_files);
+	parallel_pull_files(thread,file_client,all_pull_files);
+	printnl("all done");
+	g_pull_co = nil
+end
+
+function start_pull_thread(file_client, remote_file,local_file)
+	if g_pull_co then
+		printnl("already pulling");
+		return
+	end
+	g_pull_co = CoThread.new(1);
+	g_pull_co:Start(pull_thread,file_client,remote_file,local_file);
+end
 
 co = CoThread.new(1);
 co:Start(main_thread);
-
 relayout(UI_WND_WIDTH,UI_WND_HEIGHT);
 App.MainLoop();
 

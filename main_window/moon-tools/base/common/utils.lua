@@ -107,6 +107,19 @@ function new_file(filename,mode)
     return file, file:FileBase();    
 end
 
+function new_file_no_buffer(filename,mode)
+    if not mode then mode = "rb" end
+    
+    local file = File.new();
+
+    if not file:OpenFile(filename,mode) then
+        print("open file "..filename.." error.");
+        return
+    end
+    
+    return file;
+end
+
 --创建mmapfile的方法，不能创建超过4G的文件，因为-
 --是32位程序
 function new_mmapfile(filename,mode)
