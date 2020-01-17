@@ -9,8 +9,12 @@ local EVENT_NEW_CLIENT = 1;
 local EVENT_CONNECTED = 1;
 local EVENT_STOP = 2;
 
+local g_cur_remote_dir="/"
+local g_cur_local_dir = download_path;
+
 App.ClearScreen();
 App.StartNet();
+printfnl("Download path is: %s",g_cur_local_dir);
 
 App.ShowEmbeddedUIWindow(UI_WND_HEIGHT);
 local hwnd = App.GetHWnd(HWND_EMBEDDED_UI);
@@ -68,24 +72,53 @@ function parse_command_line(cmd_line)
 end
 
 function do_list_file(thread,file_client,params)	
+	if not params or params == "" then
+		params = g_cur_remote_dir;
+	end
+
 	local list = file_client:List(params);
 	if list then
-		App.ClearScreen();
 		print_list(list);
 	end
 end
 
 function do_run(thread,file_client,params)	
 	file_client:RunCommand(params,function(ret,val)
-		App.ClearScreen();
 		print_table(val);
 	end);
 end
 
 function do_get(thread,file_client,params)
-	local remote_file = params;
-	local local_file = "/tmp/"..FileManager.SliceFileName(remote_file,FN_FILENAME);
+	local remote_file = FileManager.ToAbsPath(g_cur_remote_dir.."/"..params);
+	
+	local local_file = FileManager.ToAbsPath(
+		g_cur_local_dir.."/"..FileManager.SliceFileName(remote_file,FN_FILENAME)
+	);
+	
 	start_pull_thread(file_client,remote_file,local_file);
+end
+
+function do_cd(thread,file_client,params)
+	if not params or params == "" then
+		printfnl("current remote dir is '%s'",g_cur_remote_dir);
+		return
+	end
+	
+	local first_char = string.char(string.byte(params,1));
+	local new_dir = params;
+	if  first_char ~= "/" then
+		new_dir = FileManager.ToAbsPath(g_cur_remote_dir.."/"..params);
+	end
+
+	if new_dir == "" then
+		new_dir="/";
+	end
+	g_cur_remote_dir = new_dir;
+	printfnl("change remote dir to '%s'",g_cur_remote_dir);
+end
+
+function do_cls(thread,file_client,params)
+	App.ClearScreen();
 end
 
 function main_thread(thread)
@@ -109,9 +142,16 @@ function main_thread(thread)
 					do_run(thread,file_client,params);
 				elseif cmd == "get" then
 					do_get(thread,file_client,params);
-				else
+				elseif cmd == "cd" then
+					do_cd(thread,file_client,params);
+				elseif cmd == "cls" or cmd == "clear" then
+					do_cls(thread,file_client,params);
+				elseif cmd == "pwd" then
+					do_cd(thread,file_client,"");
+				elseif cmd then
 					printfnl("unknown command: %s",cmd);
 				end
+				printnl("----------------------------------------------");
 				cur_cmd_line = nil;
 			end
 			thread:Sleep(500);
@@ -124,7 +164,7 @@ function on_return_pressed()
 	editbox:GetText(text);
 	cur_cmd_line = text;
 	local len = text:GetSize();
-	editbox:SetSel(len,len);
+	editbox:SetText("");
 end
 
 App.SetOnAppEvent(function(e,data)
@@ -142,7 +182,6 @@ App.SetOnAppEvent(function(e,data)
         relayout(msg.right,msg.bottom);
 	end
 end);
-
 
 Win32.SetOnWindowMessage(function(hwnd,message,wparam,lparam)
     if hwnd == editbox:GetHWnd() and message == WM_CHAR then
