@@ -1,0 +1,1 @@
+bc ..\..\..\..\..\SmallToolsV2\lua-apps\simple-file-server .
