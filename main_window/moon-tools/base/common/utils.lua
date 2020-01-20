@@ -141,16 +141,20 @@ function new_mmapfile(filename,mode)
 end
 
 --移除文件名的前缀--
---比如 C:\1.txt ,如果把前缀C:移除，就变成了 \1.txt 了 
-function remove_path_prefix(full_name,prefix)    
+--比如 C:\1.txt ,如果把前缀C:移除，就变成了 1.txt 了 
+function remove_path_prefix(full_name,prefix)
     if string.find(full_name,prefix,1,true) ~= 1 then
         return
     end
-    
     local len = string.len(prefix);
     if len == 0 then return full_name end
     local rpath = string.sub(full_name,len+1);
-    return rpath;
+    local first = string.char(string.byte(rpath,1));
+    if first == "\\" or first =="/" then
+        return string.sub(rpath,2);
+    else
+        return rpath;
+    end
 end
 
 --分隔文件后缀的列表，逗号分隔， e.g. "c,cpp,h,lua,js"
