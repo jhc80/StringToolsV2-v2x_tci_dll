@@ -54,10 +54,15 @@ end
 local cur_cmd_line = nil;
 
 function print_list(list)
+	
 	for k,v in ipairs(list) do
 		if v.is_dir then
 			printfnl("<%s>", v.name);
-		else
+		end
+	end
+
+	for k,v in ipairs(list) do
+		if not v.is_dir then
 			printfnl("%s\t\t\t%d",v.name,v.size);
 		end
 	end
@@ -99,27 +104,45 @@ function do_get(thread,file_client,params)
 end
 
 function do_cd(thread,file_client,params)
-	if not params or params == "" then
+	if not params or params == "" or params=="." then
 		printfnl("current remote dir is '%s'",g_cur_remote_dir);
 		return
 	end
+		
+	local done = false;
+	file_client:ChangeDir(params,function(ret,val)
+		if ret == E_OK then
+			if val.success then
+				g_cur_remote_dir = val.cur_dir;
+				printfnl("change remote dir to %s",val.cur_dir);
+			else
+				printfnl("change remote dir to %s fail.",val.cur_dir);
+				printfnl("current dir is %s",g_cur_remote_dir);
+			end
+		end
+		done = true;
+	end);
 	
-	local first_char = string.char(string.byte(params,1));
-	local new_dir = params;
-	if  first_char ~= "/" then
-		new_dir = FileManager.ToAbsPath(g_cur_remote_dir.."/"..params);
+	while not done do
+		thread:Sleep(100);
 	end
-
-	if new_dir == "" then
-		new_dir="/";
-	end
-	g_cur_remote_dir = new_dir;
-	printfnl("change remote dir to '%s'",g_cur_remote_dir);
 end
 
 function do_cls(thread,file_client,params)
 	App.ClearScreen();
 end
+
+function do_run(thread,file_client,params)
+	local command = params;
+    file_client:RunCommand(command,function(ret,val)
+		print("run cmd:\""..command.."\"");
+		printnl(ret==1 and " success" or " fail");
+		if ret == 1 then
+			printfnl("the result is %d",val.result)
+		end
+	end);
+end
+
 
 function main_thread(thread)
 	local file_client = SimpleFileClient.new(thread);
@@ -148,6 +171,8 @@ function main_thread(thread)
 					do_cls(thread,file_client,params);
 				elseif cmd == "pwd" then
 					do_cd(thread,file_client,"");
+				elseif cmd == "run" then
+					do_run(thread,file_client,"");
 				elseif cmd then
 					printfnl("unknown command: %s",cmd);
 				end

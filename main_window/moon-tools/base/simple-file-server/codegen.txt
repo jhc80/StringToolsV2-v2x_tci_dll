@@ -1,0 +1,5 @@
+[Peer sfs][StartId 10000]
+[Client SimpleFileClient 20000]
+class SimpleFileServer{
+	[service] (bool success) ChangeDir(string dir);
+}
