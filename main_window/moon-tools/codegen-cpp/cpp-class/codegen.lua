@@ -1315,10 +1315,10 @@ function code_all_getter_cpp(idl_class)
         end
         
         if info.is_array then
-            code_begin_extra(getter_name(info.var.name,info).."Len");
+            code_begin_extra(getter_array_len_name(info.var.name));
             code_getter_declaration_array_len(info,true);
             code_getter_body_array_len(info);
-            code_end_extra(getter_name(info.var.name,info).."Len");
+            code_end_extra(getter_array_len_name(info.var.name));
             printnl("");
             
             code_begin_extra(getter_array_elem_name(info.var.name));
