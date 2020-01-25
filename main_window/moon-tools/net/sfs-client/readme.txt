@@ -21,4 +21,7 @@ get <file>
 下载当前路径下的文件或目录。
 下载路径则是属性中的 download_path
 
+put <local_file>
+上传本地文件或文件夹到远程当前路径下。
+
 

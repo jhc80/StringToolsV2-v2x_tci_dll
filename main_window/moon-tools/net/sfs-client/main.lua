@@ -143,6 +143,43 @@ function do_run(thread,file_client,params)
 	end);
 end
 
+function do_put(thread,file_client,params)
+	local local_file_name = FileManager.ToAbsPath(params);
+	local is_dir = false;
+	if FileManager.IsDirExist(local_file_name) then
+		is_dir = true;
+	elseif not FileManager.IsFileExist(local_file_name) then
+		printfnl("local file or dir '%s' is not exist",local_file_name);
+		return
+	end
+	
+	local file_name = FileManager.SliceFileName(local_file_name,FN_FILENAME);
+	local remote_file_name = FileManager.ToAbsPath(g_cur_remote_dir.."/"..file_name);
+	
+	if not is_dir then	
+		 if not file_client:PushBigFile(local_file_name,remote_file_name) then
+			printfnl("push file fail %s",local_file_name);
+		else
+			printfnl("send %s ok",local_file_name);
+		end   
+	else
+	    local file_list = {};
+        FileManager.SearchDir(local_file_name,true,function(info)
+                if info.event == EVENT_SINGLE_FILE then
+                    table.insert(file_list,info.full_name);
+                end
+        end);
+			
+		for _,v in ipairs(file_list) do
+			local rfile = remote_file_name.."/"..remove_path_prefix(v,local_file_name);
+			if not file_client:PushBigFile(v,rfile) then
+				printfnl("push file fail %s",v);
+			else
+				printfnl("send %s ok",v);                    
+			end
+		end       			
+	end
+end
 
 function main_thread(thread)
 	local file_client = SimpleFileClient.new(thread);
@@ -173,6 +210,8 @@ function main_thread(thread)
 					do_cd(thread,file_client,"");
 				elseif cmd == "run" then
 					do_run(thread,file_client,"");
+				elseif cmd == "put" then
+					do_put(thread,file_client,params);
 				elseif cmd then
 					printfnl("unknown command: %s",cmd);
 				end
