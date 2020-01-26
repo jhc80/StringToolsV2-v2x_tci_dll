@@ -73,7 +73,7 @@ function parse_command_line(cmd_line)
 	local cmd = cmd_line:NextString();
 	local param_str = new_mem(32*1024);
 	cmd_line:ReadLeftStr(param_str,true);
-	return cmd, param_str:CStr();
+	return cmd, string.trim(param_str:CStr());
 end
 
 function do_list_file(thread,file_client,params)	
@@ -192,6 +192,8 @@ function main_thread(thread)
 	file_client:SetName("string-tools-client");
 	file_client:SetDestPeerName("simple-file-server");
 	file_client:Start();
+	
+	do_cd(thread,file_client,"/");
 	
 	while true do
 			if cur_cmd_line then	
