@@ -248,6 +248,10 @@ function code_all_includes(idl_class)
         add_include("xml");
     end
 	
+	if code_switch.task_container then
+        add_include("taskmgr");
+    end
+		
     for _,name in ipairs(all_names_sorted) do    
         add_include(to_file_name(name));        
     end
