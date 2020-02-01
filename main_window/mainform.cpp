@@ -593,7 +593,7 @@ static bool simple_keymanager_is_keydown(int vk)
 	return all_keys[vk] !=0 ;
 }
 
-static status_t simple_keymanager_clear_all()
+status_t simple_keymanager_clear_all()
 {
     memset(all_keys,0,sizeof(all_keys));
     return OK;

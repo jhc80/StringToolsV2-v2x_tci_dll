@@ -319,8 +319,11 @@ status_t CLuaThread::OnThreadBegin()
     return OK;
 }
 
+status_t simple_keymanager_clear_all();
+
 status_t CLuaThread::OnThreadEnd()
 {
+	simple_keymanager_clear_all();
     callback_on_window_message = LUA_REFNIL;
 	callback_on_app_event = LUA_REFNIL;   
     GLOBAL_MAIN_FORM(main_form);
