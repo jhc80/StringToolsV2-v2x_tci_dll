@@ -27,7 +27,9 @@ function make_full_file_name(name)
 end
 
 for _,idl_class in ipairs(all_idl_classes) do    
+	update_basic_type_table_by_hint(idl_class);
 	IdlHelper.Class.MakeConnections(idl_class);
+
 	if save_path == "" then
 		code_h(idl_class);
 		printnl("");

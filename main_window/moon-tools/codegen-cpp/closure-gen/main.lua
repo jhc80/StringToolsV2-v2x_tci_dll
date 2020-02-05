@@ -21,6 +21,7 @@ local all_idl_classes = string_to_table("{"..lua.."}");
 if not all_idl_classes then return end
 
 for _,idl_class in ipairs(all_idl_classes) do
+	update_basic_type_table_by_hint(idl_class);
 	code_closure(idl_class);
 	printnl("");
 end

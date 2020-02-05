@@ -111,3 +111,44 @@ function batch_replace_block_in_cpp_files(file_tab, block_name,rep_str)
         replace_block_in_cpp_file(file,block_name,rep_str);       
     end
 end
+
+local function get_basic_type_hints(idl_class)
+    if not idl_class then return false end
+    if not idl_class.hint then return false end
+    local ret = {}	
+    for_each_hint(idl_class.hint,function(mem,str)    
+		mem:Seek(0);
+		if mem:NextString() == "BasicType" then
+			local new_type = mem:NextString();
+			local old_type = mem:NextString();
+			table.insert(ret,{
+				new_type=new_type,
+				old_type = old_type,
+			});
+		end
+    end);	
+    return #ret>0 and ret or nil;
+end
+	
+local function find_basic_type_table(name)
+	for _,b in ipairs(basic_type_table) do	
+		if name == b[1] then
+			return b;
+		end
+	end	
+end
+
+function update_basic_type_table_by_hint(idl_class)
+	local new_types = get_basic_type_hints(idl_class);
+	if not new_types then return end
+
+	for _,v in ipairs(new_types) do	
+		local row = find_basic_type_table(v.old_type);
+		if row then			
+			local new_row = clone_table(row);
+			new_row[1] = v.new_type;
+			table.insert(basic_type_table,new_row);
+		end	
+	end
+end
+

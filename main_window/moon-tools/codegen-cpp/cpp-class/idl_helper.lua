@@ -151,3 +151,5 @@ end
 IdlHelper.Var.IsNoGetter = function(var)
 	return IdlHelper.Class.FindHintSwitch (var,"noget");
 end
+
+

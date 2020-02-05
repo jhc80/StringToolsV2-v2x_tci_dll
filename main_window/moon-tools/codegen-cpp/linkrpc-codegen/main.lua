@@ -94,7 +94,8 @@ for k=1,all_idl_classes_len,1 do
     end
 end
 --------------------h and cpp files-------------------------------
-for _,idl_class in ipairs(all_idl_classes) do                  
+for _,idl_class in ipairs(all_idl_classes) do    
+	update_basic_type_table_by_hint(idl_class);              
     if not check_idl_class_hints(idl_class) then        
         App.Sleep(2000);
         goto continue;
