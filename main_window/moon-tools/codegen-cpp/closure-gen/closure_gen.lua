@@ -47,7 +47,7 @@ function code_var_out_closure(var_info)
 	elseif var_info.is_pointer then
 		printf("SetParamPointer");		
 	elseif var_info.is_weak_ptr then
-		printf("SetParamWeakPtr");
+		printf("SetParamWeakPointer");
 	elseif var_info.is_basic_type then
 		printf("SetParam%s",IdlHelper.Var.GetClosureType(var_info.type));
 	end
@@ -55,7 +55,7 @@ function code_var_out_closure(var_info)
 	if not var_info.is_weak_ptr then
 		printf("(%s,%s)",IdlHelper.Var.GetIndex(var_info.var),var_info.var.name);
 	else
-		printf("(%s,%s,%s.__weak_ref_id)",IdlHelper.Var.GetIndex(var_info.var),var_info.var.name,var_info.var.name);
+		printf("(%s,%s,%s->__weak_ref_id)",IdlHelper.Var.GetIndex(var_info.var),var_info.var.name,var_info.var.name);
 	end	
 end
 
