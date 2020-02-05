@@ -28,3 +28,10 @@ class Test{
 [CodeSwitch bson=true,weak_ref=true,code_mark=true]
 class Test{
 }
+
+可以通过 [BasicType XXX int32_t] 添加一个自定义的basic type类型，例如
+[BasicType XXX int32_t]
+class Test{
+	XXX x;
+}
+
