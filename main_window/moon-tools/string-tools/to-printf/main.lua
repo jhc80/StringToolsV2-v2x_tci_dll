@@ -80,8 +80,8 @@ function parse_line(line)
 end
 
 function do_single_line_mode()
-    for_each_line(mem_text,function(line,line_file)
-        local format_str, params_str = parse_line(line_file);
+    for_each_line(mem_text,function(line)
+        local format_str, params_str = parse_line(line);
         output(file_to_string(format_str),params_str);
         format_str:Destroy();
     end);

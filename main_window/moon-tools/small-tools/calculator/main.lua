@@ -5,9 +5,9 @@ App.ClearScreen();
 ----------------------------------------------------
 require("user");
 
-for_each_line(mem_text:FileBase(),function(line,line_file)
-    line_file:Trim();
-    if line_file:StrLen() > 0 then
+for_each_line(mem_text:FileBase(),function(line)
+    line:Trim();
+    if line:StrLen() > 0 then
     
         local code = line:CStr();  
         local ret;

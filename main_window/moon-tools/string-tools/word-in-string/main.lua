@@ -24,14 +24,14 @@ function empty_string_table()
     return all;
 end
 
-local function do_from_head(line,line_file)
-    line_file:SetSplitChars(split_chars);
-    line_file:Seek(0);
+local function do_from_head(line)
+    line:SetSplitChars(split_chars);
+    line:Seek(0);
     
     local mem,mem_file = new_mem();    
     local all = empty_string_table();
     local k = 1; local c = 1;
-    while line_file:ReadString(mem_file) do
+    while line:ReadString(mem_file) do
         if match_n(c) then
             all[k] = mem:CStr();
             k = k + 1;
@@ -41,14 +41,14 @@ local function do_from_head(line,line_file)
     how_to_combine(all,line:CStr());
 end
 
-local function do_from_tail(line,line_file)
-    line_file:SetSplitChars(split_chars);
-    line_file:SeekEnd();
+local function do_from_tail(line)
+    line:SetSplitChars(split_chars);
+    line:SeekEnd();
     
     local mem,mem_file = new_mem();    
     local all = empty_string_table();
     local k = 1; local c = 1;
-    while line_file:ReadString_Reverse(mem_file) do
+    while line:ReadString_Reverse(mem_file) do
         if match_n(c) then
             all[k] = mem:CStr();
             k = k + 1;
@@ -58,15 +58,15 @@ local function do_from_tail(line,line_file)
     how_to_combine(all,line:CStr());
 end
 
-local function delete_from_head(line,line_file)
-    line_file:SetSplitChars(split_chars);
-    line_file:Seek(0);
+local function delete_from_head(line)
+    line:SetSplitChars(split_chars);
+    line:Seek(0);
     local c = 1;
 
     local mem = new_mem();
-    while line_file:ReadWordWithEmptyChar(mem) do
+    while line:ReadWordWithEmptyChar(mem) do
         local ch = mem:CharAt(0);
-        if line_file:IsSpChar(ch) or FileBase.IsEmptyChar(ch) then
+        if line:IsSpChar(ch) or FileBase.IsEmptyChar(ch) then
             print(mem:CStr());
         else
             
@@ -78,17 +78,17 @@ local function delete_from_head(line,line_file)
     end    
 end
 
-local function delete_from_tail(line,line_file)
-    line_file:SetSplitChars(split_chars);
-    line_file:SeekEnd();
+local function delete_from_tail(line)
+    line:SetSplitChars(split_chars);
+    line:SeekEnd();
     local c = 1;
 
     local str_tab={};
 
     local mem = new_mem();
-    while line_file:ReadWordWithEmptyChar_Reverse(mem) do        
+    while line:ReadWordWithEmptyChar_Reverse(mem) do        
         local ch = mem:CharAt(0);
-        if line_file:IsSpChar(ch) or FileBase.IsEmptyChar(ch) then
+        if line:IsSpChar(ch) or FileBase.IsEmptyChar(ch) then
             table.insert(str_tab,mem:CStr());
         else
             if not match_n(c) then
@@ -105,21 +105,21 @@ end
 
 if not delete then
     for_each_line(mem_text_file,
-        function(line,line_file)
+        function(line)
             if not from_tail then
-                do_from_head(line,line_file);
+                do_from_head(line);
             else
-                do_from_tail(line,line_file);
+                do_from_tail(line);
             end
         end
     );
 else
     for_each_line(mem_text_file,
-        function(line,line_file)
+        function(line)
             if not from_tail then
-                delete_from_head(line,line_file);
+                delete_from_head(line);
             else
-                delete_from_tail(line,line_file);
+                delete_from_tail(line);
             end
         end
     );

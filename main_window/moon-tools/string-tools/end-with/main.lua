@@ -7,8 +7,8 @@ App.ClearScreen();
 
 require("user");
 
-function need_this_line(line,line_file)
-	local res = line_file:EndWith(end_with,case_sensitive,skip_empty);
+function need_this_line(line)
+	local res = line:EndWith(end_with,case_sensitive,skip_empty);
 
 	if remove_the_line then
 		res = (not res);
@@ -18,8 +18,8 @@ function need_this_line(line,line_file)
 end
 
 for_each_line(mem_text_file,
-	function(line,line_file)
-		if need_this_line(line, line_file) then
+	function(line)
+		if need_this_line(line) then
 			printnl(line:CStr());
 		end
 	end

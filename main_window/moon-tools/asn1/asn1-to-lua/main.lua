@@ -17,10 +17,10 @@ if not convert_files then
     end
 else
     local filelist = {};
-    for_each_line(mem_text_file,function(line,line_file)
-        line_file:Trim();
+    for_each_line(mem_text_file,function(line)
+        line:Trim();
         local str = line:CStr();
-        if line_file:StrLen() > 0 then
+        if line:StrLen() > 0 then
             table.insert(filelist,FileManager.ToAbsPath(str));
         end
     end);

@@ -11,7 +11,7 @@ local all = {};
 
 for_each_line(mem_text_file,function(line)
     local str = line:CStr();
-    line:FileBase():Trim();
+    line:Trim();
     if empty_line_included then
         table.insert(all,str);
     elseif line:C(0) ~= 0 then

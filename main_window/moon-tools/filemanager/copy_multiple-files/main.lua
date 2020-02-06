@@ -42,7 +42,7 @@ function remove_path_prefix_no_case(full_name,prefix)
 end
 
 
-local line,line_file = new_mem();
+local line = new_mem();
 mem_text_file:Seek(0);
 
 local flags = 0;
@@ -55,7 +55,7 @@ if check_same then
     flags = flags | MODE_CHECKSAME;
 end
 
-while mem_text_file:ReadLine(line_file) do
+while mem_text_file:ReadLine(line) do
     local in_file = line:CStr();
     
     local out_file 

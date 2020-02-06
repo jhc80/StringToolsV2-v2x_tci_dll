@@ -8,17 +8,17 @@ App.ClearScreen();
 
 local split_string_len = string.len(split_string);
 
-function split_line(line,line_file,pos)    
+function split_line(line,pos)    
 
     local mem,mem_file = new_mem();
-    line_file:Seek(pos+split_string_len);
-    line_file:ReadLeftStr(mem_file,true);
+    line:Seek(pos+split_string_len);
+    line:ReadLeftStr(mem_file,true);
     mem_file:Trim();
     local part2 = mem:CStr();
     mem:Destroy();
     
-    line_file:SetSize(pos);
-    line_file:Trim();
+    line:SetSize(pos);
+    line:Trim();
     local part1 = line:CStr();
     
     if option == 1 then    
@@ -34,11 +34,10 @@ function split_line(line,line_file,pos)
     end        
 end
 
-for_each_line(mem_text_file,function(line,line_file)  
-
-    line_file:Seek(0);
-    local pos = line_file:SearchStr(split_string,true,false);
+for_each_line(mem_text_file,function(line)  
+    line:Seek(0);
+    local pos = line:SearchStr(split_string,true,false);
     if pos >= 0 then
-        split_line(line,line_file,pos);
+        split_line(line,pos);
     end
 end);
