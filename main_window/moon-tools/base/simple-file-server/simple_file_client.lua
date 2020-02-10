@@ -7,6 +7,7 @@ SimpleFileClient = class(PeerServiceBase);
 
 function SimpleFileClient:ctor(thread)
     self.m_thread = thread;
+	self.m_cur_pull_size = 0;
 end
 
 function SimpleFileClient:OnRequest(_context,_param)
@@ -147,6 +148,7 @@ function SimpleFileClient:PullFile(remote_file, local_file,on_complete)
 
                 local_file = new_file_no_buffer(local_file,"wb+");
                 file_to_close = local_file;
+				self.m_cur_pull_size = 0;
 
                 if not local_file then
                     printfnl("create new file fail:%s",str);
@@ -166,6 +168,7 @@ function SimpleFileClient:PullFile(remote_file, local_file,on_complete)
             if local_file then
                 local_file:Seek(offset);
                 local_file:Puts(data)
+				self.m_cur_pull_size = offset+data:GetSize();
             end
         elseif ret == E_OK then
             all_complete = true;     
@@ -230,5 +233,8 @@ function SimpleFileClient:ChangeDir(_dir, _callback)
 end
 --@@End Method ChangeDir @@--
 
+function SimpleFileClient:GetCurPullSize()
+	return self.m_cur_pull_size;
+end
 
 --@@ Insert Method Here @@--

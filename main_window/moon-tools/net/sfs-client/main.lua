@@ -95,7 +95,6 @@ end
 
 function do_get(thread,file_client,params)
 	local remote_file = FileManager.ToAbsPath(params,g_cur_remote_dir);
-print(params);
 	
 	local local_file = FileManager.ToAbsPath(
 		FileManager.SliceFileName(remote_file,FN_FILENAME),
@@ -259,6 +258,22 @@ Win32.SetOnWindowMessage(function(hwnd,message,wparam,lparam)
     end
 end);
 
+local function size_string(size)
+	if size < 1024 then
+		return size;
+	end
+	
+	if size < (1024*1024) then
+		return string.format("%.03f KB",(size/1024.0));
+	end
+	
+	if size < (1024*1024*1024) then
+		return string.format("%.03f MB",size/(1024.0*1024.0));
+	end
+	
+	return string.format("%.03f GB",size/(1024.0*1024.0*1024.0));
+end
+
 function parallel_pull_files(thread,file_client,all_pull_files)
     local pending = 0;
     while #all_pull_files > 0 do
@@ -278,9 +293,13 @@ function parallel_pull_files(thread,file_client,all_pull_files)
             thread:Sleep(1);
         end
     end
+	
     while pending > 0 and not file_client:IsClosedPermanently() do
-        thread:Sleep(1);
+		local size = file_client:GetCurPullSize();
+		App.SetStatusText(1,size_string(size));
+        thread:Sleep(200);
     end
+	
 end
 
 function pull_thread(thread,file_client,remote_file,local_file)
