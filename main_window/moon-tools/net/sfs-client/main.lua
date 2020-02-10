@@ -94,10 +94,12 @@ function do_run(thread,file_client,params)
 end
 
 function do_get(thread,file_client,params)
-	local remote_file = FileManager.ToAbsPath(g_cur_remote_dir.."/"..params);
+	local remote_file = FileManager.ToAbsPath(params,g_cur_remote_dir);
+print(params);
 	
 	local local_file = FileManager.ToAbsPath(
-		g_cur_local_dir.."/"..FileManager.SliceFileName(remote_file,FN_FILENAME)
+		FileManager.SliceFileName(remote_file,FN_FILENAME),
+		g_cur_local_dir
 	);
 	
 	start_pull_thread(file_client,remote_file,local_file);
