@@ -123,7 +123,7 @@ function SimpleFileServer:OnPushBigFile(_context,_param)
 end
 --@@End Method OnPushBigFile @@--
 
-local g_buf = new_mem(4*1024*1024);
+local g_buf = new_mem(1*1024*1024);
 function SimpleFileServer:SendFileOnThread(_context,_filename)
 
     self.m_pulling_files = self.m_pulling_files + 1;
@@ -265,10 +265,15 @@ function SimpleFileServer:OnChangeDir(_context,_param)
 	printf("change dir to %s %s",path,
 		(success and "success" or "fail")
 	);
-	
+
 	local cur_dir;
-	if success then
-		cur_dir = "/"..remove_path_prefix(new_cd,self.m_root_dir);
+    if success then
+        local rpath = remove_path_prefix(new_cd,self.m_root_dir);
+        if rpath then
+            cur_dir = "/"..rpath
+        else
+            cur_dir = new_cd;
+        end
 	end
 	
     local _ret={

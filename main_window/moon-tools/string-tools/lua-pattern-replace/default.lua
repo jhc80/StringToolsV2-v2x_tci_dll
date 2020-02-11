@@ -7,7 +7,7 @@ all_patterns = {
 --编辑框中列表的所有文件。
 replace_in_files = false;
 
---替换函数--
+--替换函数,返回替换后的字符串--
 function how_to_replace(pattern,str)
 	return str;
 end

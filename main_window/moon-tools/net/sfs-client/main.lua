@@ -182,6 +182,27 @@ function do_put(thread,file_client,params)
 	end
 end
 
+local function size_string(size)
+	if size < 1024 then
+		return string.format("%d B",size);
+	end
+	
+	if size < (1024*1024) then
+		return string.format("%.02f KB",(size/1024.0));
+	end
+	
+	if size < (1024*1024*1024) then
+		return string.format("%.02f MB",size/(1024.0*1024.0));
+	end
+	
+	return string.format("%.02f GB",size/(1024.0*1024.0*1024.0));
+end
+
+function show_file_progress(filename, size)
+	App.SetStatusText(1,filename);
+	App.SetStatusText(2,size_string(size));	
+end
+
 function main_thread(thread)
 	local file_client = SimpleFileClient.new(thread);
 	if as_server then
@@ -193,6 +214,9 @@ function main_thread(thread)
 	file_client:SetName("string-tools-client");
 	file_client:SetDestPeerName("simple-file-server");
 	file_client:Start();
+	
+	file_client:SetPullFileCallback(show_file_progress);
+	file_client:SetPushFileCallback(show_file_progress);
 	
 	do_cd(thread,file_client,"/");
 	
@@ -258,21 +282,6 @@ Win32.SetOnWindowMessage(function(hwnd,message,wparam,lparam)
     end
 end);
 
-local function size_string(size)
-	if size < 1024 then
-		return size;
-	end
-	
-	if size < (1024*1024) then
-		return string.format("%.03f KB",(size/1024.0));
-	end
-	
-	if size < (1024*1024*1024) then
-		return string.format("%.03f MB",size/(1024.0*1024.0));
-	end
-	
-	return string.format("%.03f GB",size/(1024.0*1024.0*1024.0));
-end
 
 function parallel_pull_files(thread,file_client,all_pull_files)
     local pending = 0;
@@ -290,16 +299,13 @@ function parallel_pull_files(thread,file_client,all_pull_files)
                 pending = pending - 1;
             end);
         else
-            thread:Sleep(1);
+            thread:Sleep(10);
         end
     end
 	
-    while pending > 0 and not file_client:IsClosedPermanently() do
-		local size = file_client:GetCurPullSize();
-		App.SetStatusText(1,size_string(size));
-        thread:Sleep(200);
+    while pending > 0 and not file_client:IsClosedPermanently() do	
+        thread:Sleep(10);
     end
-	
 end
 
 function pull_thread(thread,file_client,remote_file,local_file)

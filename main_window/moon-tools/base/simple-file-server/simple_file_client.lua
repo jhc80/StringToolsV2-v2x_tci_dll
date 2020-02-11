@@ -7,7 +7,8 @@ SimpleFileClient = class(PeerServiceBase);
 
 function SimpleFileClient:ctor(thread)
     self.m_thread = thread;
-	self.m_cur_pull_size = 0;
+	self.m_pull_file_callback = nil;
+	self.m_push_file_callback = nil;
 end
 
 function SimpleFileClient:OnRequest(_context,_param)
@@ -85,7 +86,7 @@ function SimpleFileClient:PushBigFile(local_file,remote_file,no_wait)
     if not file then return end
 
     file:Seek(0);    
-    local buf = new_mem(4*1024*1024);
+    local buf = new_mem(1*1024*1024);
 
     while not file:IsEnd() and not error_occur do                
         if self:GetSendingQueueLength() < 30 then
@@ -94,6 +95,9 @@ function SimpleFileClient:PushBigFile(local_file,remote_file,no_wait)
             file:Read(buf,buf:GetMaxSize());                
             if buf:GetSize() > 0 then
                 send_part_data(offset,file:GetSize(),buf);
+				if self.m_push_file_callback then
+					self.m_push_file_callback(local_file,offset+buf:GetSize());
+				end
             end
         else
             self.m_thread:Sleep(1);
@@ -120,6 +124,7 @@ function SimpleFileClient:PullFile(remote_file, local_file,on_complete)
     local error_occur = false;
     local file_to_close = nil;
     local _cbid;
+    local local_file_name = nil;
 
     function on_pull_file(ret,val)
         if (not val) or (not val.success) then
@@ -139,19 +144,23 @@ function SimpleFileClient:PullFile(remote_file, local_file,on_complete)
 
         if ret == E_PART_OK then
             if type(local_file) == "string" then
-                local str = local_file;
-
-                local path=FileManager.SliceFileName(str,FN_PATH);
+                local file_name = local_file;
+                local_file_name = local_file;
+			
+                local path=FileManager.SliceFileName(file_name,FN_PATH);
                 if not FileManager.IsDirExist(path) then
                     FileManager.CreateDir(path);
                 end
 
                 local_file = new_file_no_buffer(local_file,"wb+");
                 file_to_close = local_file;
-				self.m_cur_pull_size = 0;
+				
+                if self.m_pull_file_callback then
+                    self.m_pull_file_callback(file_name,0);
+                end				
 
                 if not local_file then
-                    printfnl("create new file fail:%s",str);
+                    printfnl("create new file fail:%s",file_name);
                     error_occur = true;
                     all_complete = true;
                     self:CancelCallback(_cbid);
@@ -168,7 +177,9 @@ function SimpleFileClient:PullFile(remote_file, local_file,on_complete)
             if local_file then
                 local_file:Seek(offset);
                 local_file:Puts(data)
-				self.m_cur_pull_size = offset+data:GetSize();
+                if self.m_pull_file_callback then
+                    self.m_pull_file_callback(local_file_name,offset+data:GetSize());
+                end
             end
         elseif ret == E_OK then
             all_complete = true;     
@@ -233,8 +244,12 @@ function SimpleFileClient:ChangeDir(_dir, _callback)
 end
 --@@End Method ChangeDir @@--
 
-function SimpleFileClient:GetCurPullSize()
-	return self.m_cur_pull_size;
+--@@ Insert Method Here @@--
+
+function SimpleFileClient:SetPullFileCallback(cb)
+    self.m_pull_file_callback = cb;
 end
 
---@@ Insert Method Here @@--
+function SimpleFileClient:SetPushFileCallback(cb)
+    self.m_push_file_callback = cb;
+end

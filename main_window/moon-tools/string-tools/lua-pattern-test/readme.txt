@@ -69,20 +69,20 @@ x: (where x is not one of the magic characters ^$()%.[]*+-?)
 The interaction between ranges and classes is not defined. Therefore, 
 patterns like [%a-z] or [a-%%] have no meaning.
 范围和类之间的交互未定义。 因此，
-[％a-z]或[a-%%]之类的模式没有意义。
+[%a-z]或[a-%%]之类的模式没有意义。
 
 [^set]: represents the complement of set, where set is interpreted as above.
 For all classes represented by single letters (%a, %c, etc.), the corresponding 
 uppercase letter represents the complement of the class. For instance, %S 
 represents all non-space characters.
 [^ set]：表示集合的补集，其中集合的解释如上。
-对于由单个字母表示的所有类（％a，％c等），对应的
+对于由单个字母表示的所有类（%a，%c等），对应的
 大写字母表示该类的补集。 例如 %S代表所有非空格字符。
 
 The definitions of letter, space, and other character groups depend on the 
 current locale. In particular, the class [a-z] may not be equivalent to %l.
 字母，空格和其他字符组的定义取决于
-当前语言环境。 特别地，[a-z]可能不等同于％l。
+当前语言环境。 特别地，[a-z]可能不等同于%l。
 
 Pattern Item:
 模式
@@ -112,7 +112,7 @@ a single character class followed by '?', which matches zero or one occurrence o
 	
 %n, for n between 1 and 9; such item matches a substring equal to the n-th 
     captured string (see below);
-％n，n在1到9之间； 此类项目匹配等于第n个子字符串
+%n，n在1到9之间； 此类项目匹配等于第n个子字符串
     捕获的字符串（见下文）；
 
 %bxy, where x and y are two distinct characters; such item matches strings that 
@@ -121,17 +121,17 @@ a single character class followed by '?', which matches zero or one occurrence o
 	the ending y is the first y where the count reaches 0. For instance, the item 
 	%b() matches expressions with balanced parentheses.
 
-％bxy，其中x和y是两个不同的字符； 这样的项目匹配的字符串
+%bxy，其中x和y是两个不同的字符； 这样的项目匹配的字符串
      以x开头，以y结尾，并且x和y处于平衡状态。 这意味着，
     如果从左到右读取该字符串，则x计数为+ 1，y计数为-1，
     结束点y是计数达到0的第一个y。例如，该项
-    ％b（）匹配带有平衡括号的表达式。
+    %b（）匹配带有平衡括号的表达式。
 
 %f[set], a frontier pattern; such item matches an empty string at any position 
     such that the next character belongs to set and the previous character does 
 	not belong to set. The set set is interpreted as previously described. The beginning
 	and the end of the subject are handled as if they were the character '\0'.
-％f[set]，一种边界模式； 这个模式在任何位置都匹配一个空字符串
+%f[set]，一种边界模式； 这个模式在任何位置都匹配一个空字符串
      这个位置的下一个字符属于集合而前一个字符不属于集合。 集合的解释如前所述。 
      文本的开始和结尾被当作字符“ \ 0”来处理。
 
@@ -161,7 +161,7 @@ A pattern can contain sub-patterns enclosed in parentheses; they describe captur
      匹配成功后，将捕获匹配的字符串的子字符串存储（捕获）以备将来使用。 
 捕获的内容按其左侧括号编号。 例如，在模式 "(a*(.)%w(%s*))" 中，字符串的一部分
 匹配“ a*(.)%w(%s*)”作为第一个捕获存储（因此具有编号1）；
-匹配“.”的字符 用数字2捕获，并且匹配“％s*”的部分有数字3。
+匹配“.”的字符 用数字2捕获，并且匹配“%s*”的部分有数字3。
 
 As a special case, the empty capture () captures the current string position (a number).
  For instance, if we apply the pattern "()aa()" on the string "flaaap", there will be two 
