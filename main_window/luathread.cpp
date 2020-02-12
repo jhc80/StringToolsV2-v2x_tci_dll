@@ -114,6 +114,7 @@ status_t CLuaThread::InitBasic()
     callback_on_window_message = LUA_REFNIL;
 	callback_on_app_event = LUA_REFNIL;
 	memset(m_DelayUnloadModules,0,sizeof(m_DelayUnloadModules));
+	m_Epoll.InitBasic();
 	CThread::InitBasic();
 	return OK;
 }
@@ -129,6 +130,7 @@ status_t CLuaThread::Destroy()
     g_peer_globals.Destroy();	
 	m_TaskMgr.Destroy();
     m_LuaVm.Destroy();
+	m_Epoll.Destroy();
 	this->InitBasic();
 	return OK;
 }
@@ -145,7 +147,8 @@ status_t CLuaThread::Run()
     p_TreeNode->GetMainCodePath(&main_lua);
     if(luaL_loadfile(m_LuaVm.GetLuaState(),main_lua.CStr()) != 0)
     {
-        this->Log("load lua file '%s' fail.",main_lua.CStr());
+        XLOG(LOG_MODULE_USER,LOG_LEVEL_ERROR,
+			"load lua file '%s' fail.",main_lua.CStr());
         this->ReportLuaError();
         goto end;
     }
@@ -240,33 +243,6 @@ status_t CLuaThread::InitLuaVm()
     return OK;
 }
 
-status_t CLuaThread::Log(const char *szFormat, ...)
-{   
-    ASSERT(szFormat);
-    MAKE_VARGS_BUFFER(szFormat);    
-    
-    if(this->IsInThisThread())
-    {        
-        BEGIN_NEW_CLOSURE(run_on_main_thread)
-        {
-            CLOSURE_PARAM_PTR(char*,szBuffer,10);
-            syslog_puts(LOG_MODULE_COMMON,LOG_LEVEL_ERROR,szBuffer);     
-            return OK;
-        }
-        END_NEW_CLOSURE(run_on_main_thread);
-
-        run_on_main_thread->Malloc(10,szBuffer,strlen(szBuffer)+1);
-        GLOBAL_MAIN_TASK_RUNNER(runner);
-        runner->AddClosure(run_on_main_thread,0);
-    }
-    else
-    {
-        syslog_puts(LOG_MODULE_COMMON,LOG_LEVEL_ERROR,szBuffer);
-    }
-
-    return OK;
-}
-
 status_t CLuaThread::Stop()
 {
 	CThread::Stop();
@@ -286,12 +262,15 @@ status_t CLuaThread::ReportLuaError()
 
         while(mem.ReadLine(&line))
         {
-            this->Log("%s",line.CStr());
+            XLOG(LOG_MODULE_USER,LOG_LEVEL_ERROR,
+				"%s",line.CStr());
         }
         lua_pop(L, 1);
     }
     return OK;
 }
+
+static status_t on_taskmgr_event(CClosure *closure);
 
 status_t CLuaThread::OnThreadBegin()
 {
@@ -303,6 +282,9 @@ status_t CLuaThread::OnThreadBegin()
 	crt_chdir(g_globals.GetWorkFolder());
 
     m_TaskMgr.Init(1024);
+	m_TaskMgr.Callback()->SetFunc(on_taskmgr_event);
+	m_TaskMgr.Callback()->SetParamPointer(10,this);
+	m_Epoll.Init();
     
     GLOBAL_MAIN_FORM(main_form);    
     main_form->SetStatusText(0,"lua vm is running");
@@ -332,6 +314,7 @@ status_t CLuaThread::OnThreadEnd()
     g_peer_globals.Destroy();	    
     m_TaskMgr.Destroy(); 
     m_LuaVm.Destroy();	
+	m_Epoll.Destroy();
     HideEmbeddedUIWindow();
 	FreeAllModules();
 	CSocket::EndNet();
@@ -397,7 +380,7 @@ status_t CLuaThread::MainLoop()
 		if(m_TaskMgr.Schedule())
 			need_sleep = false;		
 		if(need_sleep)
-			crt_msleep(5);
+			m_Epoll.Wait(5);
 	}
     SetIsMainLoopRunning(false);
 	return OK;
@@ -624,6 +607,25 @@ status_t CLuaThread::OnAppEvent(int event, CMem *mem)
 		on_lua_thread->SetParamInt(12,event);
 		m_TaskRunner.AddClosure(on_lua_thread,0);		
 	}
+	return OK;
+}
+
+
+static status_t on_taskmgr_event(CClosure *closure)
+{
+	CLOSURE_PARAM_INT(event,0);
+	CLOSURE_PARAM_PTR(CLuaThread*,self,10);
+	
+	if(event == CTaskMgr::EVENT_SOCKET_CONNECTED)
+	{
+		CLOSURE_PARAM_INT(socket,1);
+		CEpoll *epoll = &self->m_Epoll;
+		if(epoll->AddFd(socket))
+		{
+			XLOG(LOG_MODULE_USER,LOG_LEVEL_ERROR,
+				"socket %d is added to epoll.",socket);
+		}
+	}	
 	return OK;
 }
 
