@@ -75,7 +75,7 @@ patterns like [%a-z] or [a-%%] have no meaning.
 For all classes represented by single letters (%a, %c, etc.), the corresponding 
 uppercase letter represents the complement of the class. For instance, %S 
 represents all non-space characters.
-[^ set]：表示集合的补集，其中集合的解释如上。
+[^set]：表示集合的补集，其中集合的解释如上。
 对于由单个字母表示的所有类（%a，%c等），对应的
 大写字母表示该类的补集。 例如 %S代表所有非空格字符。
 
