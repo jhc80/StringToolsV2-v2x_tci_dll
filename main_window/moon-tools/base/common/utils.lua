@@ -7,7 +7,9 @@ function global_ref(obj)
 end
 
 
-
+function is_windows()
+    return true;
+end
 
 --判断是否是空白字符--
 function is_white_char(ch)

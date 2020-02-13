@@ -10,6 +10,7 @@
 #include "taskrunner.h"
 #include "basicarray.h"
 #include "mem.h"
+#include "epoll.h"
 
 #define LUA_THREAD_FLAG_FUNC(func,bit) FLAG_FUNC(m_Flags,func, bit)
 
@@ -28,6 +29,7 @@ public:
     CTaskRunner m_TaskRunner;
     int_ptr_t m_ThreadId;
     uint32_t m_Flags;
+	CEpoll m_Epoll;
 
 	HMODULE m_DelayUnloadModules[MAX_MODULES_SIZE];
     int callback_on_window_message;
@@ -52,7 +54,6 @@ public:
 	status_t OnThreadBegin();
     status_t ReportLuaError();
 	status_t Stop();
-    status_t Log(const char *szFormat, ...);
 	status_t InitLuaVm();
 	bool IsInThisThread();
 	status_t SetIndexTreeNode(CIndexTreeNode *node);

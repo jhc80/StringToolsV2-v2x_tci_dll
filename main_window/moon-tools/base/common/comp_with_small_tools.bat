@@ -1,1 +1,1 @@
-bc Z:\mydisk\Program\VC6\Projects\SmallToolsV2\lua-apps\common .
+bc ..\..\..\..\..\SmallToolsV2\lua-apps\common .

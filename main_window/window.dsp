@@ -194,6 +194,14 @@ SOURCE=.\common\encoder.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\common\epoll.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\epoll.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\file.cpp
 # End Source File
 # Begin Source File
