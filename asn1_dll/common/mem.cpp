@@ -2,6 +2,8 @@
 #include "syslog.h"
 #include "mem_tool.h"
 
+#define MALLOC_SIZE(asize) ((int_ptr_t)(asize+sizeof(int32_t)))
+
 CMem::CMem()
 {
     this->Init();
@@ -45,7 +47,7 @@ status_t CMem::Destroy()
 
 status_t CMem::Malloc(int_ptr_t asize)
 {
-    asize += sizeof(int);
+    asize = MALLOC_SIZE(asize);
     ASSERT(asize > 0);
     ASSERT(this->mBuf == NULL);
     MALLOC(this->mBuf,char,asize);
@@ -69,12 +71,20 @@ status_t CMem::Free()
     return OK;
 }
 
+status_t CMem::AutoRealloc(int_ptr_t newSize)
+{
+    if(MALLOC_SIZE(newSize) <= mMaxSize)
+        return OK;
+    return this->Realloc(newSize);
+}
 
 status_t CMem::Realloc(int_ptr_t newSize)
 {
     CMem new_mem;
-	if(newSize == mSize)
+    
+	if(MALLOC_SIZE(newSize) == mMaxSize)
 		return OK;
+
     fsize_t old_off = this->GetOffset();
     new_mem.Malloc(newSize);
     new_mem.WriteFile(this); //may change this offset
@@ -219,11 +229,7 @@ status_t CMem::Copy(CFileBase *file)
 {
     ASSERT(file);
     if(this == file) return OK;
-
-    SAVE_WEAK_REF_ID(*this,w);
-    this->Destroy();
-    this->Init();
-    RESTORE_WEAK_REF_ID(*this,w);
+    this->Free();
 
     if(file->file_name)
         this->SetFileName(file->file_name);
@@ -282,8 +288,7 @@ bool CMem::StrEqu(CMem *str, bool case_sensitive)
 status_t CMem::Transfer(CMem *from)
 {
     ASSERT(from);
-    this->Destroy();
-    this->Init();
+    this->Free();
 
     this->mBuf = from->mBuf;
     this->mSelfAlloc = from->mSelfAlloc;

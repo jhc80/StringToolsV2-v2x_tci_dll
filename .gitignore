@@ -1,9 +1,9 @@
 release
 debug
-window.ncb
-window.opt
-window.plg
-window.aps
+*.ncb
+*.opt
+*.plg
+*.aps
 *.vscode*
 *.o
 *.d
