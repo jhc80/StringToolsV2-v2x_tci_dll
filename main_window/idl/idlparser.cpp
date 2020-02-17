@@ -450,39 +450,42 @@ status_t CIdlParser::ParseType_ArrayTemplate(CIdlType *type)
 
 status_t CIdlParser::ParseNameSpace(CMem *ns)
 {
-	
 	ASSERT(ns);
 	ns->SetSize(0);
 
-    IdlLexerContext context;
-    m_Lexer.SaveContext(&context);
-
-	LOCAL_MEM(tmp);
-
-	int token = m_Lexer.Next();	
-    if(token != IDL_TOKEN_WORD)
+    while(!m_Lexer.IsEnd())
     {
-        m_Lexer.RestoreContext(&context);
-        return ERROR;
-    }
-	tmp.Puts(m_Lexer.GetCurVal());
-	
-	token = m_Lexer.Next();
-	if(token != IDL_TOKEN_COLON)
-	{
-        m_Lexer.RestoreContext(&context);
-        return ERROR;
-	}
-	
-	token = m_Lexer.Next();
-	if(token != IDL_TOKEN_COLON)
-	{
-        m_Lexer.RestoreContext(&context);
-        return ERROR;
-	}
+        IdlLexerContext context;
+        m_Lexer.SaveContext(&context);
+	    LOCAL_MEM(tmp);
 
-	ns->Puts(&tmp);
-	return OK;
+	    int token = m_Lexer.Next();	
+        if(token != IDL_TOKEN_WORD)
+        {
+            m_Lexer.RestoreContext(&context);
+            break;
+        }
+	    tmp.Puts(m_Lexer.GetCurVal());
+	    
+	    token = m_Lexer.Next();
+	    if(token != IDL_TOKEN_COLON)
+	    {
+            m_Lexer.RestoreContext(&context);
+            break;
+	    }
+
+        token = m_Lexer.Next();
+        if(token != IDL_TOKEN_COLON)
+        {
+            m_Lexer.RestoreContext(&context);
+            break;
+	    }
+
+        if(ns->StrLen() > 0)ns->Puts("::");
+        ns->Puts(&tmp);
+    }
+
+	return ns->StrLen() > 0;
 }
 
 status_t CIdlParser::ParseType(CIdlType *type)
