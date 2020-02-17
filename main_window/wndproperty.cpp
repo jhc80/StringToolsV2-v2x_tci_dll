@@ -364,12 +364,17 @@ int CWndProperty::OnOK()
 
 int CWndProperty::OnLoad()
 {
+    ASSERT(cur_node);
+
 	if(this->can_be_closed == 0)
 		return ERROR;
 	this->can_be_closed = 0;
+    
+    LOCAL_MEM(init_dir);
+    CEncoder::Utf8ToUnicode(cur_node->GetPath(),&init_dir);
 
    	LOCAL_MEM(mem);
-	int ret = CWinMisc::GetAFileName(hwnd,&mem,L"All files\0*.*\0\0");
+	int ret = CWinMisc::GetAFileName(hwnd,&mem,L"All files\0*.*\0\0",init_dir.CStrW());
 	this->can_be_closed = 1;
 	if(!ret)return ERROR;
 	
@@ -392,9 +397,14 @@ int CWndProperty::OnLoad()
 
 int CWndProperty::OnSave()
 {
+    ASSERT(cur_node);
     LOCAL_MEM(filename);
     this->can_be_closed = 0;
-    status_t ret = CWinMisc::GetSaveFileName(hwnd,&filename,L"All files\0*.*\0\0");
+
+    LOCAL_MEM(init_dir);
+    CEncoder::Utf8ToUnicode(cur_node->GetPath(),&init_dir);
+
+    status_t ret = CWinMisc::GetSaveFileName(hwnd,&filename,L"All files\0*.*\0\0",init_dir.CStrW());
     this->can_be_closed = 1;
     if(!ret) return ERROR;
     

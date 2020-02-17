@@ -75,7 +75,6 @@ else
 			save_file_string(str,line:CStr());
 		end		
 	end);
+	printnl("all done");
 end
-
-printnl("all done");
 

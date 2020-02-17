@@ -1,4 +1,6 @@
---查找字符串的模板
+--把V2X_LOG 替换为printf函数的替换
+--在debug的时候很有用
+
 all_patterns = {
 	[[V2X_%u+%(".-"]]
 };
@@ -11,7 +13,6 @@ replace_in_files = false;
 function how_to_replace(pattern,str)
 	local s,e = string.find(str,"\".-\"");
 	if not s then return str end
-	local quote = string.sub(str,s,e);
+	local quote = string.sub(str,s+1,e-1);
 	return "printf(\""..quote.."\\n\"";
 end
-
