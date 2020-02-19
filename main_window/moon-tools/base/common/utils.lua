@@ -224,6 +224,28 @@ function hex_file_to_bin_file(hex_file, bin_file)
     end
 end
 
+--把二进制转成十六进制--
+function bin_file_to_hex_file(bin_file,hex_file,line_width)
+	bin_file:Seek(0);
+	local c = 1;
+	while not bin_file:IsEnd() do
+		local ch = (bin_file:Getc()&0xff);
+		hex_file:Puts(string.format("%02x",ch));
+		
+		local eol = false;
+		if line_width > 0 and c % line_width == 0 then
+			hex_file:Puts(EOL);
+			eol = true;
+		end
+		
+		if not eol then
+			hex_file:Puts(" ");
+		end
+		
+		c = c + 1;
+	end
+end
+
 --启动一个计时器
 function set_timeout(func,interval)
     local timer = Timer.new();
