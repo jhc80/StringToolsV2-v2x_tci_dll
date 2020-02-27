@@ -375,24 +375,33 @@ function code_h(idl_class)
     end
 
     if code_switch.lib_config then
+		printnl("");
+		code_begin_marker("LibConfig");	
         printnl("    status_t LoadConfig(const config_setting_t *_settings);");
         printnl("    status_t LoadConfig(const char *_filename,const char *_path);");
         printnl("    status_t SaveConfig(config_setting_t *_settings);");
         printnl("    status_t SaveConfig(const char *filename,const char *root_name);");
+		code_end_marker("LibConfig");	
     end
 
     if code_switch.cjson then
+	    printnl("");
+		code_begin_marker("JSON");	
         printnl("    status_t LoadJson(const cJSON *_json);");
         printnl("    status_t LoadJson(const char *_json);");
         printnl("    status_t SaveJson(cJSON *_root);");
         printnl("    status_t SaveJson(CFileBase *_file);");
+		code_end_marker("JSON");	
     end
     
 	if code_switch.xml then
+	    printnl("");
+		code_begin_marker("XML");
         printnl("    status_t LoadXml(CXmlNode *_root);");
         printnl("    status_t SaveXml(CFileBase *_xml);");
 		printnl("    status_t LoadXml(const char *fn, const char *path);");
 		printnl("    status_t SaveXml(const char *fn, const char *node_name);");
+		code_end_marker("XML");
     end
 	    
 	printnl("};");	
