@@ -373,7 +373,7 @@ status_t CDirMgr::CreateDirSuper(CMem *dir)
         char str[2];
         str[0] = GetPathSplitor();
         str[1] = 0;
-		if(i > 0)path.StrCat(str);
+        if(i > 0)path.StrCat(str);
         path.StrCat(&buf);
         if(!IsDirExist(&path))
         {
