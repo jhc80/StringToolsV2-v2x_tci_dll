@@ -88,3 +88,18 @@ status_t CGlobals::StartWebServer()
     LOGI("start websocket server on port %d",port);
     return OK;
 }
+##################################################
+BEGIN_MINI_TASK(recv_task)
+{
+	CTaskNProxy *self = NULL;
+	status_t Run(uint32_t interval)
+	{
+		return OK;
+	}
+}
+END_MINI_TASK(recv_task);
+
+recv_task->Init(GetTaskMgr());
+recv_task->self = this;
+recv_task->Start(1);    
+m_RecvMiniTask = recv_task->GetId();
