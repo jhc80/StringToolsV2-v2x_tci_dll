@@ -180,6 +180,11 @@ function do_put(thread,file_client,params)
 			end
 		end       			
 	end
+	
+	while file_client:GetSendingQueueLength() > 0 do            
+		thread:Sleep(100);
+	end
+	printfnl("push file %s success",local_file_name);
 end
 
 local function size_string(size)
