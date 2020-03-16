@@ -50,6 +50,7 @@ function parse_single_file(file)
 	end
 	
 	parse_xml(xml:GetRoot());
+	xml:Destroy();
 end
 
 function print_result()

@@ -11,11 +11,12 @@ static bool xmlnode_is_userdata_valid(lua_userdata *ud)
     if(ud->p == NULL)return false;
     if(ud->__weak_ref_id == 0) return false;
     CXmlNode *p = (CXmlNode*)ud->p;
+    CHECK_IS_UD_READABLE(CXmlNode,ud);
     return p->__weak_ref_id == ud->__weak_ref_id;
 }    
 
 bool is_xmlnode(lua_State *L, int idx)
-{        
+{
     const char* ud_names[] = {
         LUA_USERDATA_XMLNODE,
     };            

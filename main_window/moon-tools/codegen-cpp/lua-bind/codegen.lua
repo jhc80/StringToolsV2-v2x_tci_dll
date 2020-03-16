@@ -262,11 +262,13 @@ function code_is_userdata_valid(idl_class)
             if(ud == NULL)return false;
             if(ud->p == NULL)return false;
             if(ud->__weak_ref_id == 0) return false;
+            CHECK_IS_UD_READABLE(%s,ud);
             %s *p = (%s*)ud->p;
             return p->__weak_ref_id == ud->__weak_ref_id;
         }    
     ]],8),
         string.lower(idl_class.name),
+		c_class_name(idl_class.name),
         c_class_name(idl_class.name),c_class_name(idl_class.name)
     );
 end
