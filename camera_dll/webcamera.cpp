@@ -160,7 +160,7 @@ CWebCamera::~CWebCamera()
 }
 status_t CWebCamera::InitBasic()
 {
-    WEAK_REF_ID_CLEAR();
+    WEAK_REF_CLEAR();
 	this->mGraphBuilder = NULL;
 	this->mCaptureGraphBuilder = NULL;
 	this->mBaseFilter = NULL;
@@ -177,7 +177,6 @@ status_t CWebCamera::InitBasic()
 status_t CWebCamera::Init()
 {
 	this->InitBasic();
-    WEAK_REF_ID_INIT();
 
 	HRESULT hr;
 	
@@ -222,6 +221,7 @@ status_t CWebCamera::Init()
 
 status_t CWebCamera::Destroy()
 {
+	WEAK_REF_DESTROY();
 	if(this->mMediaControl)
 	{
 		this->mMediaControl->Stop();

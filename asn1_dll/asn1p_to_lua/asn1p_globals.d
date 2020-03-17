@@ -1,6 +1,6 @@
 asn1p_globals.o: asn1p_to_lua/asn1p_globals.c \
  asn1p_to_lua/asn1p_globals.h common/syslog.h common/cruntime.h config.h \
- asn1_config.h platform/crt_win32.h common/mem_tool.h \
+ asn1_config.h platform/crt_win32.h common/weak_ref.h common/mem_tool.h \
  asn1p_to_lua/asn1p_to_lua_common.h libasn1common/asn1_common.h \
  libasn1fix/asn1fix.h libasn1parser/asn1parser.h libasn1common/asn1_ref.h \
  libasn1common/asn1_buffer.h libasn1common/asn1_namespace.h \

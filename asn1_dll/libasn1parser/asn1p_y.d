@@ -7,4 +7,4 @@ asn1p_y.o: libasn1parser/asn1p_y.c libasn1parser/asn1parser.h config.h \
  libasn1parser/asn1p_xports.h libasn1parser/asn1p_class.h \
  libasn1parser/asn1p_expr.h libasn1parser/asn1p_expr_str.h \
  libasn1parser/asn1p_expr2uclass.h my_fprintf.h common/syslog.h \
- common/cruntime.h platform/crt_win32.h
+ common/cruntime.h platform/crt_win32.h common/weak_ref.h

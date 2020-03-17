@@ -1,8 +1,9 @@
 asn1p_to_lua.o: asn1p_to_lua.c asn1p_to_lua.h common/cruntime.h config.h \
- asn1_config.h platform/crt_win32.h asn1p_to_lua/asn1p_globals.h \
- common/syslog.h common/cruntime.h common/mem_tool.h \
- asn1p_to_lua/asn1p_to_lua_common.h libasn1common/asn1_common.h \
- libasn1fix/asn1fix.h libasn1parser/asn1parser.h libasn1common/asn1_ref.h \
+ asn1_config.h platform/crt_win32.h common/weak_ref.h \
+ asn1p_to_lua/asn1p_globals.h common/syslog.h common/cruntime.h \
+ common/mem_tool.h asn1p_to_lua/asn1p_to_lua_common.h \
+ libasn1common/asn1_common.h libasn1fix/asn1fix.h \
+ libasn1parser/asn1parser.h libasn1common/asn1_ref.h \
  libasn1common/asn1_buffer.h libasn1common/asn1_namespace.h \
  libasn1parser/asn1p_integer.h libasn1parser/asn1p_list.h \
  libasn1parser/asn1p_oid.h libasn1parser/asn1p_module.h \

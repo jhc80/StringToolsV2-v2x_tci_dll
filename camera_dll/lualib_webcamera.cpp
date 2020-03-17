@@ -8,80 +8,36 @@ status_t CreateHiddenCameraHostWindow();
 status_t DestroyHiddenCameraHostWindow();
 CWnd* GetHiddenCameraHostWindow();
 
-static bool webcamera_is_userdata_valid(lua_userdata *ud)
-{
-	if(ud == NULL)return false;
-	if(ud->p == NULL)return false;
-	if(ud->__weak_ref_id == 0) return false;
-	CWebCamera *p = (CWebCamera*)ud->p;
-	return p->__weak_ref_id == ud->__weak_ref_id;
-}
+LUA_IS_VALID_USER_DATA_FUNC(CWebCamera,webcamera)
+LUA_GET_OBJ_FROM_USER_DATA_FUNC(CWebCamera,webcamera)
+LUA_NEW_USER_DATA_FUNC(CWebCamera,webcamera,WEBCAMERA)
+LUA_GC_FUNC(CWebCamera,webcamera)
+LUA_IS_SAME_FUNC(CWebCamera,webcamera)
+LUA_TO_STRING_FUNC(CWebCamera,webcamera)
+
 bool is_webcamera(lua_State *L, int idx)
-{
-	lua_userdata *ud = (lua_userdata*)luaL_testudata(L, idx, LUA_USERDATA_WEBCAMERA);
-	return webcamera_is_userdata_valid(ud);
-}
-CWebCamera *get_webcamera(lua_State *L, int idx)
-{
-	lua_userdata *ud = (lua_userdata*)luaL_checkudata(L, idx, LUA_USERDATA_WEBCAMERA);
-	ASSERT(ud && ud->p);
-	ASSERT(ud->__weak_ref_id != 0);
-	CWebCamera *p = (CWebCamera*)ud->p;
-	ASSERT(p->__weak_ref_id == ud->__weak_ref_id);
-	return p;
-}
-lua_userdata *webcamera_new_userdata(lua_State *L,CWebCamera *pt,int is_weak)
-{
-	lua_userdata *ud = (lua_userdata*)lua_newuserdata(L,sizeof(lua_userdata));
-	ASSERT(ud && pt);
-	ud->p = pt;
-	ud->is_attached = is_weak;
-	ud->__weak_ref_id = pt->__weak_ref_id;
-	luaL_getmetatable(L,LUA_USERDATA_WEBCAMERA);
-	lua_setmetatable(L,-2);
-	return ud;
-}
-
-static int webcamera_new(lua_State *L)
-{
-	CWebCamera *pt;
-	NEW(pt,CWebCamera);
-	pt->Init();
-	webcamera_new_userdata(L,pt,0);
-	return 1;
-}
-
-static int webcamera_destroy(lua_State *L)
-{
-	lua_userdata *ud = (lua_userdata*)luaL_checkudata(L, 1, LUA_USERDATA_WEBCAMERA);
-	if(!webcamera_is_userdata_valid(ud))
-		return 0;
-	CWebCamera *pwebcamera = (CWebCamera*)ud->p;
-	if(!(ud->is_attached))
-	{
-		DEL(pwebcamera);
-	}
-	return 0;
-}
-static int webcamera_issame(lua_State *L)
-{
-	CWebCamera *pwebcamera1 = get_webcamera(L,1);
-	ASSERT(pwebcamera1);
-	CWebCamera *pwebcamera2 = get_webcamera(L,2);
-	ASSERT(pwebcamera2);
-	int is_same = (pwebcamera1==pwebcamera2);
-	lua_pushboolean(L,is_same);
-	return 1;
-}
-static int webcamera_tostring(lua_State *L)
-{
-	CWebCamera *pwebcamera = get_webcamera(L,1);
-	char buf[1024];
-	sprintf(buf,"userdata:webcamera:%p",pwebcamera);
-	lua_pushstring(L,buf);
-	return 1;
+{        
+    const char* ud_names[] = {
+        LUA_USERDATA_WEBCAMERA,
+    };            
+    lua_userdata *ud = NULL;
+    for(size_t i = 0; i < sizeof(ud_names)/sizeof(ud_names[0]); i++)
+    {
+        ud = (lua_userdata*)luaL_testudata(L, idx, ud_names[i]);
+        if(ud)break;
+    }
+    return webcamera_is_userdata_valid(ud);  
 }
 /****************************************/
+static int webcamera_new(lua_State *L)
+{
+    CWebCamera *pt;
+    NEW(pt,CWebCamera);
+    pt->Init();
+    webcamera_new_userdata(L,pt,0);
+    return 1;
+}
+
 static int webcamera_isvalid(lua_State *L)
 {
     CWebCamera *pwebcamera = get_webcamera(L,1);
@@ -193,10 +149,10 @@ static int webcamera_getalldevicenames(lua_State *L)
 	return 1;
 }
 static const luaL_Reg webcamera_lib[] = {
-	{"new",webcamera_new},
-	{"__gc",webcamera_destroy},
-	{"__tostring",webcamera_tostring},
-	{"IsSame",webcamera_issame},
+    {"__gc",webcamera_gc_},
+    {"__tostring",webcamera_tostring_},
+    {"__is_same",webcamera_issame_},
+    {"new",webcamera_new},
 	{"IsValid",webcamera_isvalid},
 	{"SetVideoWindowVisible",webcamera_setvideowindowvisible},
 	{"Stop",webcamera_stop},

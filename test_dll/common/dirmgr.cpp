@@ -8,7 +8,7 @@
 #include "syslog.h"
 #include "mem_tool.h"
 
-#define _MAX_PATH_ (LBUF_SIZE*2)
+#define _MAX_PATH_ (1024)
 
 //////////////////////////////////////////////////////////////////////
 #if _ASC_
@@ -141,6 +141,7 @@ status_t CDirMgr::SearchDir_Interruptable(CMem *dir, bool recursive, CClosure *c
         );
         return ERROR;
     }
+
     while(crt_read_dir(p))
     {
         if(running && !(*running))break;
@@ -311,6 +312,7 @@ status_t CDirMgr::IsDirExist(CMem *dir)
 
     return FALSE;
 }
+
 status_t CDirMgr::IsFileExist(CMem *file)
 {
     ASSERT(file);
@@ -321,6 +323,14 @@ status_t CDirMgr::IsFileExist(CMem *file)
     crt_fclose(fp);
     return TRUE;
 }
+
+status_t CDirMgr::IsFileExist(const char *fn)
+{
+    ASSERT(fn);
+    CMem mem(fn);
+    return IsFileExist(&mem);
+}
+
 char CDirMgr::GetPathSplitor()
 {
     return crt_get_path_splitor();
@@ -335,6 +345,13 @@ status_t CDirMgr::DeleteFile(CMem *filename)
     ASSERT(filename);
     return crt_unlink(filename->CStr());
 }
+
+status_t CDirMgr::DeleteFile(const char *filename)
+{
+    ASSERT(filename);
+    return crt_unlink(filename);
+}
+
 status_t CDirMgr::DeleteDir(CMem *dir)
 {
     ASSERT(dir);
@@ -373,7 +390,7 @@ status_t CDirMgr::CreateDirSuper(CMem *dir)
         char str[2];
         str[0] = GetPathSplitor();
         str[1] = 0;
-		if(i > 0)path.StrCat(str);
+        if(i > 0)path.StrCat(str);
         path.StrCat(&buf);
         if(!IsDirExist(&path))
         {

@@ -18,7 +18,7 @@ class CWndVideoCommand;
 
 class CWebCamera{
 public:
-    WEAK_REF_ID_DEFINE();
+    WEAK_REF_DEFINE();
 
 public:
 	enum{

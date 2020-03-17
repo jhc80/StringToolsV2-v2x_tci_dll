@@ -11,7 +11,7 @@ asn1p_expr_to_lua.o: asn1p_to_lua/asn1p_expr_to_lua.c \
  libasn1parser/asn1p_expr_str.h libasn1parser/asn1p_expr2uclass.h \
  libasn1fix/asn1fix_export.h libasn1fix/asn1fix_tags.h \
  asn1p_to_lua/to_lua_buf.h common/cruntime.h platform/crt_win32.h \
- asn1p_to_lua/asn1p_obj_map.h asn1p_to_lua/asn1p_obj.h \
+ common/weak_ref.h asn1p_to_lua/asn1p_obj_map.h asn1p_to_lua/asn1p_obj.h \
  asn1p_to_lua/asn1p_globals.h common/syslog.h common/cruntime.h \
  common/mem_tool.h asn1p_to_lua/asn1p_constraint_to_lua.h \
  asn1p_to_lua/asn1p_ioc_table_to_lua.h asn1p_to_lua/asn1p_oid_to_lua.h \
