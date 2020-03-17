@@ -5,16 +5,12 @@
 #include "syslog.h"
 #include "lualib_mem.h"
 #include "encoder.h"
-
-static bool luawindowbase_is_userdata_valid(lua_userdata *ud)
-{
-    if(ud == NULL)return false;
-    if(ud->p == NULL)return false;
-    if(ud->__weak_ref_id == 0) return false;
-    CHECK_IS_UD_READABLE(CLuaWindowBase,ud);
-    CLuaWindowBase *p = (CLuaWindowBase*)ud->p;
-    return p->__weak_ref_id == ud->__weak_ref_id;
-}    
+LUA_IS_VALID_USER_DATA_FUNC(CLuaWindowBase,luawindowbase)
+LUA_GET_OBJ_FROM_USER_DATA_FUNC(CLuaWindowBase,luawindowbase)
+LUA_NEW_USER_DATA_FUNC(CLuaWindowBase,luawindowbase,LUAWINDOWBASE)
+LUA_GC_FUNC(CLuaWindowBase,luawindowbase)
+LUA_IS_SAME_FUNC(CLuaWindowBase,luawindowbase)
+LUA_TO_STRING_FUNC(CLuaWindowBase,luawindowbase)
 
 bool is_luawindowbase(lua_State *L, int idx)
 {        
@@ -31,65 +27,6 @@ bool is_luawindowbase(lua_State *L, int idx)
     }
     return luawindowbase_is_userdata_valid(ud);  
 }
-
-CLuaWindowBase *get_luawindowbase(lua_State *L, int idx)
-{
-    lua_userdata *ud = NULL;
-    if(is_luawindowbase(L,idx))
-    {
-        ud = (lua_userdata*)lua_touserdata(L,idx);		
-    }
-    ASSERT(ud);
-    return (CLuaWindowBase *)ud->p;
-} 
-
-lua_userdata *luawindowbase_new_userdata(lua_State *L,CLuaWindowBase *pobj,int is_weak)
-{
-    lua_userdata *ud = (lua_userdata*)lua_newuserdata(L,sizeof(lua_userdata));
-    ASSERT(ud && pobj);
-    ud->p = pobj;
-    ud->is_attached = is_weak;
-    ud->__weak_ref_id = pobj->__weak_ref_id;
-    luaL_getmetatable(L,LUA_USERDATA_LUAWINDOWBASE);
-    lua_setmetatable(L,-2);
-    return ud;
-}
-
-static int luawindowbase_gc_(lua_State *L)
-{
-    if(!is_luawindowbase(L,1)) return 0;
-
-    lua_userdata *ud = (lua_userdata*)lua_touserdata(L,1);		
-    ASSERT(ud);
-
-    if(!(ud->is_attached))
-    {
-        CLuaWindowBase *pluawindowbase = (CLuaWindowBase*)ud->p;
-        DEL(pluawindowbase);
-    }
-    return 0;
-}
-
-static int luawindowbase_issame_(lua_State *L)
-{
-    CLuaWindowBase *pluawindowbase1 = get_luawindowbase(L,1);
-    ASSERT(pluawindowbase1);
-    CLuaWindowBase *pluawindowbase2 = get_luawindowbase(L,2);
-    ASSERT(pluawindowbase2);
-    int is_same = (pluawindowbase1==pluawindowbase2);
-    lua_pushboolean(L,is_same);
-    return 1;
-}
-
-static int luawindowbase_tostring_(lua_State *L)
-{
-    CLuaWindowBase *pluawindowbase = get_luawindowbase(L,1);
-    char buf[1024];
-    sprintf(buf,"userdata:luawindowbase:%p",pluawindowbase);
-    lua_pushstring(L,buf);
-    return 1;
-}
-
 /****************************************************/
 static status_t luawindowbase_destroy(lua_State *L)
 {

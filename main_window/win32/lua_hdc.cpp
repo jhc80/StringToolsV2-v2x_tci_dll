@@ -14,7 +14,7 @@ CLuaHdc::~CLuaHdc()
 
 status_t CLuaHdc::InitBasic()
 {
-    WEAK_REF_ID_CLEAR();
+    WEAK_REF_CLEAR();
     hdc = NULL;
     hwnd = NULL;
     return OK;
@@ -23,12 +23,13 @@ status_t CLuaHdc::InitBasic()
 status_t CLuaHdc::Init()
 {
     this->InitBasic();
-    WEAK_REF_ID_INIT();
+    
     return OK;
 }
 
 status_t CLuaHdc::Destroy()
 {
+    WEAK_REF_DESTROY();
     if(hdc)
     {
         ::ReleaseDC(hwnd,hdc);

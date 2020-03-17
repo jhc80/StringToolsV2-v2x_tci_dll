@@ -3,15 +3,12 @@
 #include "syslog.h"
 #include "lualib_luawindowbase.h"
 
-static bool luaeditbox_is_userdata_valid(lua_userdata *ud)
-{
-    if(ud == NULL)return false;
-    if(ud->p == NULL)return false;
-    if(ud->__weak_ref_id == 0) return false;
-    CHECK_IS_UD_READABLE(CLuaEditBox,ud);
-    CLuaEditBox *p = (CLuaEditBox*)ud->p;
-    return p->__weak_ref_id == ud->__weak_ref_id;
-}    
+LUA_IS_VALID_USER_DATA_FUNC(CLuaEditBox,luaeditbox)
+LUA_GET_OBJ_FROM_USER_DATA_FUNC(CLuaEditBox,luaeditbox)
+LUA_NEW_USER_DATA_FUNC(CLuaEditBox,luaeditbox,LUAEDITBOX)
+LUA_GC_FUNC(CLuaEditBox,luaeditbox)
+LUA_IS_SAME_FUNC(CLuaEditBox,luaeditbox)
+LUA_TO_STRING_FUNC(CLuaEditBox,luaeditbox)
 
 bool is_luaeditbox(lua_State *L, int idx)
 {        
@@ -19,72 +16,13 @@ bool is_luaeditbox(lua_State *L, int idx)
         LUA_USERDATA_LUAEDITBOX,
     };            
     lua_userdata *ud = NULL;
-    for(int i = 0; i < sizeof(ud_names)/sizeof(ud_names[0]); i++)
+    for(size_t i = 0; i < sizeof(ud_names)/sizeof(ud_names[0]); i++)
     {
         ud = (lua_userdata*)luaL_testudata(L, idx, ud_names[i]);
         if(ud)break;
     }
     return luaeditbox_is_userdata_valid(ud);  
 }
-
-CLuaEditBox *get_luaeditbox(lua_State *L, int idx)
-{
-    lua_userdata *ud = NULL;
-    if(is_luaeditbox(L,idx))
-    {
-        ud = (lua_userdata*)lua_touserdata(L,idx);		
-    }
-    ASSERT(ud);
-    return (CLuaEditBox *)ud->p;
-} 
-
-lua_userdata *luaeditbox_new_userdata(lua_State *L,CLuaEditBox *pobj,int is_weak)
-{
-    lua_userdata *ud = (lua_userdata*)lua_newuserdata(L,sizeof(lua_userdata));
-    ASSERT(ud && pobj);
-    ud->p = pobj;
-    ud->is_attached = is_weak;
-    ud->__weak_ref_id = pobj->__weak_ref_id;
-    luaL_getmetatable(L,LUA_USERDATA_LUAEDITBOX);
-    lua_setmetatable(L,-2);
-    return ud;
-}
-
-static int luaeditbox_gc_(lua_State *L)
-{
-    if(!is_luaeditbox(L,1)) return 0;
-
-    lua_userdata *ud = (lua_userdata*)lua_touserdata(L,1);		
-    ASSERT(ud);
-
-    if(!(ud->is_attached))
-    {
-        CLuaEditBox *pluaeditbox = (CLuaEditBox*)ud->p;
-        DEL(pluaeditbox);
-    }
-    return 0;
-}
-
-static int luaeditbox_issame_(lua_State *L)
-{
-    CLuaEditBox *pluaeditbox1 = get_luaeditbox(L,1);
-    ASSERT(pluaeditbox1);
-    CLuaEditBox *pluaeditbox2 = get_luaeditbox(L,2);
-    ASSERT(pluaeditbox2);
-    int is_same = (pluaeditbox1==pluaeditbox2);
-    lua_pushboolean(L,is_same);
-    return 1;
-}
-
-static int luaeditbox_tostring_(lua_State *L)
-{
-    CLuaEditBox *pluaeditbox = get_luaeditbox(L,1);
-    char buf[1024];
-    sprintf(buf,"userdata:luaeditbox:%p",pluaeditbox);
-    lua_pushstring(L,buf);
-    return 1;
-}
-
 /****************************************************/
 static status_t luaeditbox_new(lua_State *L)
 {

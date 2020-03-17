@@ -10,15 +10,12 @@ static status_t memdc_drawrect_v2(lua_State *L);
 static status_t memdc_drawrect_v3(lua_State *L);
 static status_t memdc_drawrect_v4(lua_State *L);
 
-static bool memdc_is_userdata_valid(lua_userdata *ud)
-{
-    if(ud == NULL)return false;
-    if(ud->p == NULL)return false;
-    if(ud->__weak_ref_id == 0) return false;
-    CHECK_IS_UD_READABLE(CMemDC,ud);
-    CMemDC *p = (CMemDC*)ud->p;
-    return p->__weak_ref_id == ud->__weak_ref_id;
-}    
+LUA_IS_VALID_USER_DATA_FUNC(CMemDC,memdc)
+LUA_GET_OBJ_FROM_USER_DATA_FUNC(CMemDC,memdc)
+LUA_NEW_USER_DATA_FUNC(CMemDC,memdc,MEMDC)
+LUA_GC_FUNC(CMemDC,memdc)
+LUA_IS_SAME_FUNC(CMemDC,memdc)
+LUA_TO_STRING_FUNC(CMemDC,memdc)
 
 bool is_memdc(lua_State *L, int idx)
 {        
@@ -33,65 +30,6 @@ bool is_memdc(lua_State *L, int idx)
     }
     return memdc_is_userdata_valid(ud);  
 }
-
-CMemDC *get_memdc(lua_State *L, int idx)
-{
-    lua_userdata *ud = NULL;
-    if(is_memdc(L,idx))
-    {
-        ud = (lua_userdata*)lua_touserdata(L,idx);		
-    }
-    ASSERT(ud);
-    return (CMemDC *)ud->p;
-} 
-
-lua_userdata *memdc_new_userdata(lua_State *L,CMemDC *pobj,int is_weak)
-{
-    lua_userdata *ud = (lua_userdata*)lua_newuserdata(L,sizeof(lua_userdata));
-    ASSERT(ud && pobj);
-    ud->p = pobj;
-    ud->is_attached = is_weak;
-    ud->__weak_ref_id = pobj->__weak_ref_id;
-    luaL_getmetatable(L,LUA_USERDATA_MEMDC);
-    lua_setmetatable(L,-2);
-    return ud;
-}
-
-static int memdc_gc_(lua_State *L)
-{
-    if(!is_memdc(L,1)) return 0;
-
-    lua_userdata *ud = (lua_userdata*)lua_touserdata(L,1);		
-    ASSERT(ud);
-
-    if(!(ud->is_attached))
-    {
-        CMemDC *pmemdc = (CMemDC*)ud->p;
-        DEL(pmemdc);
-    }
-    return 0;
-}
-
-static int memdc_issame_(lua_State *L)
-{
-    CMemDC *pmemdc1 = get_memdc(L,1);
-    ASSERT(pmemdc1);
-    CMemDC *pmemdc2 = get_memdc(L,2);
-    ASSERT(pmemdc2);
-    int is_same = (pmemdc1==pmemdc2);
-    lua_pushboolean(L,is_same);
-    return 1;
-}
-
-static int memdc_tostring_(lua_State *L)
-{
-    CMemDC *pmemdc = get_memdc(L,1);
-    char buf[1024];
-    sprintf(buf,"userdata:memdc:%p",pmemdc);
-    lua_pushstring(L,buf);
-    return 1;
-}
-
 /****************************************************/
 static status_t memdc_new(lua_State *L)
 {

@@ -22,7 +22,7 @@ typedef struct{
 
 class CLexer{
 public:
-	WEAK_REF_ID_DEFINE();
+	WEAK_REF_DEFINE();
 
 	enum{
 		TOKEN_UNKNOWN = 0,

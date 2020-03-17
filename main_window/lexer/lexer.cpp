@@ -12,7 +12,7 @@ CLexer::~CLexer()
 }
 status_t CLexer::InitBasic()
 {
-	WEAK_REF_ID_CLEAR();
+	WEAK_REF_CLEAR();
 	i_SrcFile = NULL;
 	m_TmpFile.InitBasic();
 	m_CurLine = 0;
@@ -24,11 +24,12 @@ status_t CLexer::InitBasic()
 status_t CLexer::Init()
 {
 	this->InitBasic();
-	WEAK_REF_ID_INIT();
+	
 	return OK;
 }
 status_t CLexer::Destroy()
 {
+    WEAK_REF_DESTROY();
 	m_TmpFile.Destroy();
 	this->InitBasic();
 	return OK;

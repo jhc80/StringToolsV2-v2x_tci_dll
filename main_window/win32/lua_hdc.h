@@ -6,7 +6,7 @@
 
 class CLuaHdc{
 public:
-    WEAK_REF_ID_DEFINE();
+    WEAK_REF_DEFINE();
 public:
     HWND hwnd;
     HDC hdc;

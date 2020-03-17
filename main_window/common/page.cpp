@@ -13,7 +13,7 @@ CPage::~CPage()
 }
 status_t CPage::InitBasic()
 {
-	WEAK_REF_ID_CLEAR();
+	WEAK_REF_CLEAR();
 	CWnd::InitBasic();
 	this->m_Name.InitBasic();
 	this->m_VirtualWidth = 0;
@@ -25,7 +25,6 @@ status_t CPage::InitBasic()
 status_t CPage::Init()
 {
 	this->InitBasic();
-	WEAK_REF_ID_INIT();
 	CWnd::Init();	
 	this->m_Name.Init();
 	return OK;

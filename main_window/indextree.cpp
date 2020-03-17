@@ -24,6 +24,12 @@ status_t CIndexTree::Init()
 }
 status_t CIndexTree::Destroy()
 {
+    if(m_Root)
+    {
+        CIndexTreeNode::Free(m_Root);
+        m_Root = NULL;
+    }
+    
 	this->InitBasic();
 	return OK;
 }

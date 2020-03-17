@@ -8,8 +8,6 @@
 
 class CPage:public CWnd{
 public:
-	WEAK_REF_ID_DEFINE();
-public:
 	CMem m_Name;
 	int m_VirtualWidth;
 	int m_VirtualHeight;

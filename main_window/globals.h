@@ -7,7 +7,7 @@
 #include "mainform.h"
 #include "pagetext.h"
 #include "pageimage.h"
-#include "weakptr.h"
+#include "weak_pointer.h"
 #include "luavm.h"
 #include "indextree.h"
 #include "wndproperty.h"
@@ -27,8 +27,8 @@ public:
 	CWndSearch m_WndSearch;
 	CTaskMgr m_TaskMgr;
 	bool m_MainLoopRunning;
-	CWeakPtr<CPageText> i_PageText;
-    CWeakPtr<CPageImage> i_PageImage;
+	CWeakPointer<CPageText> i_PageText;
+    CWeakPointer<CPageImage> i_PageImage;
 	uint32_t m_Flags;
 	int m_TaskAutoLuaGc;
     CIndexTree m_IndexTree;

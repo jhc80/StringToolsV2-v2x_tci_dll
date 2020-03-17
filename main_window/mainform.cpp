@@ -347,6 +347,10 @@ int CMainForm::Destroy()
     DEL(this->mitem_r_help);
     DEL(this->mitem_r_open_folder);
     //////////////////////
+    DEL(mitem_text_window);
+    DEL(mitem_image_window);
+    DEL(menu_view);
+    //////////////////////
 	CWnd::Destroy();
     this->InitBasic();
 	PostQuitMessage(0);

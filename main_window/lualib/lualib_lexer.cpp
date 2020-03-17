@@ -5,15 +5,13 @@
 #include "mem_tool.h"
 #include "syslog.h"
 
-static bool lexer_is_userdata_valid(lua_userdata *ud)
-{
-    if(ud == NULL)return false;
-    if(ud->p == NULL)return false;
-    if(ud->__weak_ref_id == 0) return false;
-    CHECK_IS_UD_READABLE(CLexer,ud);
-    CLexer *p = (CLexer*)ud->p;
-    return p->__weak_ref_id == ud->__weak_ref_id;
-}    
+LUA_IS_VALID_USER_DATA_FUNC(CLexer,lexer)
+LUA_GET_OBJ_FROM_USER_DATA_FUNC(CLexer,lexer)
+LUA_NEW_USER_DATA_FUNC(CLexer,lexer,LEXER)
+LUA_GC_FUNC(CLexer,lexer)
+LUA_IS_SAME_FUNC(CLexer,lexer)
+LUA_TO_STRING_FUNC(CLexer,lexer)
+
 
 bool is_lexer(lua_State *L, int idx)
 {        
@@ -31,63 +29,6 @@ bool is_lexer(lua_State *L, int idx)
     return lexer_is_userdata_valid(ud);  
 }
 
-CLexer *get_lexer(lua_State *L, int idx)
-{
-    lua_userdata *ud = NULL;
-    if(is_lexer(L,idx))
-    {
-        ud = (lua_userdata*)lua_touserdata(L,idx);		
-    }
-    ASSERT(ud);
-    return (CLexer *)ud->p;
-} 
-
-lua_userdata *lexer_new_userdata(lua_State *L,CLexer *pobj,int is_weak)
-{
-    lua_userdata *ud = (lua_userdata*)lua_newuserdata(L,sizeof(lua_userdata));
-    ASSERT(ud && pobj);
-    ud->p = pobj;
-    ud->is_attached = is_weak;
-    ud->__weak_ref_id = pobj->__weak_ref_id;
-    luaL_getmetatable(L,LUA_USERDATA_LEXER);
-    lua_setmetatable(L,-2);
-    return ud;
-}
-
-static int lexer_gc_(lua_State *L)
-{
-    if(!is_lexer(L,1)) return 0;
-
-    lua_userdata *ud = (lua_userdata*)lua_touserdata(L,1);		
-    ASSERT(ud);
-
-    if(!(ud->is_attached))
-    {
-        CLexer *plexer = (CLexer*)ud->p;
-        DEL(plexer);
-    }
-    return 0;
-}
-
-static int lexer_issame_(lua_State *L)
-{
-    CLexer *plexer1 = get_lexer(L,1);
-    ASSERT(plexer1);
-    CLexer *plexer2 = get_lexer(L,2);
-    ASSERT(plexer2);
-    int is_same = (plexer1==plexer2);
-    lua_pushboolean(L,is_same);
-    return 1;
-}
-
-static int lexer_tostring_(lua_State *L)
-{
-    CLexer *plexer = get_lexer(L,1);
-    char buf[1024];
-    sprintf(buf,"userdata:lexer:%p",plexer);
-    lua_pushstring(L,buf);
-    return 1;
-}
 /****************************************/
 static status_t lexer_new(lua_State *L)
 {
@@ -254,7 +195,7 @@ static const luaL_Reg lexer_lib[] = {
 	{"new",lexer_new},
 	{"__gc",lexer_gc_},
 	{"__tostring",lexer_tostring_},
-	{"IsSame",lexer_issame_},
+	{"__is_same",lexer_issame_},
 	{"ReportError",lexer_reporterror},
 	{"Reset",lexer_reset},
 	{"ReadWord",lexer_readword},

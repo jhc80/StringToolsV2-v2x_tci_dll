@@ -32,6 +32,7 @@ status_t CIndexTreeNode::Init()
     m_Config.Init();
 	return OK;
 }
+
 status_t CIndexTreeNode::Destroy()
 {
     m_Config.Destroy();
@@ -189,7 +190,6 @@ status_t CIndexTreeNode::LoadMainCode(CFileBase *code)
     return code->LoadFile(path.CStr());
 }
 
-
 status_t CIndexTreeNode::SaveUserCode_Unicode(CFileBase *file)
 {
     ASSERT(file);
@@ -249,5 +249,25 @@ status_t CIndexTreeNode::GetHelpFile(CMem *path)
     path->Puts(this->GetPath());
     path->Putc(crt_get_path_splitor());
     path->Puts("readme.txt");
+    return OK;
+}
+status_t CIndexTreeNode::Free(CIndexTreeNode *node)
+{
+    CIndexTreeNode *p , *q;
+    
+    if(node == NULL)
+        return OK;
+    
+    p = node->child;
+    if( p ) q = p->next;
+    while(p)
+    {
+        CIndexTreeNode::Free(p);
+        p = q;
+        if(q != NULL)
+            q = q->next;
+    }
+    node->Destroy();
+    DEL( node );
     return OK;
 }

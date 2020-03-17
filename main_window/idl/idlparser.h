@@ -12,7 +12,7 @@
 
 class CIdlParser{
 public:
-    WEAK_REF_ID_DEFINE();
+    WEAK_REF_DEFINE();
 public:
 	CIdlLexer m_Lexer;
     CMemFile m_UncertainError;

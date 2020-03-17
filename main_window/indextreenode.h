@@ -47,6 +47,7 @@ public:
 	const char* GetPathStr();
 	status_t SetName(const char *_name);
 	status_t SetPath(const char *_path);
+    static status_t Free(CIndexTreeNode *node);
 };
 
 #endif

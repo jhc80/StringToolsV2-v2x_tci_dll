@@ -3,81 +3,36 @@
 #include "mem_tool.h"
 #include "syslog.h"
 
-static bool idlparser_is_userdata_valid(lua_userdata *ud)
-{
-	if(ud == NULL)return false;
-	if(ud->p == NULL)return false;
-	if(ud->__weak_ref_id == 0) return false;
-    CHECK_IS_UD_READABLE(CIdlParser,ud);
-	CIdlParser *p = (CIdlParser*)ud->p;
-	return p->__weak_ref_id == ud->__weak_ref_id;
-}
+LUA_IS_VALID_USER_DATA_FUNC(CIdlParser,idlparser)
+LUA_GET_OBJ_FROM_USER_DATA_FUNC(CIdlParser,idlparser)
+LUA_NEW_USER_DATA_FUNC(CIdlParser,idlparser,IDLPARSER)
+LUA_GC_FUNC(CIdlParser,idlparser)
+LUA_IS_SAME_FUNC(CIdlParser,idlparser)
+LUA_TO_STRING_FUNC(CIdlParser,idlparser)
+
 bool is_idlparser(lua_State *L, int idx)
-{
-	lua_userdata *ud = (lua_userdata*)luaL_testudata(L, idx, LUA_USERDATA_IDLPARSER);
-	return idlparser_is_userdata_valid(ud);
-}
-CIdlParser *get_idlparser(lua_State *L, int idx)
-{
-	lua_userdata *ud = (lua_userdata*)luaL_checkudata(L, idx, LUA_USERDATA_IDLPARSER);
-	ASSERT(ud && ud->p);
-	ASSERT(ud->__weak_ref_id != 0);
-	CIdlParser *p = (CIdlParser*)ud->p;
-	ASSERT(p->__weak_ref_id == ud->__weak_ref_id);
-	return p;
-}
-lua_userdata *idlparser_new_userdata(lua_State *L,CIdlParser *pt,int is_weak)
-{
-	lua_userdata *ud = (lua_userdata*)lua_newuserdata(L,sizeof(lua_userdata));
-	ASSERT(ud && pt);
-	ud->p = pt;
-	ud->is_attached = is_weak;
-	ud->__weak_ref_id = pt->__weak_ref_id;
-	luaL_getmetatable(L,LUA_USERDATA_IDLPARSER);
-	lua_setmetatable(L,-2);
-	return ud;
-}
-
-static int idlparser_new(lua_State *L)
-{
-	CIdlParser *pt;
-	NEW(pt,CIdlParser);
-	pt->Init();
-	idlparser_new_userdata(L,pt,0);
-	return 1;
-}
-
-static int idlparser_destroy(lua_State *L)
-{
-	lua_userdata *ud = (lua_userdata*)luaL_checkudata(L, 1, LUA_USERDATA_IDLPARSER);
-	if(!idlparser_is_userdata_valid(ud))
-		return 0;
-	CIdlParser *pidlparser = (CIdlParser*)ud->p;
-	if(!(ud->is_attached))
-	{
-		DEL(pidlparser);
-	}
-	return 0;
-}
-static int idlparser_issame(lua_State *L)
-{
-	CIdlParser *pidlparser1 = get_idlparser(L,1);
-	ASSERT(pidlparser1);
-	CIdlParser *pidlparser2 = get_idlparser(L,2);
-	ASSERT(pidlparser2);
-	int is_same = (pidlparser1==pidlparser2);
-	lua_pushboolean(L,is_same);
-	return 1;
-}
-static int idlparser_tostring(lua_State *L)
-{
-	CIdlParser *pidlparser = get_idlparser(L,1);
-	char buf[1024];
-	sprintf(buf,"userdata:idlparser:%p",pidlparser);
-	lua_pushstring(L,buf);
-	return 1;
+{        
+    const char* ud_names[] = {
+        LUA_USERDATA_IDLPARSER,
+    };            
+    lua_userdata *ud = NULL;
+    for(size_t i = 0; i < sizeof(ud_names)/sizeof(ud_names[0]); i++)
+    {
+        ud = (lua_userdata*)luaL_testudata(L, idx, ud_names[i]);
+        if(ud)break;
+    }
+    return idlparser_is_userdata_valid(ud);  
 }
 /****************************************/
+static status_t idlparser_new(lua_State *L)
+{
+    CIdlParser *pidlparser;
+    NEW(pidlparser,CIdlParser);
+    pidlparser->Init();
+    idlparser_new_userdata(L,pidlparser,0);
+    return 1;
+}
+
 static int idlparser_getuncertainerrors(lua_State *L)
 {
 	CIdlParser *pidlparser = get_idlparser(L,1);
@@ -183,10 +138,11 @@ static int idlparser_loadsourcefromfile(lua_State *L)
 }
 
 static const luaL_Reg idlparser_lib[] = {
-	{"new",idlparser_new},
-	{"__gc",idlparser_destroy},
-	{"__tostring",idlparser_tostring},
-	{"IsSame",idlparser_issame},
+    {"__gc",idlparser_gc_},
+    {"__tostring",idlparser_tostring_},
+    {"__is_same",idlparser_issame_},
+    {"new",idlparser_new},
+
 	{"GetUncertainErrors",idlparser_getuncertainerrors},
 	{"GetCertainErrors",idlparser_getcertainerrors},
 	{"HasErrors",idlparser_haserrors},

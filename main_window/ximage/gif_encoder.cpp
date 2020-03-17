@@ -15,7 +15,7 @@ CGifEncoder::~CGifEncoder()
 
 status_t CGifEncoder::InitBasic()
 {
-    WEAK_REF_ID_CLEAR();
+    WEAK_REF_CLEAR();
     this->m_Loops = 0;
     this->m_LocalDispMeth = 0;
     this->m_LocalColorMap = 0;
@@ -30,13 +30,14 @@ status_t CGifEncoder::InitBasic()
 status_t CGifEncoder::Init()
 {
     this->InitBasic();
-    WEAK_REF_ID_INIT();
+    
     this->m_TmpFile.Init();
     return OK;
 }
 
 status_t CGifEncoder::Destroy()
 {
+    WEAK_REF_DESTROY();
     this->m_TmpFile.Destroy();
     this->InitBasic();
     return OK;

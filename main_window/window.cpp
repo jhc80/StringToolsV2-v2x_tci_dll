@@ -83,11 +83,15 @@ int APIENTRY WinMain(HINSTANCE hInstance,
                      LPTSTR     lpCmdLine,
                      int       nCmdShow)
 {
+#if _DEBUG_
+    Mem_Tool_Init("z:\\tmp\\leak.txt");
+#endif
 	INITCOMMONCONTROLSEX InitCtrls;
 	InitCtrls.dwSize = sizeof(INITCOMMONCONTROLSEX);
 	InitCtrls.dwICC = ICC_LISTVIEW_CLASSES | ICC_TREEVIEW_CLASSES | ICC_UPDOWN_CLASS | ICC_DATE_CLASSES;
     __hinstance = hInstance;
 	InitCommonControlsEx(&InitCtrls);
+
 	/////////////////////
 	syslog_set_puts_handler(_sys_log_puts);	
 	ASSERT(SUCCEEDED(CoInitialize(NULL)));
@@ -95,6 +99,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	g_globals.Init();
 	g_globals.MainLoop();
 	g_globals.Destroy();
+#if _DEBUG_
+    Mem_Tool_Destroy();
+#endif
 	/////////////////////
 	::MessageBeep(MB_ICONEXCLAMATION);
 	return 0;

@@ -13,7 +13,7 @@ CIdlParser::~CIdlParser()
 }
 status_t CIdlParser::InitBasic()
 {
-    WEAK_REF_ID_CLEAR();
+    WEAK_REF_CLEAR();
 	this->m_Lexer.InitBasic();
     m_UncertainError.InitBasic();
     m_CertainError.InitBasic();
@@ -22,7 +22,7 @@ status_t CIdlParser::InitBasic()
 status_t CIdlParser::Init()
 {
 	this->InitBasic();
-    WEAK_REF_ID_INIT();
+    
 	this->m_Lexer.Init();
     this->m_UncertainError.Init();
     m_CertainError.Init();
@@ -30,6 +30,7 @@ status_t CIdlParser::Init()
 }
 status_t CIdlParser::Destroy()
 {
+    WEAK_REF_DESTROY();
     m_CertainError.Destroy();
     m_UncertainError.Destroy();
 	this->m_Lexer.Destroy();

@@ -48,7 +48,8 @@ status_t CLuaButton::Create()
     }
     END_NEW_CLOSURE(on_main_thread);
     
-    on_main_thread->SetParamWeakPointer(10,this,__weak_ref_id);    
+	CWeakPointer<CLuaButton> wp(this);
+    on_main_thread->SetParamWeakPointer(10,&wp);    
 
     static int run_end = 0;
     run_end = 0;
