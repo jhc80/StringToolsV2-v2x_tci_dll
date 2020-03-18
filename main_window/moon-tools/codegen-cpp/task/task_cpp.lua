@@ -28,7 +28,6 @@ function code_cpp(names)
     printfnl("}");
     printfnl("status_t %s::Init(CTaskMgr *mgr)",names.c_class_name);
     printfnl("{");
-    printfnl("    this->Destroy();");
     printfnl("    CTask::Init(mgr);");
     printfnl("    this->m_Callback.Init();");
     printfnl("    return OK;");
