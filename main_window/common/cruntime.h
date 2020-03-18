@@ -56,9 +56,9 @@
 
 #include "weak_ref.h"
 ////////////////////////////////////////////////////////////
-#define C_WEAK_REF_DEFINE() int __weak_ref_id
-#define C_WEAK_REF_CLEAR(self) self->__weak_ref_id = 0
-#define C_WEAK_REF_CREATE(self)  self->__weak_ref_id = crt_get_unique_id()
+#define C_WEAK_REF_ID_DEFINE() int __weak_ref_id
+#define C_WEAK_REF_ID_CLEAR(self) self->__weak_ref_id = 0
+#define C_WEAK_REF_ID_INIT(self)  self->__weak_ref_id = crt_get_unique_id()
 ////////////////////////////////////////////////////////////
 
 #define CLEAR_BITS(v,bits) v &= ~(bits)

@@ -4,7 +4,7 @@
 #include "closure.h"
 #include "mem_tool.h"
 #include "syslog.h"
-#include "notepad.h"
+
 
 #define CALLBACK_INDEX 15
 

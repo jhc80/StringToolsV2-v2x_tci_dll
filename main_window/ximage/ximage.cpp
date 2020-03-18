@@ -5877,8 +5877,6 @@ BOOL CxImage::Edge(long Ksize)
     return TRUE;
 }
 
-
-
 void CxImage::Mix(CxImage & imgsrc2, ImageOpType op, long lXOffset, long lYOffset, BOOL bMixAlpha)
 {
     long lWide = min(GetWidth(),imgsrc2.GetWidth()-lXOffset);
