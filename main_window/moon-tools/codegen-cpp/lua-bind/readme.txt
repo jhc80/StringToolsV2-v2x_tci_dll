@@ -2,6 +2,7 @@ lua的绑定支持继承，可以用[SubClass]来声明父类被哪些子类继�
 
 [SubClass Test]
 class Base{
+	void Base(); //构造方法，会生成new函数
     [static] void SayHello(string hello); //静态函数的声明
 	int Foo(int a); //普通函数的声明
 	[callback] void OnGetResult(int p1, string p2); //回调函数的声明

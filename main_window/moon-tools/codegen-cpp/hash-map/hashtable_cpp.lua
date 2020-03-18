@@ -67,6 +67,9 @@ function code_cpp(names)
 	printfnl("    int i;");
 	printfnl("    %s *q,*p;",names.c_entry_class_name);
 	printfnl("");
+	
+	printfnl(g_cpp_base_codegen:Code_Destroy());
+	
 	printfnl("    if(this->m_Data == NULL)");
 	printfnl("        return OK;");
 	printfnl("");

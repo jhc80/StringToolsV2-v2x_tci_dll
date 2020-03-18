@@ -38,7 +38,7 @@ function CppBaseCodeGen:Code_ClassHeader(configs)
     end
     
     if self.m_code_switch.weak_ref then
-        pb:Print("    WEAK_REF_ID_DEFINE();",true);        
+        pb:Print("    WEAK_REF_DEFINE();",true);        
     end
     
     if self.m_code_switch.task_container then
@@ -54,7 +54,7 @@ function CppBaseCodeGen:Code_InitBasic(configs)
     pb:Print(self:Code_CallBase("InitBasic()"));
     
     if self.m_code_switch.weak_ref then
-        pb:Print("    WEAK_REF_ID_CLEAR();",true);        
+        pb:Print("    WEAK_REF_CLEAR();",true);        
     end
     
     if self.m_code_switch.task_container then
@@ -68,10 +68,6 @@ function CppBaseCodeGen:Code_Init(configs)
     local pb = PrintBuffer.new();
     pb:Print(self:Code_CallBase("Init()"));
     
-    if self.m_code_switch.weak_ref then
-        pb:Print("    WEAK_REF_ID_INIT();",true);        
-    end
-    
     if self.m_code_switch.task_container then
         pb:Print("    TASK_CONTAINER_INIT(_taskmgr);",true);        
     end
@@ -80,7 +76,12 @@ function CppBaseCodeGen:Code_Init(configs)
 end
 
 function CppBaseCodeGen:Code_Destroy(configs)
-    return self:Code_CallBase("Destroy()");
+	local pb = PrintBuffer.new();
+    if self.m_code_switch.weak_ref then
+        pb:Print("    WEAK_REF_DESTROY();",true);        
+    end
+    pb:Print(self:Code_CallBase("Destroy()"));
+	return pb:GetText();
 end
 
 function CppBaseCodeGen:Code_Copy(configs)

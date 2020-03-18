@@ -254,24 +254,6 @@ function code_h(idl_class)
     printfnl("#endif");
 end
 
---生成xxx_is_userdata_valid函数的代码--
-function code_is_userdata_valid(idl_class)
-    printf(long_text([[
-        static bool %s_is_userdata_valid(lua_userdata *ud)
-        {
-            if(ud == NULL)return false;
-            if(ud->p == NULL)return false;
-            if(ud->__weak_ref_id == 0) return false;
-            CHECK_IS_UD_READABLE(%s,ud);
-            %s *p = (%s*)ud->p;
-            return p->__weak_ref_id == ud->__weak_ref_id;
-        }    
-    ]],8),
-        string.lower(idl_class.name),
-		c_class_name(idl_class.name),
-        c_class_name(idl_class.name),c_class_name(idl_class.name)
-    );
-end
 
 --生成is_xxx的代码--
 function code_is(idl_class)
@@ -310,45 +292,59 @@ function code_is(idl_class)
     );  
 end
 
+--生成xxx_is_userdata_valid函数的代码--
+function code_is_userdata_valid(idl_class)
+	printfnl("LUA_IS_VALID_USER_DATA_FUNC(%s,%s)",
+		c_class_name(idl_class.name),
+		string.lower(idl_class.name)
+	);
+	
+end
+
 --生成get_xxx函数的代码--
 function code_get(idl_class)
-    printf(long_text([[
-        %s *get_%s(lua_State *L, int idx)
-        {
-            lua_userdata *ud = NULL;
-            if(is_%s(L,idx))
-            {
-                ud = (lua_userdata*)lua_touserdata(L,idx);		
-            }
-            ASSERT(ud);
-            return (%s *)ud->p;
-        } 
-    ]],8),
-        c_class_name(idl_class.name), string.lower(idl_class.name),
-        string.lower(idl_class.name),
-        c_class_name(idl_class.name)
-    );
+	printfnl("LUA_GET_OBJ_FROM_USER_DATA_FUNC(%s,%s)",
+		c_class_name(idl_class.name),
+		string.lower(idl_class.name)
+	);
+end
+
+
+--生成xxx_gc函数的代码--
+function code_gc(idl_class)
+	printfnl("LUA_GC_FUNC(%s,%s)",
+		c_class_name(idl_class.name),
+		string.lower(idl_class.name)
+	);
 end
 
 
 --生成xxx_new_userdata函数的代码--
 function code_new_userdata(idl_class)
-    printf(long_text([[
-        lua_userdata *%s_new_userdata(lua_State *L,%s *pobj,int is_weak)
-        {
-            lua_userdata *ud = (lua_userdata*)lua_newuserdata(L,sizeof(lua_userdata));
-            ASSERT(ud && pobj);
-            ud->p = pobj;
-            ud->is_attached = is_weak;
-            ud->__weak_ref_id = pobj->__weak_ref_id;
-            luaL_getmetatable(L,LUA_USERDATA_%s);
-            lua_setmetatable(L,-2);
-            return ud;
-        }
-    ]],8),
-        string.lower(idl_class.name),c_class_name(idl_class.name),
-        string.upper(idl_class.name)
-    );
+	printfnl("LUA_NEW_USER_DATA_FUNC(%s,%s,%s)",
+		c_class_name(idl_class.name),
+		string.lower(idl_class.name),
+		string.upper(idl_class.name)
+	);
+end
+
+
+--生成xxx_is_same函数的代码--
+function code_is_same(idl_class)
+	printfnl("LUA_IS_SAME_FUNC(%s,%s,%s)",
+		c_class_name(idl_class.name),
+		string.lower(idl_class.name),
+		string.upper(idl_class.name)
+	);
+end
+
+--生成xxx_to_string函数的代码--
+function code_to_string(idl_class)
+  	printfnl("LUA_TO_STRING_FUNC(%s,%s,%s)",
+		c_class_name(idl_class.name),
+		string.lower(idl_class.name),
+		string.upper(idl_class.name)
+	);
 end
 
 --生成xxx_new函数的代码--
@@ -367,74 +363,6 @@ function code_new(idl_class)
         c_class_name(idl_class.name),
         c_class_name(idl_class.name),
         string.upper(idl_class.name)
-    );
-end
-
-
---生成xxx_gc函数的代码--
-function code_gc(idl_class)
-    printf(long_text([[
-        static int %s_gc_(lua_State *L)
-        {
-            if(!is_%s(L,1)) return 0;
-        
-            lua_userdata *ud = (lua_userdata*)lua_touserdata(L,1);		
-            ASSERT(ud);
-        
-            if(!(ud->is_attached))
-            {
-                %s *p%s = (%s*)ud->p;
-                DEL(p%s);
-            }
-            return 0;
-        }
-    ]],8),
-        string.lower(idl_class.name),
-        string.lower(idl_class.name),
-        c_class_name(idl_class.name),string.lower(idl_class.name),c_class_name(idl_class.name),
-        string.lower(idl_class.name)
-    );
-end
-
---生成xxx_is_same函数的代码--
-function code_is_same(idl_class)
-    printf(long_text([[
-        static int %s_issame_(lua_State *L)
-        {
-            %s *p%s1 = get_%s(L,1);
-            ASSERT(p%s1);
-            %s *p%s2 = get_%s(L,2);
-            ASSERT(p%s2);
-            int is_same = (p%s1==p%s2);
-            lua_pushboolean(L,is_same);
-            return 1;
-        }
-    ]],8),
-        string.lower(idl_class.name),
-        c_class_name(idl_class.name),string.lower(idl_class.name),string.lower(idl_class.name),
-        string.lower(idl_class.name),
-        c_class_name(idl_class.name),string.lower(idl_class.name),string.lower(idl_class.name),
-        string.lower(idl_class.name),
-        string.lower(idl_class.name),string.lower(idl_class.name)
-    );
-end
-
---生成xxx_to_string函数的代码--
-function code_to_string(idl_class)
-    printf(long_text([[
-        static int %s_tostring_(lua_State *L)
-        {
-            %s *p%s = get_%s(L,1);
-            char buf[1024];
-            sprintf(buf,"userdata:%s:%%p",p%s);
-            lua_pushstring(L,buf);
-            return 1;
-        }
-    ]],8),
-        string.lower(idl_class.name),
-        c_class_name(idl_class.name),string.lower(idl_class.name),string.lower(idl_class.name),
-        string.lower(idl_class.name),
-        string.lower(idl_class.name),string.lower(idl_class.name)
     );
 end
 
@@ -1075,13 +1003,14 @@ end
 --生成cpp代码--
 function code_cpp(idl_class)
     code_includes_cpp(idl_class);
-    code_is_userdata_valid(idl_class);
-    code_is(idl_class);
+    code_is_userdata_valid(idl_class);    
     code_get(idl_class);
     code_new_userdata(idl_class);
     code_gc(idl_class);
     code_is_same(idl_class);
     code_to_string(idl_class);
+	printnl("");
+	code_is(idl_class);
     printnl("/****************************************************/");
     code_all_lua_functions(idl_class);
     printnl("/****************************************************/");

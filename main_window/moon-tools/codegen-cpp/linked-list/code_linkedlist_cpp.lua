@@ -67,6 +67,9 @@ function code_cpp(names)
     printfnl("}");
     printfnl("status_t %s::Destroy()",names.c_class_name);
     printfnl("{");
+	
+    printfnl(g_cpp_base_codegen:Code_Destroy());
+
 	printfnl("    %s *q,*p = this->m_Head;",names.c_entry_class_name);
     printfnl("    while(p)");
     printfnl("    {");

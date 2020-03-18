@@ -51,6 +51,7 @@ function code_normal_cpp(names)
     printfnl("}");
     printfnl("status_t %s::Destroy()",names.c_class_name);
     printfnl("{");
+	printfnl(g_cpp_base_codegen:Code_Destroy());
     printfnl("    DEL_ARRAY(this->m_Data);");
     printfnl("    this->InitBasic();");
     printfnl("    return OK;");

@@ -45,6 +45,9 @@ function code_normal_cpp(names)
     printfnl("status_t %s::Destroy()",names.c_class_name);
     printfnl("{");
     printfnl("    int i;");
+	
+	printfnl(g_cpp_base_codegen:Code_Destroy());
+	
     printfnl("    if(this->m_Index == NULL)");
     printfnl("        return ERROR;");
     printfnl("");
