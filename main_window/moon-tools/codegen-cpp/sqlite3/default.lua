@@ -39,7 +39,6 @@ function getter_array_len_name(name)
     return "Get"..to_big_camel_case(name).."Size";
 end
 
-
 ---------------------------------------
 --基本类型表
 basic_type_table={

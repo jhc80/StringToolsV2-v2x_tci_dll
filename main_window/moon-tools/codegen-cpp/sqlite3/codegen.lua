@@ -14,6 +14,13 @@ function code_end_marker(name)
     return printnl("/*##End "..name.."##*/");
 end
 
+function get_total_members(idl_class)
+	local total = 0;
+	for_each_variables(idl_class.variables,function(info)	
+		total = total + 1;
+	end);
+	return total;
+end
 
 function for_each_variables(variables,callback)
     if not variables then return end
@@ -158,11 +165,11 @@ function code_cpp(idl_class,node_name)
 		printfnl("");
 	end
 	
-	local col = 1;
+	local col = 0;
 	for_each_variables(idl_class.variables,function(info)
 		if info.is_blob then			
-			printfnl("    stmt->ColumnBlob(%d,&mem);",col);					
-			printfnl("    row->%s((%s*)mem.GetRawBuf(),mem.GetSize()/sizeof(%s));",
+			printfnl("    stmt->ColumnBlob(%d,&mem);",col);		
+			printfnl("    row->%s((%s*)mem.GetRawBuf(),(int)mem.GetSize()/sizeof(%s));",
 				setter_name(info.var.name),
 				info.var_type.name,info.var_type.name);
 			
@@ -223,7 +230,19 @@ function code_cpp(idl_class,node_name)
 	printfnl("{");
 	printfnl("    ASSERT(row && this->p_DataBase);");
 	printfnl("    CSQLite3Stmt stmt;");
-	printfnl("    this->p_DataBase->Prepare(\"INSERT INTO %s VALUES(?,?,?,?)\",&stmt);",table_name(idl_class.name));
+		
+	printf("    this->p_DataBase->Prepare(\"INSERT INTO %s VALUES("
+		,table_name(idl_class.name));
+		
+	local total = get_total_members(idl_class);
+	for i=1,total,1 do
+		print("?");
+		if i < total then
+			print(",");
+		end
+	end	
+	printnl(")\",&stmt);");
+			
 	printfnl("    this->BindRow(&stmt,row);");
 	printfnl("    status_t ret = stmt.Step();");
 	printfnl("    stmt.Finish();");
@@ -236,6 +255,10 @@ function code_cpp(idl_class,node_name)
 	printfnl("status_t %s::ReadNextRow(%s *row)",c_class_name(idl_class.name),c_class_name(node_name));
 	printfnl("{");
 	printfnl("    ASSERT(row);");
+	printnl("");
+	printfnl("    row->Destroy();");
+	printfnl("    row->Init();");
+	printnl("");
 	printfnl("    if(this->m_TmpStmt.Next())");
 	printfnl("    {");
 	printfnl("        return this->ReadRow(&m_TmpStmt,row);");
@@ -305,11 +328,7 @@ function code_cpp(idl_class,node_name)
 	printfnl("    sql.Puts(\"UPDATE %s SET \");",table_name(idl_class.name));		
 	printfnl("    sql.Puts(");
 	
-	local total = 0;
-	for_each_variables(idl_class.variables,function(info)	
-		total = total + 1;
-	end);
-	
+	local total = get_total_members(idl_class);
 	
 	for_each_variables(idl_class.variables,function(info)	
 		printfnl("        \"%s=?%s\"",
@@ -351,14 +370,29 @@ function code_cpp(idl_class,node_name)
 	printfnl("        \"CREATE TABLE IF NOT EXISTS %s (\"",table_name(idl_class.name));
 	
 	for_each_variables(idl_class.variables,function(info)	
-		printfnl("        \"%s %s%s\"",
-			to_big_camel_case(info.var.name),
-			c_type_to_sqlite_func_name(info.var_type),
-			((info.index==total) and "" or ",")
-		);
+		local comma = (info.index==total) and "" or ",";
+		
+		if info.is_blob then
+			printfnl("        \"%s BLOB%s\"",
+				to_big_camel_case(info.var.name),
+				comma
+			);
+		elseif info.is_string then		
+			printfnl("        \"%s TEXT%s\"",
+				to_big_camel_case(info.var.name),
+				comma
+			);
+		elseif info.is_basic_type then
+			printfnl("        \"%s %s%s\"",
+				to_big_camel_case(info.var.name),
+				IdlHelper.Type.GetSqliteType(info.var_type),
+				comma
+			);
+		end
+		
 	end);
 	
-	printfnl("    ;");
+	printfnl("    \")\";");
 	printfnl("    ASSERT(this->p_DataBase);");
 	printfnl("    return this->p_DataBase->RunSqlCommand(sql);");
 	printfnl("}");
