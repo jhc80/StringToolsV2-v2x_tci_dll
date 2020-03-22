@@ -331,19 +331,17 @@ end
 
 --生成xxx_is_same函数的代码--
 function code_is_same(idl_class)
-	printfnl("LUA_IS_SAME_FUNC(%s,%s,%s)",
+	printfnl("LUA_IS_SAME_FUNC(%s,%s)",
 		c_class_name(idl_class.name),
-		string.lower(idl_class.name),
-		string.upper(idl_class.name)
+		string.lower(idl_class.name)
 	);
 end
 
 --生成xxx_to_string函数的代码--
 function code_to_string(idl_class)
-  	printfnl("LUA_TO_STRING_FUNC(%s,%s,%s)",
+  	printfnl("LUA_TO_STRING_FUNC(%s,%s)",
 		c_class_name(idl_class.name),
-		string.lower(idl_class.name),
-		string.upper(idl_class.name)
+		string.lower(idl_class.name)
 	);
 end
 
