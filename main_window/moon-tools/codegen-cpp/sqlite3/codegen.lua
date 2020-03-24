@@ -79,6 +79,8 @@ function code_h(idl_class,node_name)
 	printfnl("    CSQLite3DataBase *p_DataBase;");
 	printfnl("    CSQLite3Stmt m_TmpStmt;");
 	printfnl("public:");
+	printfnl("    bool IsTableExist();");
+	printfnl("    const char* GetTableName();");
 	printfnl("    status_t Delete(const char *where);");
 	printfnl("    status_t Update(const char *where, %s *row);",c_class_name(node_name));
 	printfnl("    int32_t RowCount();");
@@ -135,6 +137,23 @@ function code_cpp(idl_class,node_name)
 	printfnl("    this->InitBasic();");
 	printfnl("    return OK;");
 	printfnl("}");
+	printfnl("");
+	
+	code_begin_marker("IsTableExist");	
+	printfnl("status_t %s::IsTableExist()",c_class_name(idl_class.name));
+	printfnl("{");
+	printfnl("    ASSERT(p_DataBase);");
+	printfnl("    return p_DataBase->IsTableExist(\"%s\");",table_name(idl_class.name));
+	printfnl("}");
+	code_end_marker("IsTableExist");	
+	printfnl("");
+	
+	code_begin_marker("GetTableName");	
+	printfnl("const char* %s::GetTableName()",c_class_name(idl_class.name));
+	printfnl("{");
+	printfnl("    return \"%s\";",table_name(idl_class.name));
+	printfnl("}");
+	code_end_marker("IsTableExist");	
 	printfnl("");
 	
 	code_begin_marker("DropTable");	
