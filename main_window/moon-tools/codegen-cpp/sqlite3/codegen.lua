@@ -151,8 +151,10 @@ function code_cpp(idl_class,node_name)
 	printfnl("status_t %s::ReadRow(CSQLite3Stmt *stmt, %s *row)",c_class_name(idl_class.name),c_class_name(node_name));
 	printfnl("{");
 	printfnl("    ASSERT(stmt && row);");
-	printfnl("    ");
-		
+	printnl("");
+	printfnl("    row->Destroy();");
+	printfnl("    row->Init();");
+	printnl("");		
 	local need_mem = false;
 	for_each_variables(idl_class.variables,function(info)
 		if info.is_string or info.is_blob then
@@ -255,10 +257,6 @@ function code_cpp(idl_class,node_name)
 	printfnl("status_t %s::ReadNextRow(%s *row)",c_class_name(idl_class.name),c_class_name(node_name));
 	printfnl("{");
 	printfnl("    ASSERT(row);");
-	printnl("");
-	printfnl("    row->Destroy();");
-	printfnl("    row->Init();");
-	printnl("");
 	printfnl("    if(this->m_TmpStmt.Next())");
 	printfnl("    {");
 	printfnl("        return this->ReadRow(&m_TmpStmt,row);");
