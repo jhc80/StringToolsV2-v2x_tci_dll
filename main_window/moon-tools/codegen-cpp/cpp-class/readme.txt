@@ -35,3 +35,15 @@ class Test{
 	XXX x;
 }
 
+控制是否生成 setter和 getter的方法是在属性前面加上 [noset] 或 [noget],
+如果不加则默认生成 setter和getter方法，例如
+
+class Test{	
+	[noset] int a; //不会生成set方法
+	[noget] int b; //不会生成get方法
+	[noget,noset] int c; //既不生成get方法，也不生成set 方法
+}
+
+
+
+

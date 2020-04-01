@@ -15,10 +15,3 @@ function to_file_name(name)
     return to_lower_underline_case(name);
 end
 
------------------------------------------------------
---[[
-
-class TaskHello{
-}
- 
---]]
