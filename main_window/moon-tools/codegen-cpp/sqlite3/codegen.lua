@@ -140,7 +140,7 @@ function code_cpp(idl_class,node_name)
 	printfnl("");
 	
 	code_begin_marker("IsTableExist");	
-	printfnl("status_t %s::IsTableExist()",c_class_name(idl_class.name));
+	printfnl("bool %s::IsTableExist()",c_class_name(idl_class.name));
 	printfnl("{");
 	printfnl("    ASSERT(p_DataBase);");
 	printfnl("    return p_DataBase->IsTableExist(\"%s\");",table_name(idl_class.name));
@@ -153,7 +153,7 @@ function code_cpp(idl_class,node_name)
 	printfnl("{");
 	printfnl("    return \"%s\";",table_name(idl_class.name));
 	printfnl("}");
-	code_end_marker("IsTableExist");	
+	code_end_marker("GetTableName");	
 	printfnl("");
 	
 	code_begin_marker("DropTable");	
