@@ -54,8 +54,8 @@ function code_var_out_closure(var_info)
 	
 	if not var_info.is_weak_ptr then
 		printf("(%s,%s)",IdlHelper.Var.GetIndex(var_info.var),var_info.var.name);
-	else
-		printf("(%s,%s,%s->__weak_ref_id)",IdlHelper.Var.GetIndex(var_info.var),var_info.var.name,var_info.var.name);
+	else		
+		printf("(%s,&wp_%s)",IdlHelper.Var.GetIndex(var_info.var),string.lower(var_info.var.name));
 	end	
 end
 
@@ -113,6 +113,11 @@ function code_closure(idl_class)
 	
 	local dot_or_pointer = is_new and "->" or ".";
 	for_each_variables(idl_class.variables,function(info)
+	
+		if info.is_weak_ptr then
+			printfnl("CWeakPointer<%s> wp_%s();",info.type.name,string.lower(info.var.name));
+		end
+
 		printf("%s%s",idl_class.name,dot_or_pointer);
 		code_var_out_closure(info);
 		printnl(";");
