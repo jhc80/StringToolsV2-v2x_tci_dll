@@ -66,7 +66,11 @@ end
 
 function CppBaseCodeGen:Code_Init(configs)
     local pb = PrintBuffer.new();
-    pb:Print(self:Code_CallBase("Init()"));
+	if code_switch.task_container then
+		pb:Print(self:Code_CallBase("Init(_taskmgr)"));
+	else
+		pb:Print(self:Code_CallBase("Init()"));
+	end
     
     if self.m_code_switch.task_container then
         pb:Print("    TASK_CONTAINER_INIT(_taskmgr);",true);        
