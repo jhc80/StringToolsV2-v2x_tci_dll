@@ -295,7 +295,13 @@ function code_normal_cpp(names)
     printfnl("    %s tmp;",names.c_class_name);
     printfnl("");
     printfnl("    len = this->GetLen();");
-    printfnl("    tmp.Init(len);");
+	
+	if code_switch.task_container then
+		printfnl("    tmp.Init(GetTaskMgr(),len);");
+	else
+		printfnl("    tmp.Init(len);");
+	end
+	
     printfnl("");
     printfnl("    for(i = 0; i < len; i++)");
     printfnl("    {");
@@ -331,7 +337,13 @@ function code_normal_cpp(names)
     printfnl("");
     printfnl("    ASSERT(_p);");
     printfnl("    this->Destroy();");
-    printfnl("    this->Init(_p->GetLen());");
+    
+	if code_switch.task_container then
+		printfnl("    this->Init(GetTaskMgr(),_p->GetLen());");
+	else
+		printfnl("    this->Init(_p->GetLen());");
+	end
+	
     printfnl("    for(i = 0; i < _p->GetLen(); i++)");
     printfnl("    {");
     printfnl("        %s *p = _p->GetElem(i);",names.c_node_class_name);

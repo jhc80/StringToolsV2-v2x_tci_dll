@@ -180,7 +180,13 @@ function code_basic_cpp(names)
     printfnl("    int i;");
     printfnl("    %s tmp;",names.c_class_name);
     printfnl("");
-    printfnl("    tmp.Init(this->GetLen());");
+	
+	if code_switch.task_container then
+		printfnl("    tmp.Init(GetTaskMgr(),this->GetLen());");
+	else
+		printfnl("    tmp.Init(this->GetLen());");
+	end	
+	
     printfnl("    for(i = 0; i < this->GetLen(); i++)");
     printfnl("    {");
     printfnl("        tmp.Push(this->GetElem(i));");
@@ -208,7 +214,13 @@ function code_basic_cpp(names)
     printfnl("    int i;");
     printfnl("    ASSERT(_p);");
     printfnl("    this->Destroy();");
-    printfnl("    this->Init(_p->GetLen());");
+
+	if code_switch.task_container then
+		printfnl("    this->Init(GetTaskMgr(),_p->GetLen());");
+	else
+		printfnl("    this->Init(_p->GetLen());");
+	end
+
     printfnl("    for(i = 0; i < _p->GetLen(); i++)");
     printfnl("    {");
     printfnl("        this->Push(_p->GetElem(i));");
