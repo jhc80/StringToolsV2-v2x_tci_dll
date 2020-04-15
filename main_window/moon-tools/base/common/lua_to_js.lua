@@ -60,7 +60,7 @@ local function lua_table_to_js_inner(lua_table,is_array,pbuf)
                 pbuf:Printf(k);
                 pbuf:Printf(":");
             end
-            pbuf:Printf(v);
+            pbuf:Printf(tostring(v));
             pbuf:Printf(",");
             pbuf:Eol();
         end
