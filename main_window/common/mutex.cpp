@@ -13,15 +13,15 @@ CMutex::~CMutex()
 
 status_t CMutex::InitBasic()
 {
-    this->m_Initialized = false;
+    this->m_Flags = 0;
     return OK;
 }
 status_t CMutex::Init()
 {
-    if(!this->m_Initialized)
+    if(!this->IsInitialized())
     {
         crt_init_mutex(&m_Mutex);
-        this->m_Initialized = true;
+        this->SetIsInitialized(true);
     }
     
     return OK;
@@ -29,9 +29,10 @@ status_t CMutex::Init()
 
 status_t CMutex::Destroy()
 {
-    if(this->m_Initialized)
+    if(this->IsInitialized())
     {
         crt_destroy_mutex(&m_Mutex);
+        this->SetIsInitialized(false);
     }
     this->InitBasic();
     return OK;
@@ -39,14 +40,16 @@ status_t CMutex::Destroy()
 
 status_t CMutex::Lock()
 {
-    ASSERT(m_Initialized);
+    ASSERT(IsInitialized());
     crt_lock_mutex(&m_Mutex);
+    this->SetIsLocked(true);
     return OK;
 }
 
 status_t CMutex::Unlock()
 {
-    ASSERT(m_Initialized);
+    ASSERT(IsInitialized());
     crt_unlock_mutex(&m_Mutex);
+    this->SetIsLocked(false);
     return OK;
 }

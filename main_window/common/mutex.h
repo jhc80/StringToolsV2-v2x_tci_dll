@@ -7,7 +7,7 @@ class CMutex
 {
 public:
     MUTEX_TYPE m_Mutex;
-    bool m_Initialized;
+    uint32_t m_Flags;
 public:
     CMutex();
     virtual ~CMutex();
@@ -16,6 +16,9 @@ public:
     status_t Destroy();
     status_t Init();
     status_t InitBasic();
+
+    FLAG_FUNC(m_Flags,IsInitialized,0x00000001);
+    FLAG_FUNC(m_Flags,IsLocked,0x00000002);
 };
 
 #endif 
