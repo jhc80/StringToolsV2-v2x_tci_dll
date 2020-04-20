@@ -103,3 +103,76 @@ recv_task->Init(GetTaskMgr());
 recv_task->self = this;
 recv_task->Start(1);    
 m_RecvMiniTask = recv_task->GetId();
+###################################################
+
+static status_t on_tcp_connector_event(CClosure *closure)
+{
+    CLOSURE_PARAM_INT(event,0);
+    CLOSURE_PARAM_PTR(CTaskVetalkProxy*,self,10);
+    ASSERT(self);
+
+    if(event == CTaskTcpConnector::EVENT_STOP)
+    {
+        CLOSURE_PARAM_INT(err,1);
+        if(err != CTaskTcpConnector::ERROR_NONE)
+        {            
+			self->Restart(CTaskVetalkProxy::ERROR_CONNECT_FAIL);
+        }
+    }
+    else if(event == CTaskTcpConnector::EVENT_CONNECTED)
+    {
+        CLOSURE_PARAM_PTR(CTcpClient*,client,2);
+        ASSERT(client); 
+		g_globals.AddHandleToEpoll(client->GetSocketFd());
+		self->m_Socket.TransferSocketFd(client);		
+    }
+    return OK;
+}
+
+status_t CTaskVetalkProxy::StartTaskConnector()
+{
+    ASSERT(!IsTask(m_TaskTcpConnectror));
+
+	m_SocketRwer.Callback()->SetFunc(on_socketrwer_event);
+	m_SocketRwer.Callback()->SetParamPointer(10,this);
+
+	GLOBAL_SETTINGS(settings);
+
+    CTaskTcpConnector *pc;
+    NEW(pc,CTaskTcpConnector);
+    pc->Init(this->GetTaskMgr());
+    pc->SetServerName(settings->GetJsonProxyIpAddrStr());
+    pc->SetPort(settings->GetJsonProxyPort());
+    pc->Callback()->SetFunc(on_tcp_connector_event);
+    pc->Callback()->SetParamPointer(10,this);
+    pc->Start();
+
+	LOGI("start connecting to json server %s:%d",
+		settings->GetJsonProxyIpAddrStr(),
+		settings->GetJsonProxyPort()
+	);
+    m_TaskTcpConnectror = pc->GetId();
+    return OK;
+}
+#####################################################
+static status_t on_socketrwer_event(CClosure *closure)
+{
+    CLOSURE_PARAM_INT(event,0);
+    if(event == CSocketReaderWriter::EVENT_ERROR)
+    {
+        CLOSURE_PARAM_PTR(const char*,err_str,2);
+        CLOSURE_PARAM_PTR(CTaskLinkRpc*,self,10);
+        ASSERT(self);
+        XLOG(LOG_MODULE_MESSAGEPEER,LOG_LEVEL_ERROR,
+            "CTaskLinkRpc(%d) socket error: %s",self->GetId(),err_str
+        );
+        self->Retry(CTaskLinkRpc::ERROR_SOCKET_ERROR);
+        self->OnSocketError();
+    }
+    return OK;
+}
+
+CClosure *callback = this->mSocketRwer->Callback();
+callback->SetFunc(on_socketrwer_event);
+callback->SetParamPointer(10,this);
+
