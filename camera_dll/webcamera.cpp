@@ -352,7 +352,7 @@ status_t CWebCamera::SetActiveDevice(int index)
 			closure->SetParamInt(12,OK);
 		}
 
-		closure->SetParamInt(12,counter+1);
+		closure->SetParamInt(11,counter+1);
 		return OK;
 	}
 	END_CLOSURE(on_enum);
