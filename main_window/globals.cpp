@@ -560,9 +560,8 @@ status_t CGlobals::ShowLuaDoc()
 status_t CGlobals::GetHelpPath(CMem *path)
 {
     ASSERT(path);
-    path->SetSize(0);
-    path->Puts("help");
-    CDirMgr::ToAbsPath(path);
+    CDirMgr::GetFileName(&m_WorkFolder,path,FN_PATH);
+    path->StrCat("\\help");
     return OK;
 }
 
