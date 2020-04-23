@@ -44,6 +44,8 @@ public:
     CMenu *mitem_select_all;
     CMenu *menu_help;
     CMenu *mitem_help;
+    CMenu *mitem_help_lua_doc;
+    CMenu *mitem_help_lua_pattern;
     CMenu *mitem_about;
     CMenu *menu_vm;
     CMenu *mitem_start;

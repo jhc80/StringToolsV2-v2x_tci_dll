@@ -547,3 +547,43 @@ status_t CGlobals::OpenTheFolder()
     WinExec(cmd.CStr(),SW_SHOW);
     return OK;
 }
+
+status_t CGlobals::ShowLuaDoc()
+{
+    LOCAL_MEM(path);
+    this->GetHelpPath(&path);
+    path.StrCat("\\lua-doc\\index.html");
+    ShellExecute(m_MainForm.hwnd,"open",path.CStr(),NULL,NULL,SW_SHOW);
+    return OK;
+}   
+
+status_t CGlobals::GetHelpPath(CMem *path)
+{
+    ASSERT(path);
+    path->SetSize(0);
+    path->Puts("help");
+    CDirMgr::ToAbsPath(path);
+    return OK;
+}
+
+status_t CGlobals::ShowLuaPatternHelp()
+{
+    ASSERT(i_PageText.get());
+
+    LOCAL_MEM(path);
+    this->GetHelpPath(&path);
+    path.StrCat("\\lua-pattern.txt");
+    
+    CEditBox eb;
+    eb.Init();
+    eb.AttachWnd(i_PageText->eb_log->hwnd);
+ 
+    CMem help;
+    help.Init();
+    help.LoadFile(path.CStr());
+    help.Realloc((int)help.GetSize()*4);
+    
+    CEncoder::Utf8ToUnicode(&help);
+    eb.SetText(help.CStrW());
+    return OK;
+}

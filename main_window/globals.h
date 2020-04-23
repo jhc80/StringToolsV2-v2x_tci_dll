@@ -40,6 +40,9 @@ public:
 	CPrintBuffer m_PrintBuffer;
     CScreenBuffer m_ScreenBuffer;
 public:
+	status_t ShowLuaPatternHelp();
+	status_t GetHelpPath(CMem *path);
+	status_t ShowLuaDoc();
 	status_t OpenTheFolder();
 	status_t ShowHelp();
 	CLuaVm *GetLuaVm();

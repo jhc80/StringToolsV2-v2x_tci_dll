@@ -48,6 +48,8 @@ int CMainForm::InitBasic()
     this->mitem_select_all = NULL;
     this->menu_help = NULL;
     this->mitem_help = NULL;
+    this->mitem_help_lua_doc = NULL;
+    this->mitem_help_lua_pattern = NULL;
     this->mitem_about = NULL;
     this->menu_vm = NULL;
     this->mitem_start = NULL;
@@ -217,10 +219,22 @@ int CMainForm::CreateMenu()
     this->menu_help->Init();
     this->menu_help->SetName(L"Help");
     this->menu_help->Create();
+    
     NEW(this->mitem_help,CMenu);
     this->mitem_help->Init();
-    this->mitem_help->SetName(L"&Help");
+    this->mitem_help->SetName(L"Show item &Help");
     this->mitem_help->Create();
+
+    NEW(this->mitem_help_lua_doc,CMenu);
+    this->mitem_help_lua_doc->Init();
+    this->mitem_help_lua_doc->SetName(L"&Lua 5.3 reference");
+    this->mitem_help_lua_doc->Create();
+
+    NEW(this->mitem_help_lua_pattern,CMenu);
+    this->mitem_help_lua_pattern->Init();
+    this->mitem_help_lua_pattern->SetName(L"Lua string &pattern help");
+    this->mitem_help_lua_pattern->Create();
+
     NEW(this->mitem_about,CMenu);
     this->mitem_about->Init();
     this->mitem_about->SetName(L"&About");
@@ -277,6 +291,8 @@ int CMainForm::CreateMenu()
     this->menu_view->AddItem(mitem_image_window);
     this->menu_bar->AddMenu(menu_help);
     this->menu_help->AddItem(mitem_help);
+    this->menu_help->AddItem(mitem_help_lua_doc);
+    this->menu_help->AddItem(mitem_help_lua_pattern);
     this->menu_help->AddItem(mitem_about);    
     this->menu_vm->AddItem(mitem_start);
     this->menu_vm->AddItem(mitem_stop);
@@ -335,6 +351,8 @@ int CMainForm::Destroy()
     DEL(this->mitem_select_all);
     DEL(this->menu_help);
     DEL(this->mitem_help);
+    DEL(this->mitem_help_lua_doc);
+    DEL(this->mitem_help_lua_pattern);
     DEL(this->mitem_about);
     DEL(this->menu_vm);
     DEL(this->mitem_start);
@@ -473,7 +491,14 @@ int CMainForm::OnCommand(WPARAM wparam,LPARAM lparam)
     {
         g_globals.ShowHelp();
     }
-
+    else if(mitem_help_lua_doc->IsMyCommand(wparam))
+    {
+        g_globals.ShowLuaDoc();
+    }
+    else if(mitem_help_lua_pattern->IsMyCommand(wparam))
+    {
+        g_globals.ShowLuaPatternHelp();
+    }
     else if(mitem_r_help->IsMyCommand(wparam))
     {
         g_globals.ShowHelp();
