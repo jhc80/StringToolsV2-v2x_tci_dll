@@ -35,6 +35,7 @@ int CMainForm::InitBasic()
     ////////////////////
     this->menu_file = NULL;
     this->mitem_open = NULL;
+	this->mitem_load_image = NULL;
     this->mitem_save_as = NULL;
     this->mitem_property = NULL;
     this->mitem_exit = NULL;
@@ -167,13 +168,19 @@ int CMainForm::CreateMenu()
     this->menu_file->Init();
     this->menu_file->SetName(L"F&ile");
     this->menu_file->Create();
-    NEW(this->mitem_open,CMenu);
-    this->mitem_open->Init();
-    this->mitem_open->SetName(L"&Open");
+
+    NEW(this->mitem_open,CMenu);    
+	this->mitem_open->Init();
+    this->mitem_open->SetName(L"&Load text");
     this->mitem_open->Create();
+    NEW(this->mitem_load_image,CMenu);    
+	this->mitem_load_image->Init();
+    this->mitem_load_image->SetName(L"Load i&mage");
+    this->mitem_load_image->Create();
+
     NEW(this->mitem_save_as,CMenu);
     this->mitem_save_as->Init();
-    this->mitem_save_as->SetName(L"Save &As");
+    this->mitem_save_as->SetName(L"Save text &As");
     this->mitem_save_as->Create();
     NEW(this->mitem_property,CMenu);
     this->mitem_property->Init();
@@ -273,6 +280,7 @@ int CMainForm::CreateMenu()
     this->menu_bar->AddMenu(menu_file);
     this->menu_bar->AddMenu(menu_vm);
     this->menu_file->AddItem(mitem_open);
+	this->menu_file->AddItem(mitem_load_image);
     this->menu_file->AddItem(mitem_save_as);
     this->menu_file->AddItem(mitem_property);
     this->menu_file->AddItem(mitem_exit);
@@ -338,6 +346,7 @@ int CMainForm::Destroy()
     //////////////////////
     DEL(this->menu_file);
     DEL(this->mitem_open);
+	DEL(this->mitem_load_image);
     DEL(this->mitem_save_as);
     DEL(this->mitem_property);
     DEL(this->mitem_exit);
@@ -432,6 +441,11 @@ int CMainForm::OnCommand(WPARAM wparam,LPARAM lparam)
 	else if(mitem_open->IsMyCommand(wparam))
 	{
 		this->OnLoad();
+	}
+
+	else if(mitem_load_image->IsMyCommand(wparam))
+	{
+		this->OnLoadImage();
 	}
 
     else if(mitem_select_all->IsMyCommand(wparam))
@@ -903,6 +917,32 @@ int CMainForm::OnLoad()
 	eb->SetText(mem_unicode.CStrW());
 	return OK;
 }
+
+int CMainForm::OnLoadImage()
+{
+	LOCAL_MEM(mem);
+	
+	if(!CWinMisc::GetAFileName(hwnd,&mem,L"All files\0*.*\0\0"))
+		return ERROR;
+	CEncoder::EncodingConvert(ENCODING_UNICODE,LOCAL_ENCODING,&mem);
+	
+	GLOBAL_SCREEN_BUFFER(screen);
+	if(screen->LoadFile(mem.CStr()))
+	{
+		this->SwitchToPageImage();
+	}
+	else
+	{
+		XLOG(LOG_MODULE_USER,LOG_LEVEL_ERROR,
+			"load image %s fail.",mem.CStr());
+		this->SwitchToPageText();
+		return ERROR;
+	}
+	GLOBAL_PAGE_IMAGE(page_img);
+	page_img->RefreshUI();
+	return OK;
+}
+
 
 status_t CMainForm::SwitchToPageText()
 {

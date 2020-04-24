@@ -31,6 +31,7 @@ public:
 	//////////////////////////////////
     CMenu *menu_file;
     CMenu *mitem_open;
+	CMenu *mitem_load_image;
     CMenu *mitem_save_as;
     CMenu *mitem_property;
     CMenu *mitem_exit;
@@ -71,6 +72,7 @@ public:
 	status_t SwitchToPageImage();
 	status_t SwitchToPageText();
 	int OnLoad();
+	int OnLoadImage();
 	int OnSaveAs();
 	status_t SetStatusText(int part,const char *szFormat,...);
 	status_t ShowPropertyWindow();

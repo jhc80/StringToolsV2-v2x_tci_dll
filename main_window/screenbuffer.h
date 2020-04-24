@@ -33,6 +33,7 @@ public:
     status_t Print(CFileBase *_buf);
 
     CxImage* GetImageBuffer();
+	status_t LoadFile(const char *fn);
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "screenbuffer.h"
 #include "syslog.h"
 #include "mem_tool.h"
+#include "ximagehelper.h"
 
 int32_t rgbquad_to_int32(RGBQUAD r);
 RGBQUAD int32_to_rgbquad(int32_t r);
@@ -143,3 +144,8 @@ status_t CScreenBuffer::DrawImage(CxImage *img, int offx, int offy, int op, bool
     return OK;
 }
 
+status_t CScreenBuffer::LoadFile(const char *fn)
+{
+	ASSERT(fn);
+	return CxImageHelper::LoadImage(fn,&m_ImageBuffer);
+}
