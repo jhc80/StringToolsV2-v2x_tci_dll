@@ -182,7 +182,7 @@ status_t CPageImage::OnPaint(WPARAM wparam, LPARAM lparam)
     return OK;
 }
 
-status_t CPageImage::RefreshScreen()
+status_t CPageImage::RefreshScreen(BOOL clear)
 {
     RECT r;
     ::GetClientRect(hwnd,&r);
@@ -201,9 +201,9 @@ status_t CPageImage::RefreshScreen()
     ASSERT(img);
 
     if(win_width > img->GetWidth() || win_height > img->GetHeight())
-        ::InvalidateRect(hwnd,&r,FALSE);
+        ::InvalidateRect(hwnd,&r,clear);
     else
-        ::InvalidateRect(hwnd,&r,FALSE);
+        ::InvalidateRect(hwnd,&r,clear);
 
     return OK;
 }

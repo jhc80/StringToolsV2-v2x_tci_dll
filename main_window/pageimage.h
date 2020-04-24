@@ -15,7 +15,7 @@ public:
 public:
     status_t ResetPosition_ThreadSafe();
 	status_t ResetPosition();
-	status_t RefreshScreen();
+	status_t RefreshScreen(BOOL clear=FALSE);
 	status_t RefreshUI();
     CPageImage();
     ~CPageImage();

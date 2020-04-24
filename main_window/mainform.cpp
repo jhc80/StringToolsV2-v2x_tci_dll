@@ -939,7 +939,8 @@ int CMainForm::OnLoadImage()
 		return ERROR;
 	}
 	GLOBAL_PAGE_IMAGE(page_img);
-	page_img->RefreshUI();
+	page_img->RefreshScreen(TRUE);
+	page_img->RefreshUI();	
 	return OK;
 }
 
