@@ -6,13 +6,74 @@
 --------------------Configuration: dll - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP48A.tmp" with contents
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP58B.tmp" with contents
 [
 /nologo /MT /W3 /GX /O2 /I "." /I "common" /I "platform" /I "lua" /I "share" /I "dshowInclude" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DLL_EXPORTS" /FR"Release/" /Fo"Release/" /Fd"Release/" /FD /c 
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\closure.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\closurelist.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\cruntime.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\dirmgr.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\dll.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\encoder.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\file.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\filebase.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\fileinfo.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\fileinfolist.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lapi.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lauxlib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lbaselib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lbitlib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lcode.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lcorolib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lctype.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\ldblib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\ldebug.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\ldo.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\ldump.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lfunc.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lgc.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\linit.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\liolib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\llex.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lmathlib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lmem.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\loadlib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lobject.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lopcodes.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\loslib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lparser.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lstate.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lstring.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lstrlib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\ltable.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\ltablib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\ltm.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lua.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua_helper.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua_print.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\luac.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lualib_webcamera.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\luavm.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lundump.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lutf8lib.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lvm.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\lzio.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\mem.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\mem_tool.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\memfile.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\memstk.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\minibson.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\misc.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\raw_weak_pointer.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\syslog.c"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\taskmgr.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\tcp.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\userfunc.cpp"
 "Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\webcamera.cpp"
+"Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\wnd.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP48A.tmp" 
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP48B.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP58B.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP58C.tmp" with contents
 [
 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:no /pdb:"Release/dll.pdb" /machine:I386 /out:"Release/dll.dll" /implib:"Release/dll.lib" 
 .\Release\closure.obj
@@ -78,15 +139,109 @@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32
 .\Release\webcamera.obj
 .\Release\wnd.obj
 ]
-Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP48B.tmp"
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP58C.tmp"
 <h3>Output Window</h3>
 Compiling...
+closure.cpp
+closurelist.cpp
+Generating Code...
+Compiling...
+cruntime.c
+Generating Code...
+Compiling...
+dirmgr.cpp
+dll.cpp
+encoder.cpp
+file.cpp
+filebase.cpp
+fileinfo.cpp
+fileinfolist.cpp
+Generating Code...
+Compiling...
+lapi.c
+lauxlib.c
+lbaselib.c
+lbitlib.c
+lcode.c
+lcorolib.c
+lctype.c
+ldblib.c
+ldebug.c
+ldo.c
+Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\lua\ldo.c(506) : warning C4244: '=' : conversion from 'long ' to 'unsigned char ', possible loss of data
+ldump.c
+lfunc.c
+lgc.c
+linit.c
+liolib.c
+llex.c
+lmathlib.c
+lmem.c
+loadlib.c
+lobject.c
+Generating Code...
+Compiling...
+lopcodes.c
+loslib.c
+lparser.c
+lstate.c
+lstring.c
+lstrlib.c
+ltable.c
+ltablib.c
+ltm.c
+lua.c
+Generating Code...
+Compiling...
+lua_helper.cpp
+lua_print.cpp
+Generating Code...
+Compiling...
+luac.c
+Generating Code...
+Compiling...
+lualib_webcamera.cpp
+luavm.cpp
+Generating Code...
+Compiling...
+lundump.c
+lutf8lib.c
+lvm.c
+lzio.c
+Generating Code...
+Compiling...
+mem.cpp
+Generating Code...
+Compiling...
+mem_tool.c
+Generating Code...
+Compiling...
+memfile.cpp
+memstk.cpp
+minibson.cpp
+Generating Code...
+Compiling...
+misc.c
+Generating Code...
+Compiling...
+raw_weak_pointer.cpp
+Generating Code...
+Compiling...
+syslog.c
+Generating Code...
+Compiling...
+taskmgr.cpp
+tcp.cpp
+Z:\MYDISK\PROGRAM\VC6\PROJECTS\STRINGTOOLSV2\CAMERA_DLL\common\tcp.cpp(158) : warning C4018: '==' : signed/unsigned mismatch
+userfunc.cpp
 webcamera.cpp
+wnd.cpp
+Generating Code...
 Linking...
    Creating library Release/dll.lib and object Release/dll.exp
 LINK : warning LNK4089: all references to "WINMM.dll" discarded by /OPT:REF
 LINK : warning LNK4089: all references to "WS2_32.dll" discarded by /OPT:REF
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP48F.tmp" with contents
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP590.tmp" with contents
 [
 /nologo /o"Release/dll.bsc" 
 .\Release\closure.sbr
@@ -151,14 +306,14 @@ Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP48F.tmp" with con
 .\Release\userfunc.sbr
 .\Release\webcamera.sbr
 .\Release\wnd.sbr]
-Creating command line "bscmake.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP48F.tmp"
+Creating command line "bscmake.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP590.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 
 
 
 <h3>Results</h3>
-dll.dll - 0 error(s), 2 warning(s)
+dll.dll - 0 error(s), 4 warning(s)
 </pre>
 </body>
 </html>

@@ -345,5 +345,7 @@ LUA_API void lua_close (lua_State *L) {
 
 //chenxp
 lua_State_Size = sizeof(lua_State);
-
-
+void lua_set_running_flag(int running)
+{
+    //dummy
+}

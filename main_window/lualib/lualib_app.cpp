@@ -10,6 +10,7 @@
 #include "lualib_stream.h"
 #include "lualib_filebase.h"
 #include "lua_print.h"
+#include "lua_helper.h"
 /****************************************/
 static int app_getsystemtimer(lua_State *L)
 {
@@ -190,7 +191,7 @@ static status_t on_accept(CClosure *closure)
         CLOSURE_PARAM_INT(fd,1);
         CTaskPeerServer *server;
         NEW(server,CTaskPeerServer);
-        server->Init(mgr);
+        server->Init(mgr,how_to_get_peer_globals());
         server->SetMaxRetries(1);
         server->SetSocket(fd);
         server->Start();
@@ -217,7 +218,10 @@ static int app_startmessagecenter(lua_State *L)
 {
     int port = (int)lua_tointeger(L,1);
 	int trust_mode = lua_toboolean(L,2);
-	g_peer_globals.SetTrustMode(trust_mode!=0);
+    GLOBAL_LUA_THREAD(lua_thread);
+    CPeerGlobals *g = lua_thread->GetPeerGlobals();
+    ASSERT(g);
+	g->SetTrustMode(trust_mode!=0);
     int _ret_0 = (int)start_message_center(port);
     lua_pushinteger(L,_ret_0);
     return 1;

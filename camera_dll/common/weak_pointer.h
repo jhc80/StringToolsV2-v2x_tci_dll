@@ -2,6 +2,7 @@
 #define __WEAK_POINTER_H
 
 #include "raw_weak_pointer.h"
+#include "mem_tool.h"
 
 template <class T>
 class CWeakPointer:public CRawWeakPointer{

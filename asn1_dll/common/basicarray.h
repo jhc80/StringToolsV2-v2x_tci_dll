@@ -3,6 +3,8 @@
 
 #include "cruntime.h"
 #include "filebase.h"
+#include "syslog.h"
+#include "mem_tool.h"
 
 template <class T>
 class CBasicArray{
@@ -36,7 +38,7 @@ status_t InitBasic()
     this->how_to_comp = NULL;
     return OK;
 }
-status_t Init(int init_size)
+status_t Init(int init_size=256)
 {
     this->InitBasic();
     

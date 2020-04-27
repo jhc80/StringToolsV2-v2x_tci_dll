@@ -216,8 +216,8 @@ function main_thread(thread)
 		file_client:InitClientSidePeer(server,port);
 	end
 
-	file_client:SetName("string-tools-client");
-	file_client:SetDestPeerName("simple-file-server");
+	file_client:SetName(peer_name);
+	file_client:SetDestPeerName(server_peer_name);
 	file_client:Start();
 	
 	file_client:SetPullFileCallback(show_file_progress);

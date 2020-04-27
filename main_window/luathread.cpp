@@ -109,7 +109,7 @@ status_t CLuaThread::InitBasic()
     m_LuaVm.InitBasic();
 	m_TaskMgr.InitBasic();
     m_Flags = 0;
-    g_peer_globals.InitBasic();
+    m_PeerGlobals.InitBasic();
     m_TaskRunner.InitBasic();	
     callback_on_window_message = LUA_REFNIL;
 	callback_on_app_event = LUA_REFNIL;
@@ -127,7 +127,7 @@ status_t CLuaThread::Init()
 status_t CLuaThread::Destroy()
 { 
 	CThread::Destroy();
-    g_peer_globals.Destroy();	
+    m_PeerGlobals.Destroy();	
 	m_TaskMgr.Destroy();
     m_LuaVm.Destroy();
 	m_Epoll.Destroy();
@@ -292,8 +292,8 @@ status_t CLuaThread::OnThreadBegin()
     this->SwitchToPageText();
     m_ThreadId = crt_get_current_thread_id();   
 
-    g_peer_globals.Init(&m_TaskMgr);
-    g_peer_globals.SetTrustMode(true);
+    m_PeerGlobals.Init(&m_TaskMgr);
+    m_PeerGlobals.SetTrustMode(true);
 
     m_TaskRunner.Init();
 
@@ -311,7 +311,7 @@ status_t CLuaThread::OnThreadEnd()
     GLOBAL_MAIN_FORM(main_form);
     main_form->SetStatusText(0,"lua vm is not running");
     m_TaskRunner.Destroy();
-    g_peer_globals.Destroy();	    
+    m_PeerGlobals.Destroy();	    
     m_TaskMgr.Destroy(); 
     m_LuaVm.Destroy();	
 	m_Epoll.Destroy();
@@ -629,3 +629,7 @@ static status_t on_taskmgr_event(CClosure *closure)
 	return OK;
 }
 
+CPeerGlobals *CLuaThread::GetPeerGlobals()
+{
+    return &m_PeerGlobals;
+}

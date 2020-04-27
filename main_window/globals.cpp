@@ -20,10 +20,17 @@ static CLuaVm* get_global_luavm()
 {
     return g_globals.GetLuaVm();
 }
+
 static int* get_lua_running_flag()
 {
     GLOBAL_LUA_THREAD(thread);
     return &thread->m_IsRunning;
+}
+
+static const void* get_peer_globals()
+{
+    GLOBAL_LUA_THREAD(thread);
+    return &thread->m_PeerGlobals;
 }
 ///////////////////////////////////////////
 ///////////////////////////////////////////
@@ -53,6 +60,7 @@ status_t CGlobals::InitBasic()
 	m_PrintBuffer.InitBasic();
     m_ScreenBuffer.InitBasic();
 	m_WndSearch.InitBasic();
+    m_PeerGlobals.InitBasic();
 	return OK;
 }
 status_t CGlobals::Init()
@@ -60,6 +68,7 @@ status_t CGlobals::Init()
 	this->InitBasic();
 	SetIsInitiated(true);
 	m_TaskMgr.Init(1024);
+    m_PeerGlobals.Init(&m_TaskMgr);
     this->SetWorkFolder("moon-tools");
     m_MainTaskRunner.Init();
 	i_PageText.Init();
@@ -74,6 +83,7 @@ status_t CGlobals::Init()
 	how_to_get_global_taskmgr = get_global_taskmgr;
 	how_to_get_global_luavm = get_global_luavm;
     how_to_get_lua_running_flag = get_lua_running_flag;
+    how_to_get_peer_globals = get_peer_globals;
 	return OK;
 }
 status_t CGlobals::Destroy()
@@ -88,6 +98,7 @@ status_t CGlobals::Destroy()
 	i_PageText.Destroy();
     i_PageImage.Destroy();
 	m_TaskMgr.Destroy();
+    m_PeerGlobals.Destroy();
 	m_MainForm.Destroy();
     m_LuaThread.Destroy();
 	this->InitBasic();

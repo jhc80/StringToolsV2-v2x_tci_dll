@@ -17,6 +17,7 @@
 #include "screenbuffer.h"
 #include "memstk.h"
 #include "wndsearch.h"
+#include "peerglobals.h"
 
 #define GLOBALS_FLAG_FUNC(func,bit) FLAG_FUNC(m_Flags,func,bit)
 
@@ -39,6 +40,7 @@ public:
     int_ptr_t m_MainThreadId;
 	CPrintBuffer m_PrintBuffer;
     CScreenBuffer m_ScreenBuffer;
+    CPeerGlobals m_PeerGlobals;
 public:
 	status_t ShowLuaPatternHelp();
 	status_t GetHelpPath(CMem *path);
@@ -92,5 +94,6 @@ extern CGlobals g_globals;
 #define GLOBAL_PRINT_BUFFER(buf) CPrintBuffer *buf = &g_globals.m_PrintBuffer
 #define GLOBAL_SCREEN_BUFFER(buf) CScreenBuffer *buf = &g_globals.m_ScreenBuffer
 #define GLOBAL_WND_SEARCH(win) CWndSearch *win = &g_globals.m_WndSearch
+#define GLOBAL_PEER_GLOBALS(p) CPeerGlobals *p=&g_globals.m_PeerGlobals
 //////////////////////////////////////////
 #endif

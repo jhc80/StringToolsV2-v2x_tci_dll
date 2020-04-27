@@ -16,12 +16,20 @@ end
 
 FileManager.ChangeDir(root_path);
 printfnl("root path is %s",FileManager.GetCurDir());
-printfnl("start message center on port %d",listen_port);
-App.WaitBuffer();
-App.StartMessageCenter(listen_port,true);
+
+if not as_client then
+	printfnl("start message center on port %d",port);
+	App.WaitBuffer();
+	App.StartMessageCenter(port,true);
+end
 
 file_server = SimpleFileServer.new();
-file_server:InitServerSidePeer();
+if not as_client then
+	file_server:InitServerSidePeer();
+else
+	file_server:InitClientSidePeer(server,port);
+end
+
 file_server:SetName(peer_name);
 file_server:SetRootDir(root_path);
 file_server:Start();

@@ -11,6 +11,7 @@
 #include "basicarray.h"
 #include "mem.h"
 #include "epoll.h"
+#include "peerglobals.h"
 
 #define LUA_THREAD_FLAG_FUNC(func,bit) FLAG_FUNC(m_Flags,func, bit)
 
@@ -30,11 +31,13 @@ public:
     int_ptr_t m_ThreadId;
     uint32_t m_Flags;
 	CEpoll m_Epoll;
+    CPeerGlobals m_PeerGlobals;
 
 	HMODULE m_DelayUnloadModules[MAX_MODULES_SIZE];
     int callback_on_window_message;
 	int callback_on_app_event;
 public:
+    CPeerGlobals *GetPeerGlobals();
 	status_t OnAppEvent(int event, CMem *mem);
 	status_t HideEmbeddedUIWindow();
 	status_t ShowEmbeddedUIWindow(int height);
