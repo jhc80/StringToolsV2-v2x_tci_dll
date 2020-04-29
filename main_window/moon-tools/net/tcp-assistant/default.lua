@@ -16,6 +16,7 @@ clear_after_send = false;
 use_hex = false;
 
 --接收到数据打印之前的回调函数--
+--返回true阻止默认的打印函数--
 function after_recv_msg(mem)
 end
 

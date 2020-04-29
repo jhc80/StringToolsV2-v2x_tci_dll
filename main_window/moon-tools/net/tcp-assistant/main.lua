@@ -92,8 +92,7 @@ function on_send_click()
 end
 
 App.SetOnAppEvent(function(e,data)
-    local msg;
-    
+    local msg;   
     if e == APP_EVENT_EMBEDDED_UI_WINDOW_RESIZED or 
        e == APP_EVENT_EMBEDDED_UI_WINDOW_MESSAGE 
     then
@@ -160,7 +159,8 @@ function print_hex(mem)
 end
 
 function received_message(mem)
-    after_recv_msg(mem);
+    local block = after_recv_msg(mem);
+	if block then return end
     if not use_hex then
         print_whole_file(mem);
     else
