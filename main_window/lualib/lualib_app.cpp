@@ -226,6 +226,31 @@ static int app_startmessagecenter(lua_State *L)
     lua_pushinteger(L,_ret_0);
     return 1;
 }
+static status_t app_getallpeernames(lua_State *L)
+{
+    CPeerGlobals *g = (CPeerGlobals *)how_to_get_peer_globals();
+	ASSERT(g);
+    CPeerProxyManager *mgr = g->GetPeerProxyManager();
+	ASSERT(mgr);
+
+	CMemStk all_names;
+	all_names.Init();
+
+	for(int i = 0; i < mgr->GetTotalPeers(); i++)
+	{
+		CPeerProxy *proxy = mgr->GetPeer(i);
+		ASSERT(proxy);
+		all_names.Push(proxy->GetName());
+	}
+
+	if(all_names.GetLen() > 0)
+	{
+		CLuaVm::PushStringArray(L,&all_names);
+		return 1;
+	}
+    return 0;
+}
+
 ///////////////////////////////////
 static int app_startnet(lua_State *L)
 {
@@ -464,6 +489,7 @@ static const luaL_Reg app_lib[] = {
 	{"Base64Encode",app_base64encode},
     {"Base64Decode",app_base64decode},
     {"StartMessageCenter",app_startmessagecenter},
+	{"GetAllPeerNames",app_getallpeernames},	
     {"StartNet",app_startnet},
 	{"EndNet",app_endnet},
     {"SwitchToPageText",app_switchtopagetext},
