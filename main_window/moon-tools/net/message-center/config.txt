@@ -1,1 +1,1 @@
-name=MessagePeer服务器
+name=MessageCenter服务器

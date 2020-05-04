@@ -1,7 +1,7 @@
-App.ClearScreen();
-
-require("common")
+require("common");
 require("peer_service_base")
+require("user");
+App.ClearScreen();
 
 METHOD_MC_GETALLPEERNAMES = 8000001;
 
@@ -45,14 +45,17 @@ end
 App.StartNet();
 
 client = MessageCenterClient.new();
-client:InitClientSidePeer("111.231.32.67",23456);
-client:SetName("test-client");
-client:SetDestPeerName("message-center-query-on-tencent-heptane");
+client:InitClientSidePeer(server,port);
+client:SetName("string-tools-client-temp");
+client:SetDestPeerName(query_peer_name);
 client:Start();
 
 client:GetAllPeerNames(function(ret,val)
-	print(ret);
-	print_table(val);
+	if val and val.RetVal0 then
+		print_table(val.RetVal0);
+	else
+		print("fail.");
+	end
 end);
 
 
