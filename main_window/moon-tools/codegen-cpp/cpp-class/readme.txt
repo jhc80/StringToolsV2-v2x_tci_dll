@@ -5,6 +5,7 @@ class Test:Base{
 	int *ptr; //指针类型
 	string str; //字符串类型
 	[weak] Obj *weak_ptr; //弱指针类型
+	[struct] Stru stru; //声明为struct 类型
 	array<int> arr1; //未知大小的数组
 	array<int,10> arr2; //固定大小的数组
 	array<Obj> obj_arr; //对象数组
@@ -43,6 +44,10 @@ class Test{
 	[noget] int b; //不会生成get方法
 	[noget,noset] int c; //既不生成get方法，也不生成set 方法
 }
+
+
+目前声明为struct类型只是类型的定义前加入了 struct 而已，并没有对
+struct类型本身的做太多的支持。
 
 
 
