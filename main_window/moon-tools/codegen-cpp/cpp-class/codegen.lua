@@ -93,6 +93,7 @@ function for_each_variables(variables,callback)
         info.is_weak_ptr = is_weak_ptr;		
 		info.is_no_setter = IdlHelper.Var.IsNoSetter(var);
 		info.is_no_getter = IdlHelper.Var.IsNoGetter(var);
+		info.is_struct = is_struct;
 		var_type.is_struct = is_struct;
 		
         callback(info);
@@ -455,6 +456,15 @@ function code_cpp_init_basic(idl_class)
     local need_i = false;
         
     function pc_array_with_array_size(info)
+		if info.is_struct then		
+			 temp_code_nl(string.format(
+                "    memset(%s,0,sizeof(%s));",
+                member_name(info.var.name),
+				member_name(info.var.name)
+            ));		
+			return
+		end
+		
         need_i = true;
         temp_code_nl(string.format(
             "    for(i = 0; i < %s; i++)",
@@ -503,10 +513,18 @@ function code_cpp_init_basic(idl_class)
                 get_init_value(info)
             ));
         else
-            temp_code_nl(string.format(
-                "    this->%s.InitBasic();",
-                member_name(info.var.name)
-            ));
+			if info.is_struct then
+				temp_code_nl(string.format(
+					"    memset(&%s,0,sizeof(%s));",
+					member_name(info.var.name),
+					member_name(info.var.name)
+				));
+			else
+				temp_code_nl(string.format(
+					"    this->%s.InitBasic();",
+					member_name(info.var.name)
+				));
+			end
         end   
     end
     
@@ -553,7 +571,7 @@ function code_cpp_init(idl_class)
     local need_i = false;
     
     function pc_array_with_array_size(info)
-        if info.is_object then
+        if info.is_object and not info.is_struct then
             need_i = true;
             temp_code_nl(string.format(
                 "    for(i = 0; i < %s; i++)",
@@ -571,7 +589,11 @@ function code_cpp_init(idl_class)
     end
     
     function pc_not_array(info)
-        if info.is_object and not info.is_pointer and not info.is_optional then
+        if info.is_object 
+			and not info.is_pointer 
+			and not info.is_optional 
+			and not info.is_struct
+		then
             temp_code_nl(string.format(
                 "    this->%s.Init();",
                 member_name(info.var.name)
@@ -633,6 +655,9 @@ function code_cpp_destroy(idl_class)
     local need_i = false;
     
     function pc_array_with_array_size_object(info)
+		if info.is_struct then
+			return
+		end
         need_i = true;
         temp_code_nl(string.format(
             "    for(i = 0; i < %s; i++)",
@@ -662,7 +687,7 @@ function code_cpp_destroy(idl_class)
                 member_name(info.var.name)
             ));
         else
-            if not info.is_pointer then
+            if not info.is_pointer and not info.is_struct then
                 temp_code_nl(string.format(
                     "    this->%s.Destroy();",
                     member_name(info.var.name)
@@ -753,7 +778,7 @@ function code_cpp_copy(idl_class)
             array_size
         ));
         temp_code_nl("    {");
-        if info.is_basic_type or info.is_pointer then
+        if info.is_basic_type or info.is_pointer or info.is_struct then
             temp_code_nl(string.format(
                 "        this->%s[i] = _p->%s[i];",
                 member_name(info.var.name),
@@ -777,7 +802,7 @@ function code_cpp_copy(idl_class)
                 getter_name(info.var.name,info)
             ));
         else        
-            if info.is_basic_type or info.is_pointer then
+            if info.is_basic_type or info.is_pointer or info.is_struct then
                 temp_code_nl(string.format(
                     "    this->%s = _p->%s;",
                     member_name(info.var.name),
@@ -862,8 +887,11 @@ function code_cpp_print(idl_class)
         local tab = 2;
         local dot_or_arrow = ".";
         
-        if info.is_weak_ptr then
-        
+		if info.is_struct then
+			return
+		end
+		
+        if info.is_weak_ptr then        
             temp_code_nl(string.format(
                 "%sif(this->%s[i].get())",
                 ptab(tab),
@@ -922,6 +950,10 @@ function code_cpp_print(idl_class)
     end
     
     function pc_array(info)
+		if info.is_struct then
+			return
+		end
+	
         need_i = true;
         
         temp_code_nl(string.format(
@@ -956,7 +988,6 @@ function code_cpp_print(idl_class)
     end
     
     function pc_not_array_basic_type(info)
-
         if info.is_optional then            
             temp_code_nl(string.format(
                 "    if(%s)",
@@ -984,7 +1015,11 @@ function code_cpp_print(idl_class)
     function pc_not_array_object(info)
         local tab = 1;
         local arrow_or_dot = ".";
-        
+
+        if info.is_struct then
+			return
+		end
+
         if info.is_optional or info.is_weak_ptr then  
             local get_str= info.is_weak_ptr and ".get()" or "";            
             arrow_or_dot = "->";
@@ -1478,10 +1513,21 @@ function code_setter_body_object_not_array(info)
 
     printnl("");
     printnl("{");
-        
+
     if info.is_pointer then
         printnl(string.format(
           "    this->%s = _%s;",
+          member_name(info.var.name),
+          string.lower(info.var.name)
+        )); 
+        printnl("    return OK;");
+	elseif info.is_struct then
+		printnl(string.format(
+            "    ASSERT(_%s);",
+            string.lower(info.var.name)
+        ));
+		printnl(string.format(
+          "    this->%s = *_%s;",
           member_name(info.var.name),
           string.lower(info.var.name)
         )); 
@@ -1614,15 +1660,17 @@ function code_setter_body_array(info,need_class_prefix,pointer_version)
         ,info.array_size));
     end
     
-    if info.is_basic_type or info.is_pointer then      
+    if info.is_basic_type or info.is_pointer 
+		or (info.is_struct and not pointer_version)
+	then		
         printnl(string.format(        
-        "    memcpy(this->%s,_%s,sizeof(%s)*_len);",
-        member_name(info.var.name),
-        string.lower(info.var.name),
-        var_type_name
-        ));        
-    else    
-    
+			"    memcpy(this->%s,_%s,sizeof(%s)*_len);",
+			member_name(info.var.name),
+			string.lower(info.var.name),
+			var_type_name
+        ));
+		
+    else
         local copy_or_weak_ref = "Copy";
         if info.is_weak_ptr then
             copy_or_weak_ref = "WeakRef"
@@ -1630,20 +1678,27 @@ function code_setter_body_array(info,need_class_prefix,pointer_version)
         printnl("    for(int i = 0; i < _len; i++)");
         printnl("    {");
 		
-		local addr = pointer_version and "" or "&";
+		if info.is_struct and pointer_version then
+			printfnl("        ASSERT(_%s[i]);",string.lower(info.var.name));
+			printfnl("        this->%s[i] = *_%s[i];",
+				member_name(info.var.name),
+				string.lower(info.var.name)
+			);
+		else		
+			local addr = pointer_version and "" or "&";		
+			printnl(string.format(
+				"        this->%s[i].%s(%s_%s[i]);",
+				member_name(info.var.name),
+				copy_or_weak_ref,
+				addr,
+				string.lower(info.var.name)
+			));
+		end
 		
-        printnl(string.format(
-            "        this->%s[i].%s(%s_%s[i]);",
-            member_name(info.var.name),
-            copy_or_weak_ref,
-			addr,
-            string.lower(info.var.name)
-        ));
         printnl("    }");
-    end    
-    
+    end
+
     printnl("    return OK;");
-    
     printnl("}");
 end
 
@@ -1688,10 +1743,11 @@ function code_setter_body_array_elem(info)
         member_name_len(info.var.name)
     ));
     
-    if info.is_pointer or info.is_basic_type then    
+    if info.is_pointer or info.is_basic_type or info.is_struct then    
         printnl(string.format(
-            "    this->%s[_index] = _%s;",
+            "    this->%s[_index] = %s_%s;",
             member_name(info.var.name),
+			(info.is_struct and "*" or ""),
             string.lower(info.var.name)
         ));
     else
@@ -1833,14 +1889,13 @@ function code_alloc_body_unknown_array(info,need_class_prefix)
         member_name(info.var.name),var_type_name
     ));
     
-    if info.is_basic_type or info.is_pointer then        
+    if info.is_basic_type or info.is_pointer or info.is_struct then
         printnl(string.format(        
         "        memset(this->%s,0,sizeof(%s)*_len);",
         member_name(info.var.name),
         var_type_name
-        ));        
-    else
-    
+        ));
+    else 
         printnl("        for(int i = 0; i < _len; i++)");
         printnl("        {");
         printnl(string.format(
@@ -1899,7 +1954,7 @@ function code_all_setter_cpp(idl_class)
         info.idl_class = idl_class;
         
         if not info.is_array then
-            if info.is_basic_type then            
+            if info.is_basic_type then
                 code_begin_extra(setter_name(info.var.name,info));
                 code_setter_declaration_basic_not_array(info,true);
                 code_setter_body_basic_not_array(info);

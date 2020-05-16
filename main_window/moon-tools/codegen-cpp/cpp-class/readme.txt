@@ -45,9 +45,9 @@ class Test{
 	[noget,noset] int c; //既不生成get方法，也不生成set 方法
 }
 
+声明为struct类型，相应的操作都会变成类似于 memcpy的操作
+不会对struct进行深拷贝的操作。
 
-目前声明为struct类型只是类型的定义前加入了 struct 而已，并没有对
-struct类型本身的做太多的支持。
 
 
 
