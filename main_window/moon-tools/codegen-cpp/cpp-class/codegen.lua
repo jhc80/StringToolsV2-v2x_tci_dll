@@ -2306,9 +2306,10 @@ function code_cpp_save_bson_1(idl_class)
         end
         
 		if info.is_struct then
-			printfnl("%s_bson->PutBinary(\"%s\",%s%s);",tab,
+			printfnl("%s_bson->PutBinary(\"%s\",%s%s,sizeof(%s));",tab,
 				info.var.name,				
-				addr,member_name(info.var.name)
+				addr,member_name(info.var.name),
+				c_class_name_with_ns(info.var_type)
 			);			
 		else		
 			printfnl("%sfsize_t _off;",tab);
@@ -2567,9 +2568,14 @@ function code_cpp_load_bson_1(idl_class)
 		
 		if info.is_struct then
 			if not info.is_optional then
-			printfnl("    BSON_CHECK(_bson->GetBinary(\"%s\",&%s));",
+			printfnl("    CMem _bin;");
+			printfnl("    BSON_CHECK(_bson->GetBinary(\"%s\",&_bin));",
 				info.var.name,
 				member_name(info.var.name)
+			);
+			printfnl("    this->%s((%s*)_bin.GetRawBuf());",
+				setter_name(info.var.name),
+				c_class_name_with_ns(info.var_type)
 			);
 			else
 			
