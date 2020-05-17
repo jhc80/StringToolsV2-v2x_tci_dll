@@ -1526,11 +1526,20 @@ function code_setter_body_object_not_array(info)
             "    ASSERT(_%s);",
             string.lower(info.var.name)
         ));
-		printnl(string.format(
-          "    this->%s = *_%s;",
-          member_name(info.var.name),
-          string.lower(info.var.name)
-        )); 
+		if not info.is_optional then
+			printnl(string.format(
+			  "    this->%s = *_%s;",
+			  member_name(info.var.name),
+			  string.lower(info.var.name)
+			)); 			
+		else
+			printfnl("    this->%s();",create_optional_name(info.var.name));
+			printnl(string.format(
+			  "    *(this->%s) = *_%s;",
+			  member_name(info.var.name),
+			  string.lower(info.var.name)
+			));
+		end
         printnl("    return OK;");
     else        
         if not info.is_optional then
@@ -1941,7 +1950,14 @@ function code_create_optional_body(info)
         member_name(info.var.name),
         c_class_name_with_ns(info.var_type)
     );
-    printfnl("    this->%s->Init();",member_name(info.var.name));
+	if info.is_struct then
+		printfnl("    memset(%s,0,sizeof(%s));",
+			member_name(info.var.name),
+			c_class_name_with_ns(info.var_type)	
+		);		
+	else		
+		printfnl("    this->%s->Init();",member_name(info.var.name));
+	end
     printnl("    return OK;");
     printnl("}");
 end
@@ -2277,30 +2293,39 @@ function code_cpp_save_bson_1(idl_class)
         ));
         local tab = "    ";
         local arrow_or_dot = ".";
-        
+        local addr="&";
+		
         if info.is_optional then
             arrow_or_dot = "->";
             tab = "        ";
+			addr="";
             printfnl("    if(this->%s)",
                 member_name(info.var.name)
             );
             printfnl("    {");
         end
         
-        printfnl("%sfsize_t _off;",tab);
-        printnl(string.format(
-            "%s_bson->StartDocument(\"%s\",&_off);",
-            tab,info.var.name
-        ));
+		if info.is_struct then
+			printfnl("%s_bson->PutBinary(\"%s\",%s%s);",tab,
+				info.var.name,				
+				addr,member_name(info.var.name)
+			);			
+		else		
+			printfnl("%sfsize_t _off;",tab);
+			printnl(string.format(
+				"%s_bson->StartDocument(\"%s\",&_off);",
+				tab,info.var.name
+			));
 
-        printnl(string.format(
-            "%s%s%sSaveBson(_bson);",
-            tab,member_name(info.var.name),
-            arrow_or_dot
-        ));
+			printnl(string.format(
+				"%s%s%sSaveBson(_bson);",
+				tab,member_name(info.var.name),
+				arrow_or_dot
+			));
 
-        printfnl("%s_bson->EndDocument(_off);",tab);
-        
+			printfnl("%s_bson->EndDocument(_off);",tab);
+        end
+		
         if info.is_optional then
             printfnl("    }");
         end
@@ -2334,54 +2359,67 @@ function code_cpp_save_bson_1(idl_class)
             "    /******%s begin*******/{",
             info.var.name
         ));
+		
+		if info.is_struct then
+			printfnl("    if(%s > 0)",array_size);
+			printfnl("    {");
+			printfnl("        _bson->PutBinary(\"%s\",%s,",
+				info.var.name,member_name(info.var.name)
+			);
+			printfnl("            sizeof(%s)*%s);",
+				c_class_name_with_ns(info.var_type),
+				array_size
+			);
+			
+			printfnl("    }");	
+		else
+			printnl("    fsize_t _off;");   
+			printnl("    char _index_name[64];");   
 
-        printnl("    fsize_t _off;");   
-        printnl("    char _index_name[64];");   
+			printnl(string.format(
+				"    _bson->StartArray(\"%s\",&_off);",
+				info.var.name
+			));
 
-        printnl(string.format(
-            "    _bson->StartArray(\"%s\",&_off);",
-            info.var.name
-        ));
+			printnl(string.format(
+				"    for(int i = 0; i < %s; i++)",
+				array_size
+			));
 
-        printnl(string.format(
-            "    for(int i = 0; i < %s; i++)",
-            array_size
-        ));
+			printnl("    {");
 
-        printnl("    {");
+			printnl("        sprintf(_index_name,\"%d\",i);");
 
-        printnl("        sprintf(_index_name,\"%d\",i);");
+			if info.is_string then
+				printnl(string.format(
+					"        _bson->PutString(_index_name,&%s[i]);",
+					member_name(info.var.name)
+				));
+			else
+				printnl("        fsize_t __off;");
+				printnl(string.format(
+					"        _bson->StartDocument(_index_name,&__off);"
+				));
 
-        if info.is_string then
-            printnl(string.format(
-                "        _bson->PutString(_index_name,&%s[i]);",
-                member_name(info.var.name)
-            ));
-        else
-            printnl("        fsize_t __off;");
-            printnl(string.format(
-                "        _bson->StartDocument(_index_name,&__off);"
-            ));
+				printnl(string.format(
+					"        %s[i].SaveBson(_bson);",
+					member_name(info.var.name)
+				));
 
-            printnl(string.format(
-                "        %s[i].SaveBson(_bson);",
-                member_name(info.var.name)
-            ));
+				printnl(string.format(
+					"        _bson->EndDocument(__off);"
+				));
+	   
+			end
 
-            printnl(string.format(
-                "        _bson->EndDocument(__off);"
-            ));
-   
-        end
-
-        printnl("    }");
+			printnl("    }");
 
 
-        printnl(string.format(
-            "    _bson->EndArray(_off,%s);",
-            array_size
-        ));
-
+			printnl(string.format(
+				"    _bson->EndArray(_off,%s);",
+				array_size
+			));
+		end
         printnl(string.format(
             "    /*******%s end********/}",
             info.var.name
@@ -2526,49 +2564,65 @@ function code_cpp_load_bson_1(idl_class)
             "    /******%s begin*******/{",
             info.var.name
         ));
+		
+		if info.is_struct then
+			if not info.is_optional then
+			printfnl("    BSON_CHECK(_bson->GetBinary(\"%s\",&%s));",
+				info.var.name,
+				member_name(info.var.name)
+			);
+			else
+			
+				printfnl("    %s _tmp;",c_class_name_with_ns(info.var_type));
+				printfnl("    if(_bson->GetBinary(\"%s\",&_tmp))",info.var.name);
+				printfnl("    {");
+				printfnl("        this->%s(&_tmp);",setter_name(info.var.name));
+				printfnl("    }");
+			
+			end
+		else 
+			printnl("    CMiniBson _doc;");   
+			
+			if info.is_optional then
+				printfnl(
+					"    if(_bson->GetDocument(\"%s\",&_doc))",
+					info.var.name
+				); 
+				printfnl("    {");            
+				
+				printfnl("        %s _tmp_%s;",
+					c_class_name_with_ns(info.var_type),
+					string.lower(info.var.name)
+				);
+				
+				printfnl("        __tmp_%s.Init();",
+					string.lower(info.var.name)
+				);
 
-        printnl("    CMiniBson _doc;");   
-        
-        if info.is_optional then
-            printfnl(
-                "    if(_bson->GetDocument(\"%s\",&_doc))",
-                info.var.name
-            ); 
-            printfnl("    {");            
-            
-            printfnl("        %s _tmp_%s;",
-                c_class_name_with_ns(info.var_type),
-                string.lower(info.var.name)
-            );
-            
-            printfnl("        __tmp_%s.Init();",
-                string.lower(info.var.name)
-            );
+				printfnl("        __tmp_%s.LoadBson(&_doc);",
+					string.lower(info.var.name)
+				);
+				
+				printfnl("        this->%s.%s(&__tmp_%s);",
+					member_name(info.var.name),
+					setter_name(info.var.name,info),
+					string.lower(info.var.name)
+				);
+				
+				printfnl("    }");
+			else
+				printnl(string.format(
+					"    BSON_CHECK(_bson->GetDocument(\"%s\",&_doc));",
+					info.var.name
+				));
 
-            printfnl("        __tmp_%s.LoadBson(&_doc);",
-                string.lower(info.var.name)
-            );
-            
-            printfnl("        this->%s.%s(&__tmp_%s);",
-                member_name(info.var.name),
-                setter_name(info.var.name,info),
-                string.lower(info.var.name)
-            );
-            
-            printfnl("    }");
-        else
-            printnl(string.format(
-                "    BSON_CHECK(_bson->GetDocument(\"%s\",&_doc));",
-                info.var.name
-            ));
-
-            printnl(string.format(
-                "    %s.LoadBson(&_doc);",
-                member_name(info.var.name)
-            ));
+				printnl(string.format(
+					"    %s.LoadBson(&_doc);",
+					member_name(info.var.name)
+				));
+			end			
         end
-        
-        
+		
         printnl(string.format(
             "    /*******%s end********/}",
             info.var.name
@@ -2618,56 +2672,73 @@ function code_cpp_load_bson_1(idl_class)
             info.var.name
         ));
         
-        printnl("    CMiniBson _doc;");
-        printnl("    int _array_len = 0;");
+		if info.is_struct then		
+			printfnl("    CMem _bin;");
+			
+			printfnl("    this->%s(0);",alloc_name(info.var.name));
+				
+			printfnl("    if(_bson->GetBinary(\"%s\",&_bin))",info.var.name);
+			printnl("    {");
+			
+			printfnl("        int _len = _bin.GetSize()/sizeof(%s);",
+				c_class_name_with_ns(info.var_type));
+			printfnl("        this->%s((%s*)_bin.GetRawBuf(),_len);",
+				setter_name(info.var.name),
+				c_class_name_with_ns(info.var_type)
+			);
+			printnl("    }");
+		else
+			printnl("    CMiniBson _doc;");
+			printnl("    int _array_len = 0;");
 
-        printnl(string.format(
-            "    if(_bson->GetArray(\"%s\",&_doc,&_array_len))",
-            info.var.name
-        ));
-        printnl("    {");
-        if not info.array_size then
-            printnl(string.format(
-                "        this->%s(_array_len);",
-                alloc_name(info.var.name)
-            ));
-        end
+			printnl(string.format(
+				"    if(_bson->GetArray(\"%s\",&_doc,&_array_len))",
+				info.var.name
+			));
+			printnl("    {");
+			if not info.array_size then
+				printnl(string.format(
+					"        this->%s(_array_len);",
+					alloc_name(info.var.name)
+				));
+			end
 
-        printnl(string.format(
-            "        for(int i = 0; i < %s; i++)",
-            array_size
-        ));
+			printnl(string.format(
+				"        for(int i = 0; i < %s; i++)",
+				array_size
+			));
 
-        printnl("        {");   
+			printnl("        {");   
 
-        if info.is_string then
-            printnl("            CMem __str;");
-            printnl(string.format(
-                "            BSON_CHECK(_doc.GetString(NULL,&__str));"
-            ));
+			if info.is_string then
+				printnl("            CMem __str;");
+				printnl(string.format(
+					"            BSON_CHECK(_doc.GetString(NULL,&__str));"
+				));
 
-            printnl(string.format(
-                "            this->%s(i,&__str);",
-                setter_array_elem_name(info.var.name)
-            ));
-        else
-            printnl("            CMiniBson __doc;");
-            printnl(string.format(
-                "            BSON_CHECK(_doc.GetDocument(NULL,&__doc));"
-            ));
-    
-            printnl(string.format(
-                "            %s[i].LoadBson(&__doc);",
-                member_name(info.var.name)
-            ));
-        end
+				printnl(string.format(
+					"            this->%s(i,&__str);",
+					setter_array_elem_name(info.var.name)
+				));
+			else
+				printnl("            CMiniBson __doc;");
+				printnl(string.format(
+					"            BSON_CHECK(_doc.GetDocument(NULL,&__doc));"
+				));
+		
+				printnl(string.format(
+					"            %s[i].LoadBson(&__doc);",
+					member_name(info.var.name)
+				));
+			end
 
-        printnl("        }");
-        printnl("    }");
-        printnl(string.format(
-            "    /*******%s end********/}",
-            info.var.name
-        ));
+			printnl("        }");
+			printnl("    }");
+		end
+		printnl(string.format(
+			"    /*******%s end********/}",
+			info.var.name
+		));
     end
 
     for_each_variables_sorted(idl_class.variables,function(info)

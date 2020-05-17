@@ -36,7 +36,12 @@ end
 
 --如何转成成员变量长度的名字--
 function member_name_len(name)
-	return member_name(name).."Size";
+	local str = member_name(name);
+	if string.find(str,"%u") then
+		return str.."Size";
+	else
+		return str.."_size";
+	end	
 end
 
 --如何生成getter函数的名字
