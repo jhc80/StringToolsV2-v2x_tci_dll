@@ -144,7 +144,7 @@ function code_variables_define(variables)
         print("    ");
         
         if info.is_weak_ptr then
-            print("CWeakPtr<");
+            print("CWeakPointer<");
         end
     
 		print(
@@ -1145,7 +1145,7 @@ end
 function code_getter_declaration(info,need_class_prefix)
 
     if info.is_weak_ptr and info.is_array then
-        print("CWeakPtr<");
+        print("CWeakPointer<");
     end
 
     if info.is_basic_type then
@@ -1871,7 +1871,7 @@ function code_alloc_body_unknown_array(info,need_class_prefix)
     end
     
     if info.is_weak_ptr then
-        var_type_name = string.format("CWeakPtr<%s>",var_type_name);
+        var_type_name = string.format("CWeakPointer<%s>",var_type_name);
     end
     
     if info.is_pointer then
