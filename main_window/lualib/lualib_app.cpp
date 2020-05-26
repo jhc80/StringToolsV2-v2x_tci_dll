@@ -113,7 +113,7 @@ static int app_getselfpath(lua_State *L)
 
     LOCAL_MEM(mem);
     lua_thread->GetCurrentPath(rpath,&mem);
-    lua_pushlstring(L,mem.CStr(),mem.StrLen());
+	lua_push_local_string(L,mem.CStr());
     return 1;
 }
 static int app_setbufferflushinterval(lua_State *L)

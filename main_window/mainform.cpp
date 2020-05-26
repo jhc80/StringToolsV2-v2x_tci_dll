@@ -6,6 +6,7 @@
 #include "pagetext.h"
 #include "pageimage.h"
 #include "globals.h"
+#include "_build_time_.h"
 
 #define PAGE_NAME_TEXT L"text"
 #define PAGE_NAME_IMAGE L"image"
@@ -416,7 +417,15 @@ int CMainForm::OnCommand(WPARAM wparam,LPARAM lparam)
 	}
 	else if(mitem_about->IsMyCommand(wparam))
 	{
-		MessageBoxW(hwnd,L"Moon String Tools by\nChen XiangPeng",L"About",MB_OK);		
+		LOCAL_MEM(text);
+
+		text.Puts("Moon String Tools.\n");
+		text.Puts("XiangPeng Chen.\n");
+		text.Puts("Build: ");
+		text.Printf("%s ",BUILD_DATE);
+		text.Printf("%s\n",BUILD_TIME);
+
+		MessageBoxA(hwnd,text.CStr(),"About",MB_OK);		
 	}
     else if(mitem_start->IsMyCommand(wparam))
     {		
