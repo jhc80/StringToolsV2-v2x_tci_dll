@@ -1,0 +1,7 @@
+[Peer wc][StartId 8000000]
+[MessageCenterClient TestClient 9000000]
+class MessageCenterServer{
+	[service] array<PeerProxy> GetAllPeers();
+}
+
+

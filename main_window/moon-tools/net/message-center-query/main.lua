@@ -1,9 +1,11 @@
-require("common");
+require("common")
 require("peer_service_base")
-require("user");
+require("user")
+require("cothread")
+
 App.ClearScreen();
 
-METHOD_MC_GETALLPEERNAMES = 8000001;
+METHOD_MC_GETALLPEERS = 8000001;
 
 MessageCenterClient = class(PeerServiceBase);
 
@@ -16,19 +18,19 @@ function MessageCenterClient:OnRequest(_context,_param)
 --##End OnRequest ##--
 end
 
---@@Begin Method GetAllPeerNames @@--
-function MessageCenterClient:GetAllPeerNames(_callback)
+--@@Begin Method GetAllPeers @@--
+function MessageCenterClient:GetAllPeers(_callback)
     local _cbid = self:AddCallback(_callback);
-    return self:SendRequest(null,METHOD_MC_GETALLPEERNAMES,_cbid);
+    return self:SendRequest(nil,METHOD_MC_GETALLPEERS,_cbid);
 end
---@@End Method GetAllPeerNames @@--
+--@@End Method GetAllPeers @@--
 
---@@Begin Method GetAllPeerNames_Async @@--
-function MessageCenterClient:GetAllPeerNames_Async(thread)
+--@@Begin Method GetAllPeers_Async @@--
+function MessageCenterClient:GetAllPeers_Async(thread)
     local ret = {};
     local done = false;
     
-    self:GetAllPeerNames(function(res,val)
+    self:GetAllPeers(function(res,val)
         ret.result = res;
         ret.value = val;
         done = true;
@@ -40,7 +42,7 @@ function MessageCenterClient:GetAllPeerNames_Async(thread)
     
     return ret;
 end
---@@End Method GetAllPeerNames_Async @@--
+--@@End Method GetAllPeers_Async @@--
 
 App.StartNet();
 
@@ -50,13 +52,39 @@ client:SetName("string-tools-client-temp");
 client:SetDestPeerName(query_peer_name);
 client:Start();
 
-client:GetAllPeerNames(function(ret,val)
-	if val and val.RetVal0 then
-		print_table(val.RetVal0);
-	else
-		print("fail.");
+function main_thread(thread)
+	
+	while true do
+		local done = false;
+		printnl("-------------------------");
+		client:GetAllPeers(function(ret,val)
+			if val and val.RetVal0 then
+				print_table(val.RetVal0);
+			else
+				print("fail.");
+			end
+			done = true;
+		end);
+		
+		while not done do
+			thread:Sleep(100);
+		end
+		
+		if interval <= 0 then
+			break;
+		end
+		
+		thread:Sleep(interval);
 	end
-end);
+	
+	App.QuitMainLoop();
+end
 
+if interval < 1000 then
+	interval = 1000;
+end
+
+co = CoThread.new();
+co:Start(main_thread);
 
 App.MainLoop();

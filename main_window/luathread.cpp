@@ -43,6 +43,7 @@
 #include "lualib_xmlnode.h"
 #include "lualib_serial.h"
 #include "lualib_queuefile.h"
+#include "lualib_peerproxy.h"
 
 extern "C" int _lua_running_flag;
 
@@ -222,6 +223,7 @@ status_t CLuaThread::InitLuaVm()
     luaopen_xmlnode(L);
     luaopen_serial(L);
     luaopen_queuefile(L);
+	luaopen_peerproxy(L);
 
     const char *work_folder = g_globals.GetWorkFolder();
 

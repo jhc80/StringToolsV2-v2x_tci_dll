@@ -9,6 +9,7 @@
 #include "lualib_mem.h"
 #include "lualib_stream.h"
 #include "lualib_filebase.h"
+#include "lualib_peerproxy.h"
 #include "lua_print.h"
 #include "lua_helper.h"
 /****************************************/
@@ -226,29 +227,31 @@ static int app_startmessagecenter(lua_State *L)
     lua_pushinteger(L,_ret_0);
     return 1;
 }
-static status_t app_getallpeernames(lua_State *L)
+
+
+static status_t app_getallpeers(lua_State *L)
 {
-    CPeerGlobals *g = (CPeerGlobals *)how_to_get_peer_globals();
+	GLOBAL_LUA_THREAD(lua_thread);
+    CPeerGlobals *g = lua_thread->GetPeerGlobals();
 	ASSERT(g);
-    CPeerProxyManager *mgr = g->GetPeerProxyManager();
+    
+	CPeerProxyManager *mgr = g->GetPeerProxyManager();
 	ASSERT(mgr);
 
-	CMemStk all_names;
-	all_names.Init();
+    if(mgr->GetTotalPeers() <= 0)
+        return 0;
 
+    lua_newtable(L);
+    int top = lua_gettop(L);
+    
 	for(int i = 0; i < mgr->GetTotalPeers(); i++)
 	{
-		CPeerProxy *proxy = mgr->GetPeer(i);
-		ASSERT(proxy);
-		all_names.Push(proxy->GetName());
+        lua_pushinteger(L,i+1);
+        peerproxy_new_userdata(L,mgr->GetPeer(i),1);
+        lua_settable(L, top);    
 	}
 
-	if(all_names.GetLen() > 0)
-	{
-		CLuaVm::PushStringArray(L,&all_names);
-		return 1;
-	}
-    return 0;
+    return 1;
 }
 
 ///////////////////////////////////
@@ -489,7 +492,7 @@ static const luaL_Reg app_lib[] = {
 	{"Base64Encode",app_base64encode},
     {"Base64Decode",app_base64decode},
     {"StartMessageCenter",app_startmessagecenter},
-	{"GetAllPeerNames",app_getallpeernames},	
+	{"GetAllPeers",app_getallpeers},	
     {"StartNet",app_startnet},
 	{"EndNet",app_endnet},
     {"SwitchToPageText",app_switchtopagetext},

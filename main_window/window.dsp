@@ -1098,6 +1098,14 @@ SOURCE=.\lualib\lualib_mmapfile.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\lualib\lualib_peerproxy.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\lualib\lualib_peerproxy.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\lualib\lualib_queuefile.cpp
 # End Source File
 # Begin Source File

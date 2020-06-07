@@ -130,7 +130,7 @@ function code_lua_not_service_function(idl_class,info)
         printfnl("    };");
     end
 
-    local param_str = info.params and "_param" or "null";
+    local param_str = info.params and "_param" or "nil";
     
     printfnl(
         "    return self:SendRequest(%s,%s,_cbid);",
