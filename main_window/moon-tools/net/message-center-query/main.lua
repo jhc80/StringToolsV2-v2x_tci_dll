@@ -70,7 +70,7 @@ function main_thread(thread)
 			thread:Sleep(100);
 		end
 		
-		if interval <= 0 then
+		if interval == 0 then
 			break;
 		end
 		
@@ -80,7 +80,7 @@ function main_thread(thread)
 	App.QuitMainLoop();
 end
 
-if interval < 1000 then
+if interval > 0  and interval < 1000 then
 	interval = 1000;
 end
 
