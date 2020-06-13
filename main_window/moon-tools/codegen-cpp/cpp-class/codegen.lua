@@ -225,7 +225,7 @@ function code_all_includes(idl_class)
         end
         
         if info.is_weak_ptr then
-            add_name("weakptr");
+            add_name("weak_pointer");
         end
     end);
     
