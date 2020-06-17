@@ -1810,10 +1810,6 @@ SOURCE=.\common\weak_ref.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\weakptr.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\websocket\web_socket_call_context.cpp
 # End Source File
 # Begin Source File

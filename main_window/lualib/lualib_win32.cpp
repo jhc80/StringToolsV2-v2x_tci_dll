@@ -94,6 +94,19 @@ static status_t win32_getdc(lua_State *L)
     return 1;
 }
 
+static status_t win32_getwindowdc(lua_State *L)
+{
+    HWND hwnd = (HWND)lua_tointeger(L,1);  
+    
+    CLuaHdc *hdc;
+    NEW(hdc,CLuaHdc);
+    hdc->Init();
+    hdc->Set(hwnd,::GetWindowDC(hwnd));
+
+    luahdc_new_userdata(L,hdc,0);
+    return 1;
+}
+
 static status_t win32_getpixel(lua_State *L)
 {
     CLuaHdc *hdc = get_luahdc(L,1);
@@ -167,6 +180,7 @@ static const luaL_Reg win32_funcs_[] = {
     {"SetCursorPos",win32_setcursorpos},
     {"GetDesktopWindow",win32_getdesktopwindow},
     {"GetDC",win32_getdc},
+	{"GetWindowDC",win32_getdc},
     {"GetPixel",win32_getpixel},	
     {"SendMessage",win32_sendmessage},
     {"BitBlt",win32_bitblt},	
