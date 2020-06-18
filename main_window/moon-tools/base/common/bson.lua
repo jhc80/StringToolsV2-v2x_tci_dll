@@ -57,7 +57,7 @@ end
 
 function value_to_bson(bson,key,value)
     if not value then return end    
-    if type(value) == "table" then            
+    if type(value) == "table" then    
         if value._is_array_ then
             local off_a = bson:StartArray(key);
             local length = 0;
@@ -94,7 +94,7 @@ function ObjectToBson(obj)
     if not obj then return end
     local bson = Bson.new();
     bson:StartDocument();
-            
+
     for k,v in pairs_ordered(obj) do
         value_to_bson(bson,k,v);
     end 

@@ -47,10 +47,16 @@ static int screen_resize(lua_State *L)
 {
 	GLOBAL_SCREEN_BUFFER(screen);
     GLOBAL_PAGE_IMAGE(page_image);
+	
 	int w = (int)lua_tointeger(L,1);
 	int h = (int)lua_tointeger(L,2);
-    screen->Lock();
-    page_image->ResetPosition();
+	
+	if(w != screen->GetWidth() || h != screen->GetHeight())
+	{
+		page_image->ResetPosition();
+	}
+
+    screen->Lock();    
 	int _ret_0 = (int)screen->Resize(w,h);
     screen->Unlock();
 	lua_pushboolean(L,_ret_0);
@@ -158,6 +164,22 @@ static int screen_drawimage(lua_State *L)
     screen->DrawImage(img,offx,offy,op,mix_alpha);
     return 0;
 }
+
+static status_t screen_refreshui(lua_State *L)
+{
+    GLOBAL_PAGE_IMAGE(page_image);
+	page_image->RefreshUI();
+    return 0;
+}
+
+static status_t screen_refreshscreen(lua_State *L)
+{
+    bool clear = lua_toboolean(L,1)!=0;
+    GLOBAL_PAGE_IMAGE(page_image);
+	page_image->RefreshScreen(clear);
+	return 0;
+}
+
 static const luaL_Reg screen_lib[] = {
 	{"GetWidth",screen_getwidth},
 	{"GetHeight",screen_getheight},
@@ -171,6 +193,8 @@ static const luaL_Reg screen_lib[] = {
     {"GetViewWidth",screen_getviewwidth},
 	{"GetViewHeight",screen_getviewheight},
 	{"DrawImage",screen_drawimage},
+    {"RefreshUI",screen_refreshui},
+    {"RefreshScreen",screen_refreshscreen},
 	{NULL, NULL}
 };
 static int luaL_register_screen(lua_State *L)

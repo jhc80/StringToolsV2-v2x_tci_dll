@@ -535,5 +535,9 @@ class LexerLua{
 	Lexer Lexer();
 }
 
+class Screen{
+	[static] status_t RefreshUI();
+	[static] status_t RefreshScreen(bool clear);
+}
 
 

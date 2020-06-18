@@ -1,0 +1,5 @@
+[Peer rd][StartId 1000000]
+[Client RemoteDesktopClient 2000000]
+class RemoteDesktopServer{
+	[service] (array<uint8_t> jpeg) TakeScreenShot(double ratiox, double ratioy, double quality);
+}

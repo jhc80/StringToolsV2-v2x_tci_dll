@@ -69,10 +69,12 @@ CxImage* CScreenBuffer::GetImageBuffer()
 status_t CScreenBuffer::Create(int width, int height)
 {
     ASSERT((width*height*4) < 512*1024*1024);
+	SAVE_WEAK_REF_ID(m_ImageBuffer,w);
     m_ImageBuffer.DestroyAll();
     m_ImageBuffer.Init();
     m_ImageBuffer.Create(width,height,32,0);
     m_ImageBuffer.AlphaCreate();
+	RESTORE_WEAK_REF_ID(m_ImageBuffer,w);
     return OK;
 }
 

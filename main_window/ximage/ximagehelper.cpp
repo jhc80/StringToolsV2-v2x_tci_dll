@@ -15,7 +15,7 @@ status_t CxImageHelper::LoadImage(CFileBase *file, CxImage *out)
     
     SAVE_WEAK_REF_ID(*out,w);
     out->DestroyAll();
-    RESTORE_WEAK_REF_ID(*out,w);
+	RESTORE_WEAK_REF_ID(*out,w);
 
     int32_t type = CxImage::GetTypeByFileHeader(file);
     if(type == CXIMAGE_FORMAT_BMP)
@@ -57,7 +57,6 @@ status_t CxImageHelper::LoadImage(CFileBase *file, CxImage *out)
             return OK;
         }
     }
-
     return ERROR;
 }
 
@@ -266,7 +265,9 @@ status_t CxImageHelper::CreateImageFromHdc(
 		int nWidthSrc, int nHeightSrc)
 {
 	ASSERT(img);
-	
+	ASSERT(nWidthDest > 0 && nHeightDest > 0);
+	ASSERT(nWidthSrc > 0 && nHeightSrc > 0);
+
 	HBITMAP hbmWnd = ::CreateCompatibleBitmap(hdcSrc, nWidthSrc, nHeightSrc);
 	ASSERT(hbmWnd);
 	
