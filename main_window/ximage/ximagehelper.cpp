@@ -268,7 +268,11 @@ status_t CxImageHelper::CreateImageFromHdc(
 	ASSERT(img);
 	
 	HBITMAP hbmWnd = ::CreateCompatibleBitmap(hdcSrc, nWidthSrc, nHeightSrc);
+	ASSERT(hbmWnd);
+	
 	HDC hdcMem = ::CreateCompatibleDC(hdcSrc);
+	ASSERT(hdcMem);
+
 	::SelectObject(hdcMem, hbmWnd);
 	::StretchBlt(hdcMem, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, 
 		hdcSrc, nXOriginSrc, nYOriginSrc,nWidthSrc,nHeightSrc,SRCCOPY);
