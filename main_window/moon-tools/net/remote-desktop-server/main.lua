@@ -10,18 +10,34 @@ local screen_width = r[3];
 local screen_height = r[4];
 local img = XImage.new();
 
-local g_ratiox,g_ratioy,g_quality;
+local g_ratiox = 1;
+local g_ratioy = 1;
+local g_quality = 100;
+local taked = false;
 
 jpeg_file = new_mem(4*1024*1024);
 
 function take_screen_shot(ratiox, ratioy,quality)
 	if ratiox >  1 then ratiox = 1 end
+	if ratiox < 0.1 then ratiox = 0.1 end
 	if ratioy >  1 then ratioy = 1 end
+	if ratioy < 0.1 then ratioy = 0.1 end
 	if quality > 100 then quality = 100 end
-
-	g_ratiox = ratiox;
-	g_ratioy = ratioy;
-	g_quality = quality;
+	if quality < 10 then quality = 10 end
+	
+	if ratiox < g_ratiox then
+		g_ratiox = ratiox;
+	end
+	
+	if ratioy < g_ratioy then
+		g_ratioy = ratioy;
+	end
+	
+	if quality < g_quality then
+		g_quality = quality;
+	end
+	
+	taked = false;
 end
 
 function real_take_screen_shot(ratiox, ratioy,quality)
@@ -52,9 +68,9 @@ rd_server:Start();
 
 function screen_shot_thread(thread)
 	while true do
-		if g_ratiox then
+		if not taked then
 			real_take_screen_shot(g_ratiox,g_ratioy,g_quality);
-			g_ratiox = nil;
+			taked = true;
 		end
 		thread:Sleep(20);
 	end
