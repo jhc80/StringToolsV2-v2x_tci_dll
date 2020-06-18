@@ -16,4 +16,4 @@ ratioy = 1.0;
 quality = 35;
 
 --每一帧的休眠时间
-sleep_time = 100;
+sleep_time = 30;

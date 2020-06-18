@@ -25,6 +25,7 @@ App.SwitchToPageImage();
 
 function main_thread(thread)
 	local resized = false;
+	local frame = 0;
 	
 	while true do
 		local done = false;
@@ -42,6 +43,9 @@ function main_thread(thread)
 					
 					Screen.DrawImage(img,0,0);
 					Screen.RefreshScreen(false);
+					frame = frame + 1;
+					App.SetStatusText(2,"frame="..frame);
+					img:Destroy();
 				end
 				done = true;
 		end);		
