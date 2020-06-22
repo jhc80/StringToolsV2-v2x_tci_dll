@@ -68,7 +68,7 @@ end
     );
 
     printfnl("    status_t Print(CFileBase *_buf);");
-    printfnl("      status_t Copy(%s *stk);",names.c_class_name);
+    printfnl("    status_t Copy(%s *stk);",names.c_class_name);
     printfnl("    int Comp(%s *stk);",names.c_class_name);
     printfnl("};");
     printfnl("");
