@@ -2,13 +2,21 @@ require("print_buffer");
 
 local function escape_js_string(str)
     local mf,mf_file = new_memfile();    
+    
     for i=1,string.len(str),1 do    
         local b = string.byte(str,i);
-        if b == 92 or b == 39 or b ==34 then        
+        if b == 10 then
+            mf_file:Puts("\\n");
+        elseif b == 13 then
+            mf_file:Puts("\\r");
+        elseif b == 92 or b == 39 or b ==34 then        
             mf_file:Putc(92);        
+            mf_file:Putc(b);
+        else
+            mf_file:Putc(b);
         end
-        mf_file:Putc(b);
     end
+
     return file_to_string(mf_file);
 end
 
