@@ -2428,7 +2428,7 @@ function code_cpp_save_bson_1(idl_class)
     end
 
     for_each_variables_sorted(idl_class.variables,function(info)
-        if info.is_pointer then
+        if info.is_pointer or info.is_weak_ptr then
             return
         end
 
@@ -2748,7 +2748,7 @@ function code_cpp_load_bson_1(idl_class)
     end
 
     for_each_variables_sorted(idl_class.variables,function(info)
-        if info.is_pointer then
+        if info.is_pointer  or info.is_weak_ptr then
             return
         end
 
