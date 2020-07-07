@@ -33,7 +33,9 @@ function code_h(names)
     printfnl("    status_t InsertBefore(%s *node);",names.c_entry_class_name);
     printfnl("    status_t InsertAfter(%s *node);",names.c_entry_class_name);
     printfnl("    status_t AddChild(%s *node);",names.c_entry_class_name);
-    printfnl("    status_t RemoveFromTheTree();");
+    printfnl("    status_t DetachFromTheTree();");
+    printfnl("    status_t AddChildToTail(%s *node);",names.c_entry_class_name);
+    printfnl("    %s* GetLastChild();",names.c_entry_class_name);
 	
     if code_switch.bson then
         printfnl("");
