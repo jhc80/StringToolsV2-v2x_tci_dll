@@ -2601,16 +2601,15 @@ function code_cpp_load_bson_1(idl_class)
 					string.lower(info.var.name)
 				);
 				
-				printfnl("        __tmp_%s.Init();",
+				printfnl("        _tmp_%s.Init();",
 					string.lower(info.var.name)
 				);
 
-				printfnl("        __tmp_%s.LoadBson(&_doc);",
+				printfnl("        _tmp_%s.LoadBson(&_doc);",
 					string.lower(info.var.name)
 				);
 				
-				printfnl("        this->%s.%s(&__tmp_%s);",
-					member_name(info.var.name),
+				printfnl("        this->%s(&_tmp_%s);",
 					setter_name(info.var.name,info),
 					string.lower(info.var.name)
 				);
