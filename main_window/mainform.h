@@ -55,6 +55,10 @@ public:
     CMenu *mitem_text_window;
     CMenu *mitem_image_window;
 	CMenu *mitem_find;
+	CMenu *menu_tools;
+	CMenu *mitem_choose_file;
+	CMenu *mitem_choose_folder;
+
     //////////////////////////////////
     CPopupMenu *menu_context;
     CMenu *mitem_r_run;
@@ -63,6 +67,8 @@ public:
     CMenu *mitem_r_help;
 
 public:
+	status_t OnChooseFile();
+	status_t OnChooseFolder();
 	status_t OnShowContextMenu(MSG *msg);
 	status_t HideEmbeddedUIWindow();
 	status_t ShowEmbeddedUIWindow(int height);

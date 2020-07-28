@@ -64,6 +64,10 @@ int CMainForm::InitBasic()
     this->mitem_r_attrib = NULL;
     this->mitem_r_open_folder = NULL;
     this->mitem_r_help = NULL;
+	this->menu_tools = NULL;
+	this->mitem_choose_file = NULL;
+	this->mitem_choose_folder = NULL;
+
     return OK;
 }
 int CMainForm::Init()
@@ -278,6 +282,21 @@ int CMainForm::CreateMenu()
 	this->mitem_find->SetName(L"Find\tCtrl+F");
 	this->mitem_find->Create();
 
+	NEW(this->menu_tools,CMenu);
+	this->menu_tools->Init();
+	this->menu_tools->SetName(L"&Tools");
+	this->menu_tools->Create();
+	NEW(this->mitem_choose_file,CMenu);
+	this->mitem_choose_file->Init();
+	this->mitem_choose_file->SetName(L"Choose &file");
+	this->mitem_choose_file->Create();
+	NEW(this->mitem_choose_folder,CMenu);
+	this->mitem_choose_folder->Init();
+	this->mitem_choose_folder->SetName(L"Choose Fo&lder");
+	this->mitem_choose_folder->Create();
+
+
+
     this->menu_bar->AddMenu(menu_file);
     this->menu_bar->AddMenu(menu_vm);
     this->menu_file->AddItem(mitem_open);
@@ -295,6 +314,10 @@ int CMainForm::CreateMenu()
     this->menu_edit->AddSeparator();
     this->menu_edit->AddItem(mitem_clear);
     this->menu_edit->AddItem(mitem_select_all);
+	this->menu_bar->AddMenu(menu_tools);
+	this->menu_tools->AddItem(mitem_choose_file);
+	this->menu_tools->AddItem(mitem_choose_folder);
+
     this->menu_bar->AddMenu(menu_view);
     this->menu_view->AddItem(mitem_text_window);
     this->menu_view->AddItem(mitem_image_window);
@@ -379,6 +402,9 @@ int CMainForm::Destroy()
     DEL(mitem_image_window);
     DEL(menu_view);
     //////////////////////
+	DEL(this->menu_tools);
+	DEL(this->mitem_choose_file);
+	DEL(this->mitem_choose_folder);
 	CWnd::Destroy();
     this->InitBasic();
 	PostQuitMessage(0);
@@ -541,6 +567,14 @@ int CMainForm::OnCommand(WPARAM wparam,LPARAM lparam)
     {
         this->ShowPropertyWindow();
     }
+	else if(mitem_choose_file->IsMyCommand(wparam))
+	{
+		this->OnChooseFile();
+	}
+	else if(mitem_choose_folder->IsMyCommand(wparam))
+	{
+		this->OnChooseFolder();
+	}
 	return OK;
 }
 
@@ -1067,5 +1101,34 @@ status_t CMainForm::OnShowContextMenu(MSG *msg)
         menu_context->Show(info.pt.x,info.pt.y);
     }
 
+    return OK;
+}
+status_t CMainForm::OnChooseFile()
+{
+    LOCAL_MEM(filename);
+	HWND focus = ::GetFocus();
+	status_t ret = CWinMisc::GetAFileName(hwnd,&filename,L"All files\0*.*\0\0");
+    if(!ret) return ERROR;
+	if(CWinMisc::IsEditBox(focus))
+	{
+		CEditBox eb;
+		eb.AttachWnd(focus);
+		eb.ReplaceSel(filename.CStrW());
+	}
+    return OK;
+}
+
+status_t CMainForm::OnChooseFolder()
+{
+    LOCAL_MEM(filename);
+	HWND focus = ::GetFocus();
+    status_t ret = CWinMisc::FolderSelect(hwnd,&filename);
+    if(!ret) return ERROR;
+	if(CWinMisc::IsEditBox(focus))
+	{
+		CEditBox eb;
+		eb.AttachWnd(focus);
+		eb.ReplaceSel(filename.CStrW());
+	}
     return OK;
 }
