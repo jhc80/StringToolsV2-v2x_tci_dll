@@ -447,10 +447,6 @@ function code_cpp_init_basic(idl_class)
         c_class_name(idl_class.name)
     ));    
     printnl("{");
-    
-    code_begin_marker("InitBasic");
-
-    print(g_cpp_base_codegen:Code_InitBasic());
         
     clear_temp_code();
     local need_i = false;
@@ -528,6 +524,8 @@ function code_cpp_init_basic(idl_class)
         end   
     end
     
+
+	
     for_each_variables(idl_class.variables,function(info)         
         if info.is_array then        
             if info.array_size then
@@ -539,14 +537,16 @@ function code_cpp_init_basic(idl_class)
             pc_not_array(info);
         end    
     end);
+	
+	code_begin_marker("InitBasic");
     
     if need_i then
         printnl("    int i = 0;");        
         printnl("");
     end
     
+    print(g_cpp_base_codegen:Code_InitBasic());
     print(get_temp_code());
-
     code_end_marker("InitBasic");
             
     printnl("    return OK;");
@@ -621,20 +621,16 @@ function code_cpp_init(idl_class)
         end    
     end);
     
+	printnl("    this->InitBasic();");    
     code_begin_marker("Init");
-
-    printnl("    this->InitBasic();");    
     print(g_cpp_base_codegen:Code_Init());    
 
     if need_i then
         printnl("    int i = 0;");        
         printnl("");
     end
-        
     print(get_temp_code());
-
     code_end_marker("Init");
-        
     printnl("    return OK;");
     printnl("}");
 end
@@ -729,10 +725,8 @@ function code_cpp_destroy(idl_class)
     end
         
     print(get_temp_code());
-    printnl("    this->InitBasic();");
-
     code_end_marker("Destroy");
-   
+    printnl("    this->InitBasic();");
     printnl("    return OK;");
     printnl("}");
 end

@@ -25,28 +25,29 @@ function code_cpp(names)
     printfnl("status_t %s::InitBasic()",names.c_class_name);
     printfnl("{");
     printfnl("    CTask::InitBasic();");
-    printfnl("    this->m_Step = 0;");
-    printfnl("    this->m_Callback.InitBasic();");
-
 	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("InitBasic"));
 	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("InitBasic"));
+    printfnl("    this->m_Step = 0;");
+    printfnl("    this->m_Callback.InitBasic();");
 
     printfnl("    return OK;");
     printfnl("}");
     printfnl("status_t %s::Init(CTaskMgr *mgr)",names.c_class_name);
     printfnl("{");
-    printfnl("    CTask::Init(mgr);");
-    printfnl("    this->m_Callback.Init();");
+	printfnl("    this->InitBasic();");
 	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Init"));
 	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Init"));
+    printfnl("    CTask::Init(mgr);");
+    printfnl("    this->m_Callback.Init();");
     printfnl("    return OK;");
     printfnl("}");
     printfnl("status_t %s::Destroy()",names.c_class_name);
     printfnl("{");
+	
+	printfnl("    CTask::Destroy();");
+    printfnl("    this->m_Callback.Destroy();");
 	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Destroy"));
 	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Destroy"));
-    printfnl("    this->m_Callback.Destroy();");
-    printfnl("    CTask::Destroy();");
     printfnl("    this->InitBasic();");
     printfnl("    return OK;");
     printfnl("}");
