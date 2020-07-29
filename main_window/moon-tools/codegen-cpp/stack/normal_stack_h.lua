@@ -7,13 +7,13 @@ function code_normal_h(names)
     printfnl("#include \"mem.h\"");
     printfnl("#include \"%s.h\"",names.node_file_name);
     
-    printnl(g_cpp_base_codegen:Code_Includes());
-    printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
+    maybe_printnl(g_cpp_base_codegen:Code_Includes());
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
 
     printfnl("");
     printfnl("class %s{",names.c_class_name);
 
-    printnl(g_cpp_base_codegen:Code_ClassHeader());
+    maybe_printnl(g_cpp_base_codegen:Code_ClassHeader());
 
     printfnl("private:");
     printfnl("    %s **m_Index;",names.c_node_class_name);
@@ -73,7 +73,7 @@ end
     printfnl("};");
     printfnl("");
 
-    printnl(g_cpp_base_codegen:Code_NameSpaceEnd());   
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceEnd());   
     printfnl("");
     printfnl("#endif");
 

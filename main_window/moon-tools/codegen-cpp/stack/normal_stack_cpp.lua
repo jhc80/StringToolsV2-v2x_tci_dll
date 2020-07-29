@@ -5,7 +5,7 @@ function code_normal_cpp(names)
     printfnl("#include \"mem_tool.h\"");
     printfnl("#include \"syslog.h\"");
     printfnl("");
-    printnl(g_cpp_base_codegen:Code_NameSpaceBegin());    
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());    
     printfnl("");
     printfnl("%s::%s()",names.c_class_name,names.c_class_name);
     printfnl("{");
@@ -18,7 +18,7 @@ function code_normal_cpp(names)
     printfnl("status_t %s::InitBasic()",names.c_class_name);
     printfnl("{");
     
-    printnl(g_cpp_base_codegen:Code_InitBasic());    
+    maybe_printnl(g_cpp_base_codegen:Code_InitBasic());    
 
     printfnl("    this->m_Index = NULL;");
     printfnl("    this->m_Top = 0;");
@@ -34,7 +34,7 @@ function code_normal_cpp(names)
     printfnl("{");
     printfnl("    int i;");
     printfnl("    this->InitBasic();  ");
-    printnl(g_cpp_base_codegen:Code_Init());
+    maybe_printnl(g_cpp_base_codegen:Code_Init());
     printfnl("    this->m_Size = init_size;");
     printfnl("    MALLOC(this->m_Index,%s* ,this->m_Size);",names.c_node_class_name);
     printfnl("    for(i = 0; i < this->m_Size; i++)");
@@ -46,7 +46,7 @@ function code_normal_cpp(names)
     printfnl("{");
     printfnl("    int i;");
 	
-	printfnl(g_cpp_base_codegen:Code_Destroy());
+	maybe_printnl(g_cpp_base_codegen:Code_Destroy());
 	
     printfnl("    if(this->m_Index == NULL)");
     printfnl("        return ERROR;");
@@ -472,7 +472,7 @@ end
     printfnl("}");
     printfnl("/////////////////////////////////////////////////////////////////////////////////////");
     printfnl("");
-    printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
     printfnl("");
 
 end

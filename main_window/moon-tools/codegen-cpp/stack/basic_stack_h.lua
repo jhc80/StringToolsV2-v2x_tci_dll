@@ -7,13 +7,13 @@ function code_basic_h(names)
     printfnl("#include \"mem.h\"");
     printfnl("#include \"memfile.h\"");
 
-    printnl(g_cpp_base_codegen:Code_Includes());
-    printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
+    maybe_printnl(g_cpp_base_codegen:Code_Includes());
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
 
     printfnl("");
     printfnl("class %s{",names.c_class_name);
 
-    printnl(g_cpp_base_codegen:Code_ClassHeader());
+    maybe_printnl(g_cpp_base_codegen:Code_ClassHeader());
 
     printfnl("private:");
     printfnl("    %s *m_Data;",names.node_class_name);
@@ -55,6 +55,7 @@ function code_basic_h(names)
     printfnl("    int Comp(%s *stk);",names.c_class_name);
     printfnl("};");
     printfnl("");
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
     printfnl("#endif");
     
     printfnl("");

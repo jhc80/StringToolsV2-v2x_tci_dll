@@ -4,6 +4,9 @@ function code_cpp(names)
     printfnl("#include \"%s.h\"",names.file_name);
     printfnl("#include \"mem_tool.h\"");
     printfnl("#include \"syslog.h\"");
+	
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
+	
     printfnl("");
     printfnl("enum{");
     printfnl("    STEP_NONE = 0,");
@@ -24,16 +27,24 @@ function code_cpp(names)
     printfnl("    CTask::InitBasic();");
     printfnl("    this->m_Step = 0;");
     printfnl("    this->m_Callback.InitBasic();");
+
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("InitBasic"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("InitBasic"));
+
     printfnl("    return OK;");
     printfnl("}");
     printfnl("status_t %s::Init(CTaskMgr *mgr)",names.c_class_name);
     printfnl("{");
     printfnl("    CTask::Init(mgr);");
     printfnl("    this->m_Callback.Init();");
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Init"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Init"));
     printfnl("    return OK;");
     printfnl("}");
     printfnl("status_t %s::Destroy()",names.c_class_name);
     printfnl("{");
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Destroy"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Destroy"));
     printfnl("    this->m_Callback.Destroy();");
     printfnl("    CTask::Destroy();");
     printfnl("    this->InitBasic();");
@@ -83,5 +94,9 @@ function code_cpp(names)
     printfnl("    END_FSM();");
     printfnl("    return OK;");
     printfnl("}");
+	
+	maybe_printnl(g_cpp_base_codegen:Code_InsertPoint("Function"));
     printfnl("");
+	
+    printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
 end

@@ -3,6 +3,7 @@ require("user")
 require("code_utils")
 require("task_h")
 require("task_cpp")
+require("cpp_base_codegen");
 
 mem_text = load_from_file_or_editor(idl_source);
 
@@ -33,6 +34,9 @@ end
 
 for _,idl_class in ipairs(all_idl_classes) do    
     set_code_switch_by_hint(idl_class.hint,code_switch);
+    g_cpp_base_codegen = CppBaseCodeGen.new(idl_class,code_switch);
+    g_cpp_base_codegen:SetHowToConvertFileName(to_file_name);
+
     local task_name = idl_class.name;
     
     function save_current_file(ext)

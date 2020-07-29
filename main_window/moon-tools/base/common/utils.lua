@@ -255,3 +255,8 @@ function set_timeout(func,interval)
     timer:Start();    
     return timer;
 end
+
+function maybe_printnl(str)
+	if not str then return end
+	printnl(str);
+end

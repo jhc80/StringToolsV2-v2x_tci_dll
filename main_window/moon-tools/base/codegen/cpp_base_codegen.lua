@@ -252,3 +252,38 @@ end
 function CppBaseCodeGen:SetHowToConvertFileName(func)
     self.m_how_to_convert_file_name = func;
 end
+
+function CppBaseCodeGen:Code_BeginMarker(name)
+    if not code_switch.code_mark then
+        return
+    end
+    return ("/*##Begin "..name.."##*/");
+end
+
+function CppBaseCodeGen:Code_EndMarker(name)
+    if not code_switch.code_mark then
+        return
+    end
+    return ("/*##End "..name.."##*/");
+end
+
+function CppBaseCodeGen:Code_BeginExtra(name)
+    if not code_switch.code_mark then
+        return
+    end
+    return ("/*@@Begin Function "..name.."@@*/");
+end
+
+function CppBaseCodeGen:Code_EndExtra(name)
+    if not code_switch.code_mark then
+        return
+    end
+    return ("/*@@End  Function "..name.."@@*/");
+end
+
+function CppBaseCodeGen:Code_InsertPoint(name)
+    if not code_switch.code_mark then
+        return
+    end
+	return "/*@@ Insert "..name.." Here @@*/";
+end

@@ -48,7 +48,8 @@ class Test{
 声明为struct类型，相应的操作都会变成类似于 memcpy的操作
 不会对struct进行深拷贝的操作。
 
-
+可以通过 [Includes hello world] 这样的hint给文件加入自定义的include
+头文件
 
 
 
