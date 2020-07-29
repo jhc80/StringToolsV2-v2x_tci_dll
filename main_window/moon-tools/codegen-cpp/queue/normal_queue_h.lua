@@ -7,19 +7,25 @@ function code_normal_h(names)
     printfnl("#include \"%s.h\"",names.node_file_name);
     printfnl("#include \"filebase.h\"");
 
-    printnl(g_cpp_base_codegen:Code_Includes());
-    printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
+    maybe_printnl(g_cpp_base_codegen:Code_Includes());
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Inlcudes"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Inlcudes"));
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
 
     printfnl("");
     printfnl("class %s{",names.c_class_name);
 
-    printnl(g_cpp_base_codegen:Code_ClassHeader());
+    maybe_printnl(g_cpp_base_codegen:Code_ClassHeader());
 
     printfnl("private:");
     printfnl("    %s *m_Data;",names.c_node_class_name);
     printfnl("    int m_Head, m_Tail;");
     printfnl("    int m_Size;");
     printfnl("    bool m_IsFull;");
+
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Members"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Members"));
+
     printfnl("public:");
     printfnl("    status_t Clear();");
     printfnl("    int GetLen();");
@@ -44,10 +50,16 @@ function code_normal_h(names)
     printfnl("    status_t Comp(%s *queue);",names.c_class_name);
     printfnl("    status_t Print(CFileBase *_buf);");
     printfnl("    status_t InitBasic();");
+
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Getter_H"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Getter_H"));
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Setter_H"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Setter_H"));
+	
     printfnl("};");
     
     printfnl("");
-    printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
     printfnl("");
 
     printfnl("#endif");

@@ -6,7 +6,7 @@ function code_basic_cpp(names)
     printfnl("#include \"mem_tool.h\"");
     
     printfnl("");    
-    printnl(g_cpp_base_codegen:Code_NameSpaceBegin());    
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());    
     printfnl("");
 
     printfnl("%s::%s()",names.c_class_name,names.c_class_name);
@@ -20,8 +20,9 @@ function code_basic_cpp(names)
     printfnl("status_t %s::InitBasic()",names.c_class_name);
     printfnl("{");
 
-    printnl(g_cpp_base_codegen:Code_InitBasic());    
-
+    maybe_printnl(g_cpp_base_codegen:Code_InitBasic());    
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("InitBasic"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("InitBasic"));
     printfnl("    this->m_Head = 0;");
     printfnl("    this->m_Tail = 0;");
     printfnl("    this->m_Data = NULL;");
@@ -37,8 +38,9 @@ function code_basic_cpp(names)
 
     printfnl("{");
     printfnl("    this->InitBasic();");
-
-    printnl(g_cpp_base_codegen:Code_Init());    
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Init"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Init"));
+    maybe_printnl(g_cpp_base_codegen:Code_Init());    
 
     printfnl("    MALLOC(this->m_Data,%s,size);",names.node_class_name);
     printfnl("    this->m_Size = size;");
@@ -47,6 +49,8 @@ function code_basic_cpp(names)
     printfnl("status_t %s::Destroy()",names.c_class_name);
     printfnl("{");
 	printfnl(g_cpp_base_codegen:Code_Destroy());
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Destroy"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Destroy"));	
     printfnl("    FREE(this->m_Data);");
     printfnl("    this->InitBasic();");
     printfnl("    return OK;");
@@ -136,6 +140,8 @@ function code_basic_cpp(names)
     printfnl("        this->Enqueue(v);");
     printfnl("    }");
     printfnl("    ");
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Copy"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Copy"));
     printfnl("    return OK;");
     printfnl("}");
     printfnl("");
@@ -161,10 +167,14 @@ function code_basic_cpp(names)
     printfnl("        //add your code");
     printfnl("    }");
     printfnl("");
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Print"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Print"));
     printfnl("    return TRUE;");
     printfnl("}");
 
     printfnl("");    
-    printnl(g_cpp_base_codegen:Code_NameSpaceEnd());    
+	maybe_printnl(g_cpp_base_codegen:Code_InsertPoint("Function"));
+	printfnl("");    
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceEnd());    
     printfnl("");
 end

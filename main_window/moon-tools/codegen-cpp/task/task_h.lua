@@ -7,9 +7,9 @@ function code_h(names)
     printfnl("#include \"taskmgr.h\"");
     printfnl("#include \"closure.h\"");
     maybe_printnl(g_cpp_base_codegen:Code_Includes());
-    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
 	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Inlcudes"));
 	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Inlcudes"));
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
     printfnl("");
     printfnl("class %s:public CTask{",names.c_class_name);
     printfnl("public:");

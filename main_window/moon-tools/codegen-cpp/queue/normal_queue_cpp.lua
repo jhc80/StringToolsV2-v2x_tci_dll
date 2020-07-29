@@ -5,7 +5,7 @@ function code_normal_cpp(names)
     printfnl("#include \"syslog.h\"");
     printfnl("#include \"mem_tool.h\"");
     printfnl("");    
-    printnl(g_cpp_base_codegen:Code_NameSpaceBegin());    
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());    
     printfnl("");
 
     printfnl("%s::%s()",names.c_class_name,names.c_class_name);
@@ -19,8 +19,10 @@ function code_normal_cpp(names)
     printfnl("status_t %s::InitBasic()",names.c_class_name);
     printfnl("{");
 
-    printnl(g_cpp_base_codegen:Code_InitBasic());    
-
+    maybe_printnl(g_cpp_base_codegen:Code_InitBasic());    
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("InitBasic"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("InitBasic"));
+	
     printfnl("    this->m_Head = 0;");
     printfnl("    this->m_Tail = 0;");
     printfnl("    this->m_Data = NULL;");
@@ -38,7 +40,9 @@ function code_normal_cpp(names)
     printfnl("    int i;");
     printfnl("    this->InitBasic();");
 
-    printnl(g_cpp_base_codegen:Code_Init());    
+    maybe_printnl(g_cpp_base_codegen:Code_Init());    
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Init"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Init"));
 
     printfnl("");
     printfnl("    NEW_ARRAY(this->m_Data,%s,size);",names.c_node_class_name);
@@ -51,7 +55,9 @@ function code_normal_cpp(names)
     printfnl("}");
     printfnl("status_t %s::Destroy()",names.c_class_name);
     printfnl("{");
-	printfnl(g_cpp_base_codegen:Code_Destroy());
+	maybe_printnl(g_cpp_base_codegen:Code_Destroy());
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Destroy"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Destroy"));
     printfnl("    DEL_ARRAY(this->m_Data);");
     printfnl("    this->InitBasic();");
     printfnl("    return OK;");
@@ -117,6 +123,8 @@ function code_normal_cpp(names)
     printfnl("        this->Enqueue(queue->GetElem(i));");
     printfnl("    }");
     printfnl("");
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Copy"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Copy"));
     printfnl("    return OK;");
     printfnl("}");
     printfnl("");
@@ -150,6 +158,8 @@ function code_normal_cpp(names)
     printfnl("        _buf->Log(\"}\");");
     printfnl("    }");
     printfnl("");
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Print"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Print"));
     printfnl("    return TRUE;");
     printfnl("}");
     printfnl("");
@@ -180,7 +190,7 @@ function code_normal_cpp(names)
     printfnl("    return this->GetElem(GetLen()-1);");
     printfnl("}");
     printfnl("");
-    printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
     printfnl("");
     
 end

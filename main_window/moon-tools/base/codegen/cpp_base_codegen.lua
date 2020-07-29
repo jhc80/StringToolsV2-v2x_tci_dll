@@ -215,7 +215,7 @@ function CppBaseCodeGen:GetUserIncludes()
 end
 
 function CppBaseCodeGen:GetNameSpace()
-    if name_space ~= "" then
+    if name_space and name_space ~= "" then
         return name_space;
     end
     

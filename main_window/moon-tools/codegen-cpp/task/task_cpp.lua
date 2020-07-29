@@ -95,7 +95,7 @@ function code_cpp(names)
     printfnl("    END_FSM();");
     printfnl("    return OK;");
     printfnl("}");
-	
+	printfnl("");
 	maybe_printnl(g_cpp_base_codegen:Code_InsertPoint("Function"));
     printfnl("");
 	
