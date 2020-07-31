@@ -280,7 +280,8 @@ status_t CLuaThread::OnThreadBegin()
 	callback_on_app_event = LUA_REFNIL;
     _lua_running_flag = 1;
 	memset(m_DelayUnloadModules,0,sizeof(m_DelayUnloadModules));
-
+	
+	srand(time(NULL));
 	crt_chdir(g_globals.GetWorkFolder());
 
     m_TaskMgr.Init(1024);
