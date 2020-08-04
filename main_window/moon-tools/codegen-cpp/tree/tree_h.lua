@@ -25,6 +25,13 @@ function code_h(names)
     printfnl("public:");
     printfnl("    %s();",names.c_entry_class_name);
     printfnl("    ~%s();",names.c_entry_class_name);
+
+	printfnl("");
+	printfnl("    status_t Copy(%s *p);",names.c_entry_class_name);
+	printfnl("    int Comp(%s *p);",names.c_entry_class_name);
+	printfnl("    status_t Print(CFileBase *_buf);");
+	printfnl("    ");
+	
     printfnl("    %s *get();",names.c_node_class_name);
     printfnl("    status_t set(%s *node);  ",names.c_node_class_name);
     printfnl("    status_t Traverse(CClosure *closure);");
