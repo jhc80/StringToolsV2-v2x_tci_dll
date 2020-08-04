@@ -9,6 +9,7 @@ function code_cpp(names)
     
     printfnl("%s::%s()",names.c_entry_class_name,names.c_entry_class_name);
     printfnl("{");
+	maybe_printnl(g_cpp_base_codegen:Code_InitBasic());  
     printfnl("    m_RawPtr = NULL;");
     printfnl("    parent = NULL;");
     printfnl("    next = NULL;");
@@ -18,6 +19,7 @@ function code_cpp(names)
     printfnl("");
     printfnl("%s::~%s()",names.c_entry_class_name,names.c_entry_class_name);
     printfnl("{");
+	maybe_printnl(g_cpp_base_codegen:Code_Destroy());  
     printfnl("    parent = NULL;");
     printfnl("    next = NULL;");
     printfnl("    child = NULL;");
@@ -73,7 +75,7 @@ printfnl("status_t %s::DetachFromTheTree()",names.c_entry_class_name);
     printfnl("        DelNode_Recursive(p);        ");
     printfnl("    }");
     printfnl("");
-printfnl("    node->DetachFromTheTree();    ");
+	printfnl("    node->DetachFromTheTree();    ");
     printfnl("    DEL(node);    ");
     printfnl("    return OK;");
     printfnl("}");

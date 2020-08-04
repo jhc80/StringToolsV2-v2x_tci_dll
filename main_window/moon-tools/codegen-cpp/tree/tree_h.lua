@@ -16,6 +16,7 @@ function code_h(names)
     printfnl("");
     
     printfnl("class %s{",names.c_entry_class_name);
+	maybe_printnl(g_cpp_base_codegen:Code_ClassHeader()); 	
     printfnl("public:");
     printfnl("    %s *m_RawPtr;",names.c_node_class_name);
 
