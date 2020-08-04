@@ -4,7 +4,7 @@ function code_cpp(names)
     printfnl("#include \"mem_tool.h\"");
     
 	printfnl("");
-    printnl(g_cpp_base_codegen:Code_NameSpaceBegin());    
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());    
     printfnl("");
     
     printfnl("%s::%s()",names.c_entry_class_name,names.c_entry_class_name);
@@ -316,7 +316,9 @@ printfnl("    node->DetachFromTheTree();    ");
     printfnl("}");
     printfnl("status_t %s::InitBasic()",names.c_class_name);
     printfnl("{");
-    printnl(g_cpp_base_codegen:Code_InitBasic());    
+    maybe_printnl(g_cpp_base_codegen:Code_InitBasic());    
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("InitBasic"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("InitBasic"));	
     printfnl("    m_Root = NULL;");
     printfnl("    return OK;");
     printfnl("}");
@@ -328,23 +330,31 @@ printfnl("    node->DetachFromTheTree();    ");
     
     printfnl("{");
     printfnl("    this->InitBasic();");
-    printnl(g_cpp_base_codegen:Code_Init())    
+    maybe_printnl(g_cpp_base_codegen:Code_Init())    
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Init"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Init"));	
     printfnl("    return OK;");
     printfnl("}");
     printfnl("");
     printfnl("status_t %s::Destroy()",names.c_class_name);
     printfnl("{");
+	maybe_printnl(g_cpp_base_codegen:Code_Destroy());  		
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Destroy"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Destroy"));	    
     printfnl("    if(m_Root)");
     printfnl("    {");
     printfnl("        %s::DelNode_Recursive(m_Root);",names.c_entry_class_name);
     printfnl("        m_Root = NULL;");
     printfnl("    }");
+	printfnl("    this->InitBasic();");
     printfnl("    return OK;");
     printfnl("}");
     printfnl("");
     printfnl("status_t %s::Copy(%s *p)",names.c_class_name,names.c_class_name);
     printfnl("{");
     printfnl("    ASSERT(p);");
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Copy"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Copy"));		
     printfnl("    ASSERT(0);");
     printfnl("    return OK;");
     printfnl("}");
@@ -360,7 +370,7 @@ printfnl("    node->DetachFromTheTree();    ");
     printfnl("");
     printfnl("status_t %s::Print(CFileBase *_buf)",names.c_class_name);
     printfnl("{");
-    printfnl("    if(m_Root)");
+	printfnl("    if(m_Root)");
     printfnl("    {");
     printfnl("        %s::Print_Recursive(m_Root,_buf);",names.c_entry_class_name);
     printfnl("    }");
@@ -368,6 +378,9 @@ printfnl("    node->DetachFromTheTree();    ");
     printfnl("    {");
     printfnl("        _buf->Log(\"<NULL>\");");
     printfnl("    }");
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Print"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Print"));	
+
     printfnl("    return OK;");
     printfnl("}");
     printfnl("");
@@ -438,5 +451,5 @@ printfnl("    node->DetachFromTheTree();    ");
 		printfnl("");
 	end
 	
-    printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
 end
