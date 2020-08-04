@@ -42,7 +42,7 @@ function code_cpp(names)
 	printfnl("    return m_RawPtr->Comp(p->m_RawPtr);");
 	printfnl("}");
 	printfnl("");
-	printfnl("status_t Print(CFileBase *_buf)");
+	printfnl("status_t %s::Print(CFileBase *_buf)",names.c_entry_class_name);
 	printfnl("{");
 	printfnl("    return OK;");
 	printfnl("}");
