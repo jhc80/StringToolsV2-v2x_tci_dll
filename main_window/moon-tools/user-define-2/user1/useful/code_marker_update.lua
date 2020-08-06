@@ -27,7 +27,7 @@ function convert_file(filename)
 			src:ReadLine(mem);			
 			str = mem:CStr();
 			if not is_line(str,"this->InitBasic();") then
-				if not is_line(last_str,"this->InitBasic();") then
+				if is_line(last_str,"{") then
 					out:Puts("    this->InitBasic();\r\n");
 				end
 				out:Puts("/*##Begin Init##*/\r\n");
@@ -44,19 +44,14 @@ function convert_file(filename)
 			
 			if is_line(last_str,"this->InitBasic();") then
 				out:SetSize(last_line_size);out:SeekEnd();
-				out:Puts(str);out:Puts("\r\n");
-				
-				if not is_line(next_str,"this->InitBasic();") then				
-					out:Puts("    this->InitBasic();\r\n");
-				end
-				out:Puts(next_str);out:Puts("\r\n");
-			else
-				out:Puts(str);out:Puts("\r\n");
-				if not is_line(next_str,"this->InitBasic();") then				
-					out:Puts("    this->InitBasic();\r\n");
-				end
-				out:Puts(next_str);out:Puts("\r\n");
 			end
+
+			out:Puts(str);out:Puts("\r\n");
+
+			if is_line(next_str,"return OK;") then				
+				out:Puts("    this->InitBasic();\r\n");
+			end
+			out:Puts(next_str);out:Puts("\r\n");
 		else
 			last_line_size = out:GetSize();
 			out:Puts(str);out:Puts("\r\n");			
@@ -65,12 +60,13 @@ function convert_file(filename)
 
 	if find_marker then
 		out:WriteToFile(filename);
+		printfnl("%s ok",filename);
 	end
 	
 	src:Destroy();
 	out:Destroy();
 
-	printfnl("%s ok",filename);
+
 	return true;
 end
 
