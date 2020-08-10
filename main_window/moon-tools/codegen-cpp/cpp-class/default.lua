@@ -81,7 +81,7 @@ end
 
 --如何生成对应c struct的结构名--
 function c_struct_name(name)
-    return "struct "..to_lower_underline_case(name);
+    return "struct "..name;
 end
 
 --如何转换c结构体的成员名字--

@@ -122,7 +122,7 @@ function c_class_name_with_ns(type)
     end	
 	
 	if type.is_struct then
-		return "struct "..type.name;
+		return c_struct_name(type.name);
 	end
 	
     return c_class_name(type.name);
