@@ -2,7 +2,7 @@ App.ClearScreen();
 
 --自动生成各种case的替换表
 local rep_table={
-	{"helloWorld","CruleWorld"},
+	{"",""},
 }
 
 for _,v in ipairs(rep_table) do

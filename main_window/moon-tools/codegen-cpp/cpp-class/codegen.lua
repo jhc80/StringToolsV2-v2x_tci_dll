@@ -3963,7 +3963,7 @@ function code_cpp_save_xml_1(idl_class)
 			tab = tab+1;
 		end
 		
-		printfnl("%s_xml->Log(\"<%s>%%s</%s>\",this->%sStr());",ptab(tab),
+		printfnl("%s_xml->Log(\"<%s>%%s</%s>\",XML_STR(this->%sStr()));",ptab(tab),
 			info.var.name,
 			info.var.name,
 			getter_name(info.var.name,info)
@@ -4024,7 +4024,7 @@ function code_cpp_save_xml_1(idl_class)
 			);	
 		elseif info.is_string then
 			printfnl("%s_xml->Log(\"<e>%%s</e>\",",ptab(tab));			
-			printfnl("%s(this->%s(i)->StrLen()>0?this->%s(i)->CStr():\"\"));",
+			printfnl("%sXML_STR(this->%s(i)->CStr()));",
 				ptab(tab+1),
 				getter_array_elem_name(info.var.name),
 				getter_array_elem_name(info.var.name)
