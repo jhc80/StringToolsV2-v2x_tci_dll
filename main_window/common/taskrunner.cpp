@@ -65,6 +65,12 @@ status_t CTaskRunner::AddClosure(CClosure *closure,uint32_t delay)
     ASSERT(closure->IsOnHeap());
     ASSERT(closure->user_data == NULL);
 
+    if(m_ClosureList.m_Index == NULL)
+    {
+        m_ClosureList.DelNode(closure);
+        return ERROR;
+    }
+
     struct closure_extra_info *info;
     MALLOC(info,struct closure_extra_info,1);
     closure->user_data = (void*)info;
@@ -90,6 +96,12 @@ status_t CTaskRunner::AddClosureAndWait(CClosure *closure, int timeout, int *run
     ASSERT(timeout < 0);
     ASSERT(m_ThreadId != crt_get_current_thread_id());
 
+    if(m_ClosureList.m_Index == NULL)
+    {
+        m_ClosureList.DelNode(closure);
+        return ERROR;
+    }
+    
     struct closure_extra_info *info;
     MALLOC(info,struct closure_extra_info,1);
     closure->user_data = (void*)info;
