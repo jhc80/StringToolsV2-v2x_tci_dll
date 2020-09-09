@@ -185,33 +185,34 @@ static status_t on_accept(CClosure *closure)
 {
     CLOSURE_PARAM_INT(event,0);
     CLOSURE_PARAM_PTR(CTaskMgr*,mgr,10);
-    ASSERT(mgr);
+	CLOSURE_PARAM_PTR(lua_State*,L,11);
+	ASSERT(mgr);
     
     if(event == CTaskTcpAcceptor::EVENT_NEW_CLIENT)
     {
         CLOSURE_PARAM_INT(fd,1);
         CTaskPeerServer *server;
         NEW(server,CTaskPeerServer);
-        server->Init(mgr,how_to_get_peer_globals());
+        server->Init(mgr,how_to_get_peer_globals(L));
         server->SetMaxRetries(1);
         server->SetSocket(fd);
         server->Start();
     }
     return OK;
 }
-static status_t start_message_center(int port)
+static status_t start_message_center(lua_State *L,int port)
 {
-    CTaskTcpAcceptor *acceptor;
-    
+    CTaskTcpAcceptor *acceptor;   
+	
     GLOBAL_LUA_THREAD(lua_thread);
-
-    NEW(acceptor,CTaskTcpAcceptor);
+    
+	NEW(acceptor,CTaskTcpAcceptor);
     acceptor->Init(lua_thread->GetTaskMgr());
     acceptor->SetListenPort(port);	
     acceptor->Callback()->SetFunc(on_accept);
     acceptor->Callback()->SetParamPointer(10,lua_thread->GetTaskMgr());
+	acceptor->Callback()->SetParamPointer(11,L);
     acceptor->Start();
-    
     return OK;
 }
 //////////////////////////////////////
@@ -223,7 +224,7 @@ static int app_startmessagecenter(lua_State *L)
     CPeerGlobals *g = lua_thread->GetPeerGlobals();
     ASSERT(g);
 	g->SetTrustMode(trust_mode!=0);
-    int _ret_0 = (int)start_message_center(port);
+    int _ret_0 = (int)start_message_center(L,port);
     lua_pushinteger(L,_ret_0);
     return 1;
 }

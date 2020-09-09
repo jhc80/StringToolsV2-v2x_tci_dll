@@ -11,23 +11,23 @@
 
 CGlobals g_globals;
 
-static CTaskMgr* get_global_taskmgr()
+static CTaskMgr* get_global_taskmgr(lua_State *L)
 {
 	return g_globals.GetTaskMgr();
 }
 
-static CLuaVm* get_global_luavm()
+static CLuaVm* get_global_luavm(lua_State *L)
 {
     return g_globals.GetLuaVm();
 }
 
-static int* get_lua_running_flag()
+static int* get_lua_running_flag(lua_State *L)
 {
     GLOBAL_LUA_THREAD(thread);
     return &thread->m_IsRunning;
 }
 
-static const void* get_peer_globals()
+static const void* get_peer_globals(lua_State *L)
 {
     GLOBAL_LUA_THREAD(thread);
     return &thread->m_PeerGlobals;

@@ -12,11 +12,6 @@ g_all_dll_projects ={
         src_dll_name="dll.dll",        
         sub_dirs = g_common_sub_dirs,
     },{
-        path="asn1_dll",        
-        src_dll_name="test.dll",
-        dll_name="asn1parser.dll",
-        sub_dirs = g_common_sub_dirs,
-    },{
         path="camera_dll",
         dll_name="webcamera.dll",
         src_dll_name="dll.dll",        
