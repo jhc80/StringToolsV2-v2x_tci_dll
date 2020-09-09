@@ -976,17 +976,34 @@ static status_t filebase_putzeroendstring(lua_State *L)
 {
     CFileBase *pfilebase = get_filebase(L,1);
     ASSERT(pfilebase);
-	
-	size_t len = 0;
-    const char* str = (const char*)lua_tolstring(L,2,&len);
-    if(str)
+
+	if(lua_isstring(L,2))
 	{
-		int_ptr_t n = pfilebase->Write(str,len);
-		uint8_t zero = 0;
-		n += pfilebase->Write(&zero,sizeof(zero));
-		lua_pushinteger(L,n);
-		return 1;
+		size_t len = 0;
+		const char* str = (const char*)lua_tolstring(L,2,&len);
+		if(str)
+		{
+			size_t n = (size_t)pfilebase->Write(str,len);
+			uint8_t zero = 0;
+			n += pfilebase->Write(&zero,sizeof(zero));
+			lua_pushinteger(L,n);
+			return 1;
+		}
 	}
+	else
+	{
+		CFileBase *str = get_filebase(L,2);
+		if(str)
+		{
+			size_t n = 0;
+			n += (size_t)pfilebase->WriteFile(str);
+			uint8_t zero = 0;
+			n += pfilebase->Write(&zero,sizeof(zero));
+			lua_pushinteger(L,n);
+			return 1;
+		}
+	}
+
     return 0;
 }
 
@@ -994,10 +1011,17 @@ static status_t filebase_getzeroendstring(lua_State *L)
 {
     CFileBase *pfilebase = get_filebase(L,1);
     ASSERT(pfilebase);
+	
+	CFileBase *out = get_filebase(L,2);
+	ASSERT(out);
 
-
-
-    return 1;
+	while(!pfilebase->IsEnd())
+	{
+		char ch = pfilebase->Getc();
+		if(ch == 0)break;
+		out->Putc(ch);
+	}
+    return 0;
 }
 
 static const luaL_Reg filebase_lib[] = {
