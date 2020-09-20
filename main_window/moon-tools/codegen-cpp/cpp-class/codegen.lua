@@ -118,7 +118,9 @@ end
 --生成带namespace的变量类型
 function c_class_name_with_ns(type)
     if type.namespace then
-        return type.namespace.."::"..c_class_name(type.name);
+		if g_cpp_base_codegen:GetNameSpace() ~= type.namespace then
+			return type.namespace.."::"..c_class_name(type.name);
+		end
     end	
 	
 	if type.is_struct then
