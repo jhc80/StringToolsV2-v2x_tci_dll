@@ -209,11 +209,10 @@ function code_all_includes(idl_class)
     end
 	
     
-	local all_bases = IdlHelper.Class.GetAllBases(idl_class);
-	
+	local all_bases = IdlHelper.Class.GetAllBases(idl_class);	
 	if all_bases then
 		for _,base in ipairs(all_bases) do
-            add_name(to_file_name(base.name));
+            add_name(to_file_name(base.name,name_space));
 		end
 	end
     
@@ -231,11 +230,10 @@ function code_all_includes(idl_class)
         end
     end);
     
-    local all_includes = g_cpp_base_codegen:GetIncludes();
-    
-    for _,name in ipairs(all_includes) do
-        add_name(to_file_name(name));
-    end
+    --local all_includes = g_cpp_base_codegen:GetIncludes();    
+    --for _,name in ipairs(all_includes) do
+    --    add_name(to_file_name(name,name_space));
+    --end
 
     code_begin_marker("Inlcudes");
     

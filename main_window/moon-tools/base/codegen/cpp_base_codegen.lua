@@ -110,7 +110,7 @@ function CppBaseCodeGen:Code_Includes(configs)
     for _,name in ipairs(self.m_all_includes) do
         pb:Print(string.format(
             "#include \"%s.h\""..EOL,
-            self.m_how_to_convert_file_name(name)
+            self.m_how_to_convert_file_name(name,name_space)
         ));
     end
     return pb:GetText();
