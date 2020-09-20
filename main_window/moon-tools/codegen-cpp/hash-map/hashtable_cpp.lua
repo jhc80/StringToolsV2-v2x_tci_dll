@@ -4,16 +4,18 @@ function code_cpp(names)
 	printfnl("#include \"mem_tool.h\"");
 	printfnl("#include \"misc.h\"");
 	printfnl("");
-    printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
 	printfnl("");
 	printfnl("%s::%s()",names.c_entry_class_name,names.c_entry_class_name);
 	printfnl("{");
+	maybe_printnl(g_cpp_base_codegen:Code_InitBasic());  	
 	printfnl("    m_RawPtr = NULL;");
 	printfnl("    next = NULL;");
 	printfnl("}");
 	printfnl("");
 	printfnl("%s::~%s()",names.c_entry_class_name,names.c_entry_class_name);
 	printfnl("{");
+	maybe_printnl(g_cpp_base_codegen:Code_Destroy());  	
 	printfnl("    DEL(m_RawPtr);");
 	printfnl("    next = NULL;");
 	printfnl("}");
@@ -42,7 +44,10 @@ function code_cpp(names)
 	printfnl("}");
 	printfnl("status_t %s::InitBasic()",names.c_class_name);
 	printfnl("{");
-    printnl(g_cpp_base_codegen:Code_InitBasic());
+    maybe_printnl(g_cpp_base_codegen:Code_InitBasic());    
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("InitBasic"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("InitBasic"));	
+	
 	printfnl("    this->m_Capacity = 0;");
 	printfnl("    this->m_Data = 0;");
 	printfnl("    this->m_Size = 0;");
@@ -56,7 +61,9 @@ function code_cpp(names)
     
 	printfnl("{");
 	printfnl("    this->InitBasic();");
-    printnl(g_cpp_base_codegen:Code_Init())
+	maybe_printnl(g_cpp_base_codegen:Code_Init())    
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Init"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Init"));	
 	printfnl("    this->m_Capacity = capacity;");
 	printfnl("    MALLOC(this->m_Data,%s*,capacity);",names.c_entry_class_name);
 	printfnl("    memset(this->m_Data,0,capacity*sizeof(%s*));",names.c_entry_class_name);
@@ -64,11 +71,14 @@ function code_cpp(names)
 	printfnl("}");
 	printfnl("status_t %s::Destroy()",names.c_class_name);
 	printfnl("{");
+ 
 	printfnl("    int i;");
 	printfnl("    %s *q,*p;",names.c_entry_class_name);
-	printfnl("");
-	
-	printfnl(g_cpp_base_codegen:Code_Destroy());
+	printfnl("");	
+
+	maybe_printnl(g_cpp_base_codegen:Code_Destroy());  		
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Destroy"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Destroy"));	    
 	
 	printfnl("    if(this->m_Data == NULL)");
 	printfnl("        return OK;");
@@ -291,6 +301,8 @@ function code_cpp(names)
 	printfnl("status_t %s::Copy(%s *p)",names.c_class_name,names.c_class_name);
 	printfnl("{");
 	printfnl("    ASSERT(p);");
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Copy"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Copy"));		
 	printfnl("    this->Destroy();");
 	printfnl("    this->Init(p->GetCapacity());");
 	printfnl("");
@@ -353,6 +365,9 @@ function code_cpp(names)
 	printfnl("    _buf->Log(\"maximum linked list length is %%d\",maxLength);");
 	printfnl("    _buf->Log(\"total collison is %%d\",collision);");
 	printfnl("");
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Print"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Print"));		
+	printfnl("");
 	printfnl("    return OK;");
 	printfnl("}");
 	printfnl("");
@@ -409,6 +424,6 @@ function code_cpp(names)
 	printfnl("}");
 	printfnl("");
 
-    printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceEnd());
 
 end

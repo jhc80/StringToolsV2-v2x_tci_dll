@@ -8,13 +8,17 @@ function code_h(names)
 	printfnl("#include \"closure.h\"");
 	printfnl("#include \"%s.h\"",to_file_name(names.node_class_name));
     
-    printnl(g_cpp_base_codegen:Code_Includes());
+	maybe_printnl(g_cpp_base_codegen:Code_Includes());
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Inlcudes"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Inlcudes"));	
+	
+    maybe_printnl(g_cpp_base_codegen:Code_Includes());
 	printfnl("");
-    printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
+    maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
 
 	printfnl("");
 	printfnl("class %s{",names.c_entry_class_name);
-    printnl(g_cpp_base_codegen:Code_ClassHeader());
+    maybe_printnl(g_cpp_base_codegen:Code_ClassHeader());
 	printfnl("public:");
 	printfnl("    %s *m_RawPtr;",names.c_node_class_name);
 	printfnl("    %s *next;",names.c_entry_class_name);
@@ -26,7 +30,10 @@ function code_h(names)
 	printfnl("};");
 	printfnl("");
 	printfnl("class %s{",names.c_class_name);
+	maybe_printnl(g_cpp_base_codegen:Code_ClassHeader());    	
 	printfnl("private:");
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Members"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Members"));	
 	printfnl("    %s **m_Data;",names.c_entry_class_name);
 	printfnl("    int m_Capacity;");
 	printfnl("    int m_Size;");
@@ -61,6 +68,12 @@ function code_h(names)
 	printfnl("    status_t Copy(%s *p);",names.c_class_name);
 	printfnl("    status_t Comp(%s *p);",names.c_class_name);
 	printfnl("    status_t Print(CFileBase *_buf);    ");
+
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Getter_H"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Getter_H"));
+	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Setter_H"));
+	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Setter_H"));
+	
 	printfnl("};");
 	printfnl("");
 
