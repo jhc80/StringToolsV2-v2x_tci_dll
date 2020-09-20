@@ -20,7 +20,10 @@ code_switch={
 name_space="";
 ------------------------------
 --如何把一个字符串转成文件名
-function to_file_name(name)
+function to_file_name(name,ns)
+	if ns and ns == name_space then
+		name = ns.."_"..name;
+	end
 	return to_lower_underline_case(name);
 end
 

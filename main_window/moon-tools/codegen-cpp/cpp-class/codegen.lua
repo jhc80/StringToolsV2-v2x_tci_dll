@@ -118,7 +118,7 @@ end
 --生成带namespace的变量类型
 function c_class_name_with_ns(type)
     if type.namespace then
-		if g_cpp_base_codegen:GetNameSpace() ~= type.namespace then
+		if name_space ~= type.namespace then
 			return type.namespace.."::"..c_class_name(type.name);
 		end
     end	
@@ -213,7 +213,7 @@ function code_all_includes(idl_class)
 	
 	if all_bases then
 		for _,base in ipairs(all_bases) do
-            add_name(base.name);
+            add_name(to_file_name(base.name));
 		end
 	end
     
@@ -223,18 +223,18 @@ function code_all_includes(idl_class)
 			and not info.is_string 
 			and not info.var_type.is_struct
 		then
-            add_name(info.var_type.name);
+            add_name(to_file_name(info.var_type.name,info.var_type.namespace));
         end
         
         if info.is_weak_ptr then
-            add_name("weak_pointer");
+            add_include("weak_pointer");
         end
     end);
     
     local all_includes = g_cpp_base_codegen:GetIncludes();
     
     for _,name in ipairs(all_includes) do
-        add_name(name);
+        add_name(to_file_name(name));
     end
 
     code_begin_marker("Inlcudes");
@@ -256,7 +256,7 @@ function code_all_includes(idl_class)
     end
 		
     for _,name in ipairs(all_names_sorted) do    
-        add_include(to_file_name(name));        
+        add_include(name);
     end
        
     local user_includes = g_cpp_base_codegen:GetUserIncludes();
@@ -273,14 +273,14 @@ end
 
 --头文件代码生成--
 function code_h(idl_class)
-    g_cpp_base_codegen = CppBaseCodeGen.new(idl_class,code_switch);
-
+	g_cpp_base_codegen = CppBaseCodeGen.new(idl_class,code_switch);
+	
 	printnl(string.format(
-		"#ifndef __%s_H",to_upper_underline_case(to_file_name(idl_class.name))
+		"#ifndef __%s_H",to_upper_underline_case(to_file_name(idl_class.name,name_space))
 	));
 	
 	printnl(string.format(
-	"#define __%s_H",to_upper_underline_case(to_file_name(idl_class.name))
+		"#define __%s_H",to_upper_underline_case(to_file_name(idl_class.name,name_space))
 	));
 		
 	printnl("");
@@ -2111,7 +2111,7 @@ end
 function code_cpp(idl_class)
     g_cpp_base_codegen = CppBaseCodeGen.new(idl_class,code_switch);
 
-    add_include(to_file_name(idl_class.name));
+    add_include(to_file_name(idl_class.name,name_space));
     
     common_includes_cpp(idl_class);
     

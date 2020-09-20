@@ -22,10 +22,14 @@ if not all_idl_classes then return end
 
 local save_str = "";
 
+
 for _,idl_class in ipairs(all_idl_classes) do
     set_code_switch_by_hint(idl_class.hint,code_switch);
     covert_special_types(idl_class);
 	update_basic_type_table_by_hint(idl_class);
+
+	local cpp_base_codegen = CppBaseCodeGen.new(idl_class,code_switch);
+	name_space = cpp_base_codegen:GetNameSpace();
 
     if save_path and save_path ~= "" then
         local cpp_name = FileManager.ToAbsPath(
