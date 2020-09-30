@@ -31,7 +31,7 @@ editbox:SetParent(hwnd);
 
 editbox:AddStyle(
     ES_NOHIDESEL |
-    WS_VSCROLL|ES_AUTOVSCROLL |
+    WS_VSCROLL|ES_AUTOVSCROLL|ES_MULTILINE|
     WS_BORDER
 );
 
