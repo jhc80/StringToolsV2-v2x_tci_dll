@@ -1,14 +1,24 @@
 --lua和c语言struct的二进制相互转化--
 
 --idl源文件，如果为空，则从文本框读取--
-idl_source="z:\\tmp\\1.idl";
+idl_source="";
+
+--如果不为空就保存到文件--
+save_path = "z:\\tmp\\gen";
+
+--如何把一个字符串转成文件名
+function to_file_name(name,ns)
+	return "c_"..to_lower_underline_case(name);
+end
 
 --如何生成函数名--
-
 function struct_to_lua_function_name(name)
 	return to_lower_underline_case(name).."_to_lua";
 end
 
+function lua_to_struct_function_name(name)
+	return "lua_to_"..to_lower_underline_case(name);
+end
 -------------------------------------
 --定义基本数据类型的映射表--
 -------------------------------------
