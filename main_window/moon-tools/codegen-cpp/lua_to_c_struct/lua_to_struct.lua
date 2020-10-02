@@ -28,13 +28,13 @@ end
 function code_struct_to_lua(idl_class)
 	function code_for_basic_type(info)
 		local inner_type = IdlHelper.Var.GetInnerType(info.type);
-		printfnl("    _ret.%s = data:Get%s();",info.var.name, inner_type);
+		printfnl("    _obj.%s = data:Get%s();",info.var.name, inner_type);
 	end
 
 	function code_for_array_object(info)	
-		printfnl("    _ret.%s={}",info.var.name);
+		printfnl("    _obj.%s={}",info.var.name);
 		printfnl("    for i=1,%s,1 do",info.array_size);
-		printfnl("        _ret.%s[i] = %s(data);", info.var.name, struct_to_lua_function_name(info.type.name));	
+		printfnl("        _obj.%s[i] = %s(data);", info.var.name, struct_to_lua_function_name(info.type.name));	
 		printfnl("    end");
 	end
 
@@ -45,27 +45,27 @@ function code_struct_to_lua(idl_class)
 		
 		if as_binary then
 			printfnl("    local _size = SIZE_OF_%s*%s;",string.upper(inner_type),info.array_size);
-			printfnl("    _ret.%s = new_mem(_size);",info.var.name);	
-			printfnl("    data:Read(_ret.%s,_size);",info.var.name);
+			printfnl("    _obj.%s = new_mem(_size);",info.var.name);	
+			printfnl("    data:Read(_obj.%s,_size);",info.var.name);
 		elseif as_string then
 			printfnl("    local _size = SIZE_OF_%s*%s;",string.upper(inner_type),info.array_size);
 			printfnl("    local _tmp = new_mem(_size);",info.var.name);	
 			printfnl("    data:Read(_tmp,_size);");
-			printfnl("    _ret.%s = _tmp:CStr();",info.var.name);
+			printfnl("    _obj.%s = _tmp:CStr();",info.var.name);
 		else			
-			printfnl("    _ret.%s={}",info.var.name);
+			printfnl("    _obj.%s={}",info.var.name);
 			printfnl("    for i=1,%s,1 do",info.array_size);
-			printfnl("        _ret.%s[i] = data:Get%s();", info.var.name, inner_type);	
+			printfnl("        _obj.%s[i] = data:Get%s();", info.var.name, inner_type);	
 			printfnl("    end");
 		end
 	end
 	
 	function code_for_object(info)
-		printfnl("    _ret.%s = %s(data);",info.var.name, struct_to_lua_function_name(info.type.name));
+		printfnl("    _obj.%s = %s(data);",info.var.name, struct_to_lua_function_name(info.type.name));
 	end
 
 	printfnl("function %s(data)",struct_to_lua_function_name(idl_class.name));
-	printfnl("    local _ret={};");
+	printfnl("    local _obj={};");
 
 	for_each_variables(idl_class.variables,function(info)		
 		if info.is_array then				
@@ -80,6 +80,7 @@ function code_struct_to_lua(idl_class)
 			code_for_object(info);
 		end		
 	end);
+	printfnl("    return _obj;");
 	printfnl("end");	
 end
 
@@ -87,7 +88,7 @@ end
 function code_lua_to_struct(idl_class)	
 	function code_for_array_object(info)
 		printfnl("    for i=1,%s,1 do",info.array_size);
-		printfnl("        %s(obj.%s[i],file);",lua_to_struct_function_name(info.type.name),info.var.name);	
+		printfnl("        %s(_obj.%s[i],file);",lua_to_struct_function_name(info.type.name),info.var.name);	
 		printfnl("    end");
 	end
 	
@@ -97,26 +98,32 @@ function code_lua_to_struct(idl_class)
 		local inner_type = IdlHelper.Var.GetInnerType(info.type);
 		
 		if as_binary then
-			printfnl("    file:Puts(obj.%s);",info.var.name);
-		elseif as_string then			
-			printfnl("    file:Puts(obj.%s);",info.var.name);
+			printfnl("    file:Puts(_obj.%s);",info.var.name);
+		elseif as_string then						
+			printfnl("    local _mem = Mem.new();");
+			printfnl("    _mem:SetRawBuf(_obj.%s);",info.var.name);
+			printfnl("    local _size = SIZE_OF_%s*%s;",string.upper(inner_type),info.array_size);
+			printfnl("    file:Write(_mem,_size);");
+			printfnl("    if _size > _mem:GetSize() then");
+			printfnl("        file:FillBlock(_size-_mem:GetSize(),0);");
+			printfnl("    end");
 		else						
 			printfnl("    for i=1,%s,1 do",info.array_size);
-			printfnl("        file:Put%s(obj.%s[i]);",inner_type,info.var.name);	
+			printfnl("        file:Put%s(_obj.%s[i]);",inner_type,info.var.name);	
 			printfnl("    end");
 		end	
 	end
 	
 	function code_for_basic_type(info)
 		local inner_type = IdlHelper.Var.GetInnerType(info.type);
-		printfnl("    file:Put%s(obj.%s);",inner_type,info.var.name);
+		printfnl("    file:Put%s(_obj.%s);",inner_type,info.var.name);
 	end
 	
 	function code_for_object(info)
-		printfnl("    %s(obj.%s,file);",lua_to_struct_function_name(info.type.name), info.var.name);
+		printfnl("    %s(_obj.%s,file);",lua_to_struct_function_name(info.type.name), info.var.name);
 	end
 	
-	printfnl("function %s(obj,file)",lua_to_struct_function_name(idl_class.name));
+	printfnl("function %s(_obj,file)",lua_to_struct_function_name(idl_class.name));
 	for_each_variables(idl_class.variables,function(info)		
 		if info.is_array then				
 			if info.is_object then				
