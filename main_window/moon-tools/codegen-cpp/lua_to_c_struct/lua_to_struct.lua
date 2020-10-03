@@ -98,7 +98,15 @@ function code_lua_to_struct(idl_class)
 		local inner_type = IdlHelper.Var.GetInnerType(info.type);
 		
 		if as_binary then
-			printfnl("    file:Puts(_obj.%s);",info.var.name);
+			printfnl("    local _size = SIZE_OF_%s*%s;",string.upper(inner_type),info.array_size);			
+			printfnl("    if _obj.%s == nil then", info.var.name);
+			printfnl("        file:FillBlock(_size,0);");
+			printfnl("    else");			
+			printfnl("        file:Write(_obj.%s,_size);",info.var.name);
+			printfnl("        if _size > _obj.%s:GetSize() then",info.var.name);
+			printfnl("            file:FillBlock(_size-_obj.%s:GetSize(),0);",info.var.name);
+			printfnl("        end");
+			printfnl("    end");
 		elseif as_string then						
 			printfnl("    local _mem = Mem.new();");
 			printfnl("    _mem:SetRawBuf(_obj.%s);",info.var.name);
