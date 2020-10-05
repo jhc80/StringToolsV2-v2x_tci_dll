@@ -289,7 +289,6 @@ if code_switch.bson then
     printfnl("    _bson.ResetPointer();");
     printfnl("    return this->LoadBson(&_bson);");
     printfnl("}");
-    printfnl("/*#End Code_Bson_Cpp#*/");
     printfnl("");
 end
 
