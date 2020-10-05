@@ -32,11 +32,13 @@ public:
     uint32_t m_Flags;
 	CEpoll m_Epoll;
     CPeerGlobals m_PeerGlobals;
+	int m_TaskAutoLuaGc;
 
 	HMODULE m_DelayUnloadModules[MAX_MODULES_SIZE];
     int callback_on_window_message;
 	int callback_on_app_event;
 public:
+	status_t StartLuaAutoGcTask();
     CPeerGlobals *GetPeerGlobals();
 	status_t OnAppEvent(int event, CMem *mem);
 	status_t HideEmbeddedUIWindow();

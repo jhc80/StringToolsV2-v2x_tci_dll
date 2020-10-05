@@ -105,6 +105,7 @@ CLuaThread::~CLuaThread()
 }
 status_t CLuaThread::InitBasic()
 {
+	m_TaskAutoLuaGc = 0;
     m_ThreadId = 0;
     p_TreeNode = NULL;
     m_LuaVm.InitBasic();
@@ -242,6 +243,7 @@ status_t CLuaThread::InitLuaVm()
     const char *path = p_TreeNode->GetPathStr();
     g_globals.AddLuaSearchPath(L,path,"path","lua",true);
     g_globals.AddLuaSearchPath(L,path,"cpath","dll",true);
+	this->StartLuaAutoGcTask();
     return OK;
 }
 
@@ -636,3 +638,27 @@ CPeerGlobals *CLuaThread::GetPeerGlobals()
 {
     return &m_PeerGlobals;
 }
+
+
+status_t CLuaThread::StartLuaAutoGcTask()
+{
+    ASSERT(!m_TaskMgr.IsTask(m_TaskAutoLuaGc));
+    
+    CTaskTimer *timer = CTaskTimer::NewTimer(&m_TaskMgr,10000,false);
+    ASSERT(timer);
+    
+    BEGIN_CLOSURE_FUNC(auto_gc)
+    {
+        CLOSURE_PARAM_PTR(CLuaThread*,self,10);
+        self->m_LuaVm.FullGC();
+        return OK;
+    }
+    END_CLOSURE_FUNC(auto_gc);
+    
+    timer->Callback()->SetFunc(auto_gc);
+    timer->Callback()->SetParamPointer(10,this);
+    timer->Start();
+    m_TaskAutoLuaGc = timer->GetId();
+    return OK;
+}
+
