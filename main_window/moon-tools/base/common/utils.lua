@@ -48,11 +48,12 @@ end
 --在文件中进行替换--
 function replace_in_file(filebase, src_str,dst_str, case_sensitive, word_only)
     if not dst_str then dst_str = "" end
-	local _,mf_file = new_memfile();
+	local mf_file = new_memfile();
 	filebase:Seek(0);
 	filebase:ReplaceStr(src_str,dst_str,case_sensitive,word_only,mf_file);
 	filebase:SetSize(0);
 	filebase:WriteFile(mf_file);
+	mf_file:Destroy();
 end
 
 --在多个文件中进行批量替换--
