@@ -1,6 +1,12 @@
 require("common");
 require("user");
 
+function in_ext_list(exts, info)
+	if string.len(info.ext) > 0 and not info.is_dir then
+		return string.find(exts,info.ext,1,true);
+	end
+end
+
 App.ClearScreen();
 
 if the_folder=="" then
