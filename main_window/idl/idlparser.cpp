@@ -368,6 +368,38 @@ status_t CIdlParser::ParseVariableName(CIdlVariable *var)
 
     var->SetName(m_Lexer.GetCurValStr());
 
+	m_Lexer.SaveContext(&context);
+	token = m_Lexer.Next();
+	if(token == IDL_TOKEN_LEFT_SQUARE_BRACKETS)
+	{		
+		LOCAL_MEM(array_size);
+		while(!m_Lexer.IsEnd())
+		{
+		    int token1 = m_Lexer.NextTokenAll();
+			if(token1 == IDL_TOKEN_WORD || token1 == IDL_TOKEN_STRING || token1 == IDL_TOKEN_NUMBER || token1 ==IDL_TOKEN_EMPTY)
+			{
+				array_size.Puts(m_Lexer.GetCurVal());
+			}
+			else if(token1 == IDL_TOKEN_RIGHT_SQUARE_BRACKETS)
+			{
+				var->GetType()->SetIsArray(true);
+				array_size.Trim();
+				var->GetType()->SetArraySize(&array_size);
+				break;
+			}
+			else if(token1 != IDL_TOKEN_COMMENTS)
+			{
+				CertainError("error array size: '%s'",m_Lexer.GetCurValStr());
+				m_Lexer.RestoreContext(&context);
+				return ERROR;
+			}
+		}
+	}
+	else
+	{
+		m_Lexer.RestoreContext(&context);
+	}
+
     m_Lexer.SaveContext(&context);
     token = m_Lexer.Next();
     if(token != IDL_TOKEN_EQUAL)
@@ -593,15 +625,29 @@ status_t CIdlParser::ParseVariableList(CIdlVariableList *var_list)
         return ERROR;
     }
     
-    //copy type and hints
+    //copy type and hints	
     for(int i = 0; i < var_list->GetLen(); i++)
     {
         CIdlVariable *var = var_list->GetElem(i);
         //pointer info is in var not in type
         //so save it before override type
         bool is_pointer = var->GetType()->IsPointer();
+		bool is_array = var->GetType()->IsArray();
+		LOCAL_MEM(arr_size);
+
+		if(is_array)
+		{
+			arr_size.Puts(var->GetType()->GetArraySize());
+		}
+
         var->SetType(var_type.GetType());
         var->GetType()->SetIsPointer(is_pointer);
+
+		if(is_array)
+		{
+			var->GetType()->SetIsArray(is_array);
+			var->GetType()->SetArraySize(&arr_size);
+		}
     }
 
     return OK;

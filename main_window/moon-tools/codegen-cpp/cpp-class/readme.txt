@@ -8,6 +8,7 @@ class Test:Base{
 	[struct] Stru stru; //声明为struct 类型
 	array<int> arr1; //未知大小的数组
 	array<int,10> arr2; //固定大小的数组
+	int arr_2[1024]; //传统的数组声明方式也支持
 	array<Obj> obj_arr; //对象数组
 	array<string> str_arr; //字符串数组
 	[optional] int opt_val1; //可选项
