@@ -1,36 +1,79 @@
 require("common")
 require("user")
 
-local g_xml_table = {};
+local g_classes = {};
 
-function parse_single_node(node)
-	local path = node:GetPath();
-	if not g_xml_table[path] then
-		g_xml_table[path] = {};
+function parse_attributes(node)
+	local name = node:GetName();
+	if not g_classes[name] then
+		g_classes[name]={name=name};
 	end
 	
-	local item = g_xml_table[path];
-	
-	node:RestartAttrib();
-	local name = new_mem();
-	local val = new_mem();
-	
-	while node:GetNextAttrib(name,val) do
-		item[name:CStr()] = val:CStr();
+	node:RestartAttrib();	
+	local key = new_mem();
+	local val = new_mem();	
+	local cls = g_classes[name];
+		
+	while node:GetNextAttrib(key,val) do
+		if not cls.attributes then
+			cls.attributes={};
+		end		
+		cls.attributes[key:CStr()] = {
+			name = key:CStr(),
+			value = val:CStr(),
+		}
 	end
 	
-	name:Destroy();
-	val:Destroy();
+	key:Destroy();
+	val:Destroy();	
+	return cls;
 end
 
 function parse_xml(root)	
-	parse_single_node(root);
-	
+	local cls = parse_attributes(root);	
+
+	local children = {};
 	local child = root:GetChild();
 	while child do
-		parse_xml(child);
+	    parse_xml(child);
+		
+		local key = child:GetName();
+		
+		if not children[key] then
+			children[key] = {
+				count=1
+			}
+		else
+			children[key] = children[key]+1;
+		end
+				
 		child = child:GetNext();
 	end
+	
+	
+	if not cls.children then
+		cls.children = children;
+	else
+	
+		for _,v in pairs(cls.children) do
+		
+			if children[v.name] then
+			
+				if children[v.name].count > cls.children[v.name]
+			
+			
+			
+			end
+			
+		
+		end
+		
+		
+	end
+	
+	
+	
+	return cls;
 end
 
 function parse_single_file(file)
@@ -53,22 +96,10 @@ function parse_single_file(file)
 	xml:Destroy();
 end
 
-function print_result()
-	App.ClearScreen();
-	for k,v in pairs_ordered(g_xml_table) do
-		
-		printnl(k);
-		for kk,vv in pairs_ordered(v) do
-			printfnl("    %s = \"%s\"",kk,vv);
-		end	
-	end
-end
-
 if not parse_files then
 	local mem_text = App.LoadText();
 	App.ClearScreen();
 	parse_single_file(mem_text);
-	print_result();
 else
 	local mem_text = App.LoadText();
 	App.ClearScreen();
@@ -80,15 +111,35 @@ else
 		line:Trim();
 		local file = new_mem(line:CStr());
 		if not file then
-			printfnl("load file %s fail.",line:CStr());			
+			return -1;
 		else
-			printfnl("parsing file %s...",line:CStr());
 			parse_single_file(file);
-			printnl("ok");
 			file:Destroy();
 		end
 	end
-	print_result();
+end
+
+for _,cls in pairs(g_classes) do	
+	printfnl("class %s {", cls.name);
+	
+	if cls.attributes then
+		for _,attr in pairs(cls.attributes) do
+			printfnl("    string %s;", attr.name);
+		end
+	end
+	
+	if cls.children then
+		for _,child in pairs(cls.children) do
+			
+			if child.count == 1 then
+				printfnl("    %s %s",child.name,child.name);
+			else
+				printfnl("    array<%s> %s_array",child.name,child.name);
+			end			
+		end
+	end
+	
+	printfnl("}"..EOL);
 end
 
 
