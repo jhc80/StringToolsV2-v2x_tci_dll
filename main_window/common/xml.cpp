@@ -458,7 +458,7 @@ status_t CXmlNode::GetStringValue(CMem *val)
         val->Puts(this->GetValue());
         return OK;
     }    
-    return OK;
+    return ERROR;
 }
 
 int32_t CXmlNode::GetInt32Value()

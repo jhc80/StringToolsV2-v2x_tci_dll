@@ -30,8 +30,7 @@ function parse_attributes(node)
 end
 
 function parse_xml(root)	
-	local cls = parse_attributes(root);	
-
+	local cls = parse_attributes(root);	      
 	local children = {};
 	local child = root:GetChild();
 	while child do
@@ -41,10 +40,11 @@ function parse_xml(root)
 		
 		if not children[key] then
 			children[key] = {
-				count=1
+				count=1,
+                name=key,
 			}
 		else
-			children[key] = children[key]+1;
+			children[key].count = children[key].count+1;
 		end
 				
 		child = child:GetNext();
@@ -55,25 +55,15 @@ function parse_xml(root)
 		cls.children = children;
 	else
 	
-		for _,v in pairs(cls.children) do
-		
-			if children[v.name] then
-			
-				if children[v.name].count > cls.children[v.name]
-			
-			
-			
-			end
-			
-		
-		end
-		
-		
-	end
-	
-	
-	
-	return cls;
+		for k,v in pairs(children) do
+            
+            if not cls.children[k] then
+                cls.children[k] = v;
+            elseif v.count > cls.children[k].count then
+                cls.children[k] = v;                
+            end
+		end		
+	end	
 end
 
 function parse_single_file(file)
@@ -129,17 +119,16 @@ for _,cls in pairs(g_classes) do
 	end
 	
 	if cls.children then
-		for _,child in pairs(cls.children) do
-			
+		for _,child in pairs(cls.children) do			
 			if child.count == 1 then
 				printfnl("    %s %s",child.name,child.name);
 			else
-				printfnl("    array<%s> %s_array",child.name,child.name);
+				printfnl("    array<%s> %s_array;",child.name,child.name);
 			end			
 		end
 	end
 	
-	printfnl("}"..EOL);
+	printfnl("}"..EOL);    
 end
 
 
