@@ -110,18 +110,18 @@ end
 
 local all_lists={};
     
-for _,cls in pairs(g_classes) do	
+for _,cls in pairs_ordered(g_classes) do	
 	printfnl("class %s {", class_name(cls.name));
 	
 	if cls.attributes then
-		for _,attr in pairs(cls.attributes) do
+		for _,attr in pairs_ordered(cls.attributes) do
             printf("    [name=%s]",attr.name);
 			printfnl(" string %s;", member_name(attr.name));
 		end
 	end
 	
 	if cls.children then
-		for _,child in pairs(cls.children) do			
+		for _,child in pairs_ordered(cls.children) do			
 			if child.count == 1 then
                 printf("    [name=%s]",child.name);
 				printfnl(" %s %s;",class_name(child.name),member_name(child.name));
@@ -141,7 +141,7 @@ for _,cls in pairs(g_classes) do
 	printfnl("}"..EOL);    
 end
     
-for _,name in pairs(all_lists) do
+for _,name in pairs_ordered(all_lists) do
     printfnl("[Stack of %s]",class_name(name));
     printfnl("class %s{}",array_class_name(name));
     printnl("");
