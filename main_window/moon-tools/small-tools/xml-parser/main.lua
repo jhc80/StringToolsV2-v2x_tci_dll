@@ -30,14 +30,17 @@ function parse_attributes(node)
 end
 
 function parse_xml(root)	
-	local cls = parse_attributes(root);	      
+	local cls = parse_attributes(root);	 
+	
+	if root:GetStringValue() then	
+		cls.has_value = true;	
+	end
+	
 	local children = {};
 	local child = root:GetChild();
 	while child do
 	    parse_xml(child);
-		
 		local key = child:GetName();
-		
 		if not children[key] then
 			children[key] = {
 				count=1,
@@ -46,17 +49,13 @@ function parse_xml(root)
 		else
 			children[key].count = children[key].count+1;
 		end
-				
 		child = child:GetNext();
 	end
-	
 	
 	if not cls.children then
 		cls.children = children;
 	else
-	
 		for k,v in pairs(children) do
-            
             if not cls.children[k] then
                 cls.children[k] = v;
             elseif v.count > cls.children[k].count then
@@ -109,26 +108,43 @@ else
 	end
 end
 
+local all_lists={};
+    
 for _,cls in pairs(g_classes) do	
-	printfnl("class %s {", cls.name);
+	printfnl("class %s {", class_name(cls.name));
 	
 	if cls.attributes then
 		for _,attr in pairs(cls.attributes) do
-			printfnl("    string %s;", attr.name);
+            printf("    [name=%s]",attr.name);
+			printfnl(" string %s;", member_name(attr.name));
 		end
 	end
 	
 	if cls.children then
 		for _,child in pairs(cls.children) do			
 			if child.count == 1 then
-				printfnl("    %s %s",child.name,child.name);
+                printf("    [name=%s]",child.name);
+				printfnl(" %s %s;",class_name(child.name),member_name(child.name));
 			else
-				printfnl("    array<%s> %s_array;",child.name,child.name);
+                printf("    [array,name=%s]",child.name);
+				printfnl(" %s %s;",array_class_name(child.name),
+                    array_member_name(child.name));
+                all_lists[child.name] = child.name;
 			end			
 		end
 	end
-	
+
+	if cls.has_value then	
+        print("    [value]");
+		printnl(" string value;");	
+	end	
 	printfnl("}"..EOL);    
+end
+    
+for _,name in pairs(all_lists) do
+    printfnl("[Stack of %s]",class_name(name));
+    printfnl("class %s{}",array_class_name(name));
+    printnl("");
 end
 
 
