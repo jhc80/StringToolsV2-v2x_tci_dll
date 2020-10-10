@@ -1,6 +1,9 @@
 --如果为true则分析文件列表--
 parse_files = true;
 
+--是否自动猜测成员变量类型--
+guess_type = true;
+
 --如何生成类的名字--
 function class_name(name)
     return to_big_camel_case(name);
@@ -20,3 +23,8 @@ end
 function array_member_name(name)
     return member_name(name).."List";
 end
+
+function add_code_switches()
+	printnl("[CodeSwitch code_mark=true,xml2=true]");
+end
+

@@ -3,6 +3,26 @@ require("user")
 
 local g_classes = {};
 
+function guess_value_type(value)	
+	if not guess_type then
+		return "string";
+	end
+	
+	if value=="true" or value=="false" then
+		return "bool";
+	end
+	
+	if tonumber(value) then	
+		if string.find(value,".",1,true) then
+			return "double";
+		else
+			return "int";
+		end	
+	end
+
+	return "string";
+end
+
 function parse_attributes(node)
 	local name = node:GetName();
 	if not g_classes[name] then
@@ -111,12 +131,13 @@ end
 local all_lists={};
     
 for _,cls in pairs_ordered(g_classes) do	
+	add_code_switches();
 	printfnl("class %s {", class_name(cls.name));
 	
 	if cls.attributes then
 		for _,attr in pairs_ordered(cls.attributes) do
             printf("    [name=%s]",attr.name);
-			printfnl(" string %s;", member_name(attr.name));
+			printfnl(" %s %s;", guess_value_type(attr.value), member_name(attr.name));
 		end
 	end
 	
@@ -142,6 +163,7 @@ for _,cls in pairs_ordered(g_classes) do
 end
     
 for _,name in pairs_ordered(all_lists) do
+	add_code_switches();
     printfnl("[Stack of %s]",class_name(name));
     printfnl("class %s{}",array_class_name(name));
     printnl("");
