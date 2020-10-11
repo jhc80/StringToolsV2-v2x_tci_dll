@@ -1,9 +1,23 @@
 require("common");
 require("user");
 
+function split(s, p)
+    local rt= {}
+    string.gsub(s, '[^'..p..']+', function(w) 
+		rt[w] = 1;
+	end);
+    return rt
+end
+
+local exts_table={};
 function in_ext_list(exts, info)
 	if string.len(info.ext) > 0 and not info.is_dir then
-		return string.find(exts,info.ext,1,true);
+		if not exts_table[exts] then
+			exts_table[exts] = split(exts,",");
+		end
+		if exts_table[exts] then
+			return exts_table[exts][info.ext];
+		end
 	end
 end
 

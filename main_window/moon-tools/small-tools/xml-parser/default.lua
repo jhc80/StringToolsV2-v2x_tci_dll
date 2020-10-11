@@ -11,7 +11,7 @@ end
 
 --如何生成成员的名字--
 function member_name(name)
-    return name;
+    return valid_var_name(name);
 end
 
 --如何生成数组类的名字--

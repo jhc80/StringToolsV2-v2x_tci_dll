@@ -3,6 +3,10 @@ require("user")
 
 local g_classes = {};
 
+function valid_var_name(name)
+	return string.gsub(name,"[^%w]","_");
+end
+
 function guess_value_type(value)	
 	if not guess_type then
 		return "string";

@@ -15,7 +15,8 @@ unix_style = false;
 
 --过滤器，返回false就不会出现在列表中--
 function file_name_filter(info)
-	return in_ext_list("c,h,cpp,html,js,lua",info);
+	local exts = "c,h,cpp,html,js,lua";
+	return in_ext_list(exts,info);
 end
 
 --如何打印的函数--
