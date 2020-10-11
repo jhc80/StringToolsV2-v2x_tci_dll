@@ -416,6 +416,7 @@ status_t CXmlNode::GetNextAttrib(CFileBase *name, CFileBase *val)
     if(mem.C(0) == 0)
         return ERROR;
 
+	mem.SetSplitChars(" =!?\t\r\n\"\'?/<>");
     mem.Trim();
     mem.Seek(0);
     mem.ReadWord(name);

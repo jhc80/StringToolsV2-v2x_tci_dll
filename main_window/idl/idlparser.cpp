@@ -642,7 +642,7 @@ status_t CIdlParser::ParseVariableList(CIdlVariableList *var_list)
 
         var->SetType(var_type.GetType());
         var->GetType()->SetIsPointer(is_pointer);
-
+		
 		if(is_array)
 		{
 			var->GetType()->SetIsArray(is_array);
