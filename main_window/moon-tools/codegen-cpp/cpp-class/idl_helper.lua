@@ -152,4 +152,29 @@ IdlHelper.Var.IsNoGetter = function(var)
 	return IdlHelper.Class.FindHintSwitch (var,"noget");
 end
 
+IdlHelper.Var.GetXml2Info = function(var)
+	if not var then return end
+	if not var.hint then return end
+	
+	local info={};
+	local hit = false;
 
+	for_each_hint(var.hint,function(mem,str)    
+		mem:Seek(0);
+		mem:SetSplitChars(",=");
+		while not mem:IsEnd() do
+			local s = mem:NextString();
+			if s == "array" then
+				info.is_array = true;
+				info.array_entry = mem:NextString();
+				hit = true;
+			end
+			if s == "name" then
+				info.name = mem:NextString();			
+				hit = true;
+			end
+		end
+	end);    
+
+	if hit then return info end
+end

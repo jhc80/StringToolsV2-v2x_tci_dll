@@ -229,11 +229,6 @@ function code_all_includes(idl_class)
             add_include("weak_pointer");
         end
     end);
-    
-    --local all_includes = g_cpp_base_codegen:GetIncludes();    
-    --for _,name in ipairs(all_includes) do
-    --    add_name(to_file_name(name,name_space));
-    --end
 
     code_begin_marker("Inlcudes");
     
@@ -245,7 +240,7 @@ function code_all_includes(idl_class)
         add_include("cJSON");
     end
     
-	if code_switch.xml then
+	if code_switch.xml or code_switch.xml2 then
         add_include("xml");
     end
 	
@@ -395,7 +390,7 @@ function code_h(idl_class)
 		code_end_marker("JSON");	
     end
     
-	if code_switch.xml then
+	if code_switch.xml or code_switch.xml2 then
 	    printnl("");
 		code_begin_marker("XML");
         printnl("    status_t LoadXml(CXmlNode *_root);");
@@ -404,8 +399,8 @@ function code_h(idl_class)
 		printnl("    status_t SaveXml(const char *fn, const char *node_name);");
 		code_end_marker("XML");
     end
-	    
-	printnl("};");	
+        
+    printnl("};");	
 	printnl("");
     
     local ns = g_cpp_base_codegen:Code_NameSpaceEnd();
@@ -2200,16 +2195,27 @@ function code_cpp(idl_class)
         code_cpp_save_json_1(idl_class);
         printnl("");        
     end
+    
+    if code_switch.xml2 or code_switch.xm1 then
+        code_cpp_load_xml_2(idl_class);
+        printnl("");        
+        code_cpp_save_xml_2(idl_class);
+        printnl("");
+    end
+
 
     if code_switch.xml then
         code_cpp_load_xml_1(idl_class);
         printnl("");        
         code_cpp_save_xml_1(idl_class);
         printnl("");        
-		code_cpp_load_xml_2(idl_class);
+    end
+
+    if code_switch.xml2 then
+        code_cpp_load_xml_3(idl_class);
         printnl("");        
-        code_cpp_save_xml_2(idl_class);
-        printnl("");        		
+        code_cpp_save_xml_3(idl_class);
+        printnl("");        
     end
 	
     if code_switch.code_mark then
@@ -4107,5 +4113,198 @@ function code_cpp_save_xml_2(idl_class)
 end
 
 -----------------------------------------------------------
+--xml2
 -----------------------------------------------------------
 
+--生成LoadXml2的代码--
+function code_cpp_load_xml_3(idl_class)
+    printnl(string.format(
+        "status_t %s::LoadXml(CXmlNode *_root)",
+        c_class_name(idl_class.name)
+    ));
+    printnl("{");
+
+    code_begin_marker("LoadXml_2");
+
+    function pc_not_array_basic_type(context)        
+        local else_str = context.need_else and "else " or "";
+        context.need_else = true;
+        printfnl("%s%sif(strcmp(name.CStr(),\"%s\") == 0)",
+            ptab(context.tab),else_str,context.xml2_info.name);
+        printfnl("%s{",ptab(context.tab));
+        context.tab = context.tab + 1;
+     
+        printfnl("%sthis->%s(XML_STRING_TO_%s(name.CStr()));",ptab(context.tab),
+            setter_name(context.info.var.name),
+            string.upper(IdlHelper.Type.GetXmlType(context.info.var_type))
+        );
+
+        context.tab = context.tab - 1;
+        printfnl("%s}",ptab(context.tab));
+    end
+
+    function pc_not_array_string(context)
+        local else_str = context.need_else and "else " or "";
+        context.need_else = true;
+        printfnl("%s%sif(strcmp(name.CStr(),\"%s\") == 0)",
+            ptab(context.tab),else_str,context.xml2_info.name);
+        printfnl("%s{",ptab(context.tab));
+        context.tab = context.tab + 1;
+		printfnl("%sthis->%s(&val);",ptab(context.tab),
+			setter_name(context.info.var.name)
+        );
+        context.tab = context.tab - 1;
+        printfnl("%s}",ptab(context.tab));
+    end
+
+    function pc_not_array_object(context)   
+        local else_str = context.need_else and "else " or "";
+        context.need_else = true;
+        printfnl("%s%sif(strcmp(px->GetName(),\"%s\") == 0)",
+            ptab(context.tab),else_str,context.xml2_info.name);
+        printfnl("%s{",ptab(context.tab));
+        context.tab = context.tab + 1;
+        printfnl("%s%s.LoadXml(px);",ptab(context.tab),
+            member_name(context.info.var.name));
+        context.tab = context.tab - 1;
+        printfnl("%s}",ptab(context.tab));  
+    end
+    
+    function pc_array(context)
+        local else_str = context.need_else and "else " or "";
+        context.need_else = true;
+        printfnl("%s%sif(strcmp(px->GetName(),\"%s\") == 0)",
+            ptab(context.tab),else_str,context.xml2_info.name);
+        printfnl("%s{",ptab(context.tab));
+        context.tab = context.tab + 1;
+                
+        printfnl("%s%s *tmp;",ptab(context.tab),
+            c_class_name(context.xml2_info.array_entry));
+        printfnl("%sNEW(tmp,%s);",ptab(context.tab),
+            c_class_name(context.xml2_info.array_entry));
+        printfnl("%stmp->Init();",ptab(context.tab));
+        printfnl("%stmp->LoadXml(px);",ptab(context.tab));
+        printfnl("%s%s.PushPtr(tmp);",ptab(context.tab),
+            member_name(context.info.var.name));
+        context.tab = context.tab - 1;
+        printfnl("%s}",ptab(context.tab));            
+    end
+
+    printnl("    ASSERT(_root);");
+    printnl("    CXmlNode *px = _root;");
+
+    printfnl("");
+    printfnl("    LOCAL_MEM(name);");
+    printfnl("    LOCAL_MEM(val);");
+    printfnl("");
+    printfnl("    px->RestartAttrib();");
+    printfnl("    while(px->GetNextAttrib(&name,&val))");
+    printfnl("    {");
+
+    local context={};
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then return end
+        local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
+        if not xml2_info then return end
+
+        context.tab = 2;
+        context.xml2_info = xml2_info;
+        context.info = info;
+    
+        if not xml2_info.is_array and not info.is_array then
+            if info.is_basic_type then
+                pc_not_array_basic_type(context);
+            elseif info.is_string then
+                pc_not_array_string(context);
+            end
+        end
+    end);  
+    printfnl("    }");
+
+    printfnl("");
+
+    printfnl("    while(px)");
+    printfnl("    {");    
+    local context={};
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then return end
+        local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
+        if not xml2_info then return end
+
+        context.tab = 2;
+        context.xml2_info = xml2_info;
+        context.info = info;
+        
+        if xml2_info.is_array then
+            pc_array(context);
+        elseif info.is_object and not info.is_array and not info.is_string then
+            pc_not_array_object(context);            
+        end
+        
+    end);  
+
+    printfnl("        px = px->next;");
+    printfnl("    }");
+    code_end_marker("LoadXml_2");
+    printnl("    return OK;")
+    printnl("}");
+end
+
+--生成SaveXml2的代码--
+function code_cpp_save_xml_3(idl_class)
+    printnl(string.format(
+        "status_t %s::SaveXml(CFileBase *_xml)",
+        c_class_name(idl_class.name)
+    ));
+    printnl("{");
+	
+	local need_i = false;
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then return  end
+		if info.is_array then need_i = true end
+	end);
+	
+	if need_i then
+		printfnl("    int i;");
+	end
+	    
+    code_begin_marker("SaveXml_2");
+
+    function pc_not_array_basic_type(info)
+    end
+
+    function pc_not_array_string(info)
+    end
+
+    function pc_not_array_object(info)   
+        
+        
+    end
+    
+    function pc_array(info)
+
+    end
+    
+    printnl("    ASSERT(_xml);");
+
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then return end
+
+        if info.is_array then
+            pc_array(info);
+            printnl(""); 
+        else
+            if info.is_basic_type  then
+                pc_not_array_basic_type(info);
+            elseif info.is_string then
+                pc_not_array_string(info);                
+            else
+                pc_not_array_object(info);
+            end
+        end
+    end);  
+
+    code_end_marker("SaveXml_2");
+    printnl("    return OK;")
+    printnl("}");
+end

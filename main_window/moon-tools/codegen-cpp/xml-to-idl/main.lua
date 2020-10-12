@@ -151,7 +151,7 @@ for _,cls in pairs_ordered(g_classes) do
                 printf("    [name=%s]",child.name);
 				printfnl(" %s %s;",class_name(child.name),member_name(child.name));
 			else
-                printf("    [array,name=%s]",child.name);
+                printf("    [array=%s,name=%s]",class_name(child.name),child.name);
 				printfnl(" %s %s;",array_class_name(child.name),
                     array_member_name(child.name));
                 all_lists[child.name] = child.name;

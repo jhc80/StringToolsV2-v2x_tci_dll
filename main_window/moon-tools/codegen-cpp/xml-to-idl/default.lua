@@ -6,7 +6,8 @@ guess_type = true;
 
 --如何生成类的名字--
 function class_name(name)
-    return to_big_camel_case(name);
+    local str = valid_var_name(name);
+	return to_big_camel_case(str);
 end
 
 --如何生成成员的名字--

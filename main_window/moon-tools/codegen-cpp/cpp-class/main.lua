@@ -45,32 +45,26 @@ for _,idl_class in ipairs(all_idl_classes) do
         App.ClearBuffer();
         code_h(idl_class);        
         
-        if App.SaveBuffer(h_name) then
-            save_str = save_str .. "save to "..h_name..EOL;
+        if App.SaveBuffer(h_name) then            
+            printfnl("save to %s",h_name);
         else
-            save_str = save_str .. "fail to save "..h_name..EOL;
+            printfnl("fail to save %s",h_name);
         end
         
         App.ClearBuffer();
         code_cpp(idl_class);
         
         if App.SaveBuffer(cpp_name) then
-            save_str = save_str .. "save to "..cpp_name..EOL;
+            printfnl("save to %s",cpp_name);
         else
-            save_str = save_str .. "fail to save "..cpp_name..EOL;
+            printfnl("fail to save %s",cpp_name);
         end
 
     else
         code_h(idl_class);
         printnl("");
         code_cpp(idl_class);
-    end
-    
-    if save_str ~= "" then 
-        App.ClearScreen();
-        printnl(save_str);
-    end
-    
+    end    
 end
 
 

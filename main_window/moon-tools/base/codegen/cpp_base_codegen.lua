@@ -107,6 +107,10 @@ function CppBaseCodeGen:Code_Includes(configs)
         pb:Log("#include \"minibson.h\"");
     end
 
+    if self.m_code_switch.xml or self.m_code_switch.xml2 then
+        pb:Log("#include \"xml.h\"");
+    end
+    
     for _,name in ipairs(self.m_all_includes) do
         pb:Print(string.format(
             "#include \"%s.h\""..EOL,

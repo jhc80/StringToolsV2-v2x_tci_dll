@@ -13,6 +13,7 @@ code_switch={
 	cjson = false,
 	lib_config = false,	
 	xml = false,
+	xml2 = false,
     code_mark = false,
 }
 
