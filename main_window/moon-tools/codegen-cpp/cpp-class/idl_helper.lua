@@ -173,6 +173,9 @@ IdlHelper.Var.GetXml2Info = function(var)
 				info.name = mem:NextString();			
 				hit = true;
 			end
+			if s == "value" then
+				info.is_value = true;
+			end
 		end
 	end);    
 

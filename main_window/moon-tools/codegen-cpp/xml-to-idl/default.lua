@@ -26,6 +26,6 @@ function array_member_name(name)
 end
 
 function add_code_switches()
-	printnl("[CodeSwitch code_mark=true,xml2=true]");
+	printnl("[CodeSwitch code_mark=true,weak_ref=true,xml2=true]");
 end
 

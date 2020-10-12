@@ -42,10 +42,18 @@ function parse_attributes(node)
 		if not cls.attributes then
 			cls.attributes={};
 		end		
-		cls.attributes[key:CStr()] = {
-			name = key:CStr(),
-			value = val:CStr(),
-		}
+		
+		if cls.attributes[key:CStr()] then
+			local guess_type = guess_value_type(val:CStr());
+			if guess_type == "string" then
+				cls.attributes[key:CStr()].value = val:CStr();
+			end
+		else
+			cls.attributes[key:CStr()] = {
+				name = key:CStr(),
+				value = val:CStr(),
+			}
+		end
 	end
 	
 	key:Destroy();

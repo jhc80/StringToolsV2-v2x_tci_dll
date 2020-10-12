@@ -4134,7 +4134,7 @@ function code_cpp_load_xml_3(idl_class)
         printfnl("%s{",ptab(context.tab));
         context.tab = context.tab + 1;
      
-        printfnl("%sthis->%s(XML_STRING_TO_%s(name.CStr()));",ptab(context.tab),
+        printfnl("%sthis->%s(XML_STRING_TO_%s(val.CStr()));",ptab(context.tab),
             setter_name(context.info.var.name),
             string.upper(IdlHelper.Type.GetXmlType(context.info.var_type))
         );
@@ -4223,6 +4223,7 @@ function code_cpp_load_xml_3(idl_class)
 
     printfnl("");
 
+    printfnl("    px = px->child;");
     printfnl("    while(px)");
     printfnl("    {");    
     local context={};
@@ -4240,11 +4241,23 @@ function code_cpp_load_xml_3(idl_class)
         elseif info.is_object and not info.is_array and not info.is_string then
             pc_not_array_object(context);            
         end
-        
     end);  
-
     printfnl("        px = px->next;");
     printfnl("    }");
+
+
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then return end
+        local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
+        if not xml2_info then return end
+        if xml2_info.is_value then
+            printfnl("");
+            printfnl("    px = _root;");
+            printfnl("    px->GetStringValue(&val);");
+            printfnl("    this->SetValue(&val);");
+        end
+    end);  
+
     code_end_marker("LoadXml_2");
     printnl("    return OK;")
     printnl("}");
@@ -4270,38 +4283,10 @@ function code_cpp_save_xml_3(idl_class)
 	    
     code_begin_marker("SaveXml_2");
 
-    function pc_not_array_basic_type(info)
-    end
-
-    function pc_not_array_string(info)
-    end
-
-    function pc_not_array_object(info)   
-        
-        
-    end
-    
-    function pc_array(info)
-
-    end
-    
     printnl("    ASSERT(_xml);");
 
     for_each_variables(idl_class.variables,function(info)
         if info.is_pointer then return end
-
-        if info.is_array then
-            pc_array(info);
-            printnl(""); 
-        else
-            if info.is_basic_type  then
-                pc_not_array_basic_type(info);
-            elseif info.is_string then
-                pc_not_array_string(info);                
-            else
-                pc_not_array_object(info);
-            end
-        end
     end);  
 
     code_end_marker("SaveXml_2");
