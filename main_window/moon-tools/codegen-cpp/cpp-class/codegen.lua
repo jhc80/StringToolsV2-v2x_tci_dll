@@ -4211,7 +4211,10 @@ function code_cpp_load_xml_3(idl_class)
         context.xml2_info = xml2_info;
         context.info = info;
     
-        if not xml2_info.is_array and not info.is_array then
+        if not xml2_info.is_array and 
+			not info.is_array and 
+			not xml2_info.is_value 
+		then
             if info.is_basic_type then
                 pc_not_array_basic_type(context);
             elseif info.is_string then
@@ -4238,7 +4241,11 @@ function code_cpp_load_xml_3(idl_class)
         
         if xml2_info.is_array then
             pc_array(context);
-        elseif info.is_object and not info.is_array and not info.is_string then
+        elseif info.is_object and 
+			not info.is_array and 
+			not info.is_string and 
+			not xml2_info.is_value 
+		then
             pc_not_array_object(context);            
         end
     end);  

@@ -175,6 +175,7 @@ IdlHelper.Var.GetXml2Info = function(var)
 			end
 			if s == "value" then
 				info.is_value = true;
+				hit = true;
 			end
 		end
 	end);    

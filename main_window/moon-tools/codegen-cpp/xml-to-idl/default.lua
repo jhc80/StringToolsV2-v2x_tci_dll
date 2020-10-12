@@ -17,12 +17,12 @@ end
 
 --如何生成数组类的名字--
 function array_class_name(name)
-    return class_name(name).."List";
+    return class_name(name).."Array";
 end
 
 --如何生成数组成员的名字--
 function array_member_name(name)
-    return member_name(name).."List";
+    return member_name(name).."Array";
 end
 
 function add_code_switches()
