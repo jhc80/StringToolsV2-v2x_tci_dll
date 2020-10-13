@@ -394,7 +394,12 @@ function code_h(idl_class)
 	    printnl("");
 		code_begin_marker("XML");
         printnl("    status_t LoadXml(CXmlNode *_root);");
-        printnl("    status_t SaveXml(CFileBase *_xml);");
+
+        if code_switch.xml2 then
+            printnl("    status_t SaveXml(CFileBase *_xml, const char *node_name);");
+        else
+            printnl("    status_t SaveXml(CFileBase *_xml);");
+        end
 		printnl("    status_t LoadXml(const char *fn, const char *path);");
 		printnl("    status_t SaveXml(const char *fn, const char *node_name);");
 		code_end_marker("XML");
@@ -4101,13 +4106,19 @@ function code_cpp_save_xml_2(idl_class)
 	printfnl("");
 	printfnl("    CMemFile mf;");
 	printfnl("    mf.Init();");
-	printfnl("    mf.Log(\"<?xml version=\\\"1.0\\\" encoding=\\\"utf-8\\\"?>\");");
-	printfnl("    mf.Log(\"<%%s>\",node_name);");
-	printfnl("    mf.IncLogLevel(1);");
-	printfnl("    this->SaveXml(&mf);");
-	printfnl("    mf.IncLogLevel(-1);");
-	printfnl("    mf.Log(\"</%%s>\",node_name);");
-	printfnl("    ");
+    printfnl("    mf.Log(\"<?xml version=\\\"1.0\\\" encoding=\\\"utf-8\\\"?>\");");
+    
+    if code_switch.xml2 then
+        printfnl("    this->SaveXml(&mf,node_name);");
+    else
+        printfnl("    mf.Log(\"<%%s>\",node_name);");
+        printfnl("    mf.IncLogLevel(1);");
+        printfnl("    this->SaveXml(&mf);");
+        printfnl("    mf.IncLogLevel(-1);");
+        printfnl("    mf.Log(\"</%%s>\",node_name);");
+    end
+
+	printfnl("");
 	printfnl("    return mf.WriteToFile(fn) > 0;");
 	printfnl("}");
 end
@@ -4252,7 +4263,6 @@ function code_cpp_load_xml_3(idl_class)
     printfnl("        px = px->next;");
     printfnl("    }");
 
-
     for_each_variables(idl_class.variables,function(info)
         if info.is_pointer then return end
         local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
@@ -4261,7 +4271,7 @@ function code_cpp_load_xml_3(idl_class)
             printfnl("");
             printfnl("    px = _root;");
             printfnl("    px->GetStringValue(&val);");
-            printfnl("    this->SetValue(&val);");
+            printfnl("    this->%s(&val);",setter_name(info.var.name));
         end
     end);  
 
@@ -4273,7 +4283,7 @@ end
 --生成SaveXml2的代码--
 function code_cpp_save_xml_3(idl_class)
     printnl(string.format(
-        "status_t %s::SaveXml(CFileBase *_xml)",
+        "status_t %s::SaveXml(CFileBase *_xml,const char *node_name)",
         c_class_name(idl_class.name)
     ));
     printnl("{");
@@ -4281,7 +4291,9 @@ function code_cpp_save_xml_3(idl_class)
 	local need_i = false;
     for_each_variables(idl_class.variables,function(info)
         if info.is_pointer then return  end
-		if info.is_array then need_i = true end
+        local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
+        if not xml2_info then return end        
+        if xml2_info.is_array then need_i = true end
 	end);
 	
 	if need_i then
@@ -4289,12 +4301,126 @@ function code_cpp_save_xml_3(idl_class)
 	end
 	    
     code_begin_marker("SaveXml_2");
+    printnl("    ASSERT(_xml && node_name);");
 
-    printnl("    ASSERT(_xml);");
+    function pc_not_array_basic_type(context)
+		printfnl("%s_xml->Printf(\" %s=\\\"%s\\\"\",this->%s);",ptab(context.tab),
+			context.xml2_info.name,
+			IdlHelper.Type.GetPrintFormat(context.info.var_type),
+			member_name(context.info.var.name)
+		);	
+    end
+
+    function pc_not_array_string(context)
+        printfnl("%sif(%s.StrLen() > 0)",ptab(context.tab),
+            member_name(context.info.var.name));
+        printfnl("%s{",ptab(context.tab));
+        context.tab = context.tab + 1;
+		
+		printfnl("%s_xml->Printf(\" %s=\\\"%%s\\\"\",this->%sStr());",ptab(context.tab),
+			context.xml2_info.name,			
+			getter_name(context.info.var.name,info)
+		);		
+        
+        context.tab = context.tab - 1;
+    	printfnl("%s}",ptab(context.tab));	
+    end
+
+    function pc_not_array_object(context)    
+        printfnl("%s%s.SaveXml(_xml,\"%s\");",
+            ptab(context.tab),
+            member_name(context.info.var.name),
+            context.xml2_info.name
+        );
+    end
+
+    function pc_array(context)
+        printfnl("%sfor(i = 0; i < %s.GetLen(); i++)",
+            ptab(context.tab),
+            member_name(context.info.var.name)
+        );
+        printfnl("%s{",ptab(context.tab));
+
+        context.tab = context.tab + 1;
+        printfnl("%s%s.GetElem(i)->SaveXml(_xml,\"%s\");",
+            ptab(context.tab),
+            member_name(context.info.var.name),
+            context.xml2_info.name
+        );
+        context.tab = context.tab - 1;
+        printfnl("%s}",ptab(context.tab));
+    end
+
+    function pc_value(context)
+        printfnl("%s_xml->Tab();",ptab(context.tab));
+        printfnl("%s_xml->Puts(this->%s());",
+            ptab(context.tab),getter_name(context.info.var.name));
+        printfnl("%s_xml->Eol();",ptab(context.tab));
+    end
+    
+    printfnl("    _xml->Tab();");
+    printfnl("    _xml->Printf(\"<%%s\",node_name);");
+    local context={};
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then return end
+        local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
+        if not xml2_info then return end
+
+        context.info = info;
+        context.xml2_info = xml2_info;
+        context.tab = 1;
+
+        if not xml2_info.is_array and not xml2_info.is_value then
+            if info.is_basic_type then
+                pc_not_array_basic_type(context);
+            elseif info.is_string then
+                pc_not_array_string(context);
+            end
+        end        
+    end);  
+    printfnl("    _xml->Printf(\">\");");
+    printfnl("    _xml->Eol();");
+    printfnl("    _xml->IncLogLevel(1);");
+    printfnl("");
 
     for_each_variables(idl_class.variables,function(info)
         if info.is_pointer then return end
+        local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
+        if not xml2_info then return end
+
+        context.info = info;
+        context.xml2_info = xml2_info;
+        context.tab = 1;
+
+        if xml2_info.is_array then
+            pc_array(context);
+        elseif info.is_object and 
+            not xml2_info.is_value and 
+            not info.is_string 
+        then
+            pc_not_array_object(context);
+        end        
     end);  
+
+    
+    for_each_variables(idl_class.variables,function(info)
+        if info.is_pointer then return end
+        local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
+        if not xml2_info then return end
+
+        context.info = info;
+        context.xml2_info = xml2_info;
+        context.tab = 1;
+
+        if xml2_info.is_value then
+            printnl("");
+            pc_value(context);
+        end        
+    end);  
+
+    printfnl("");
+    printfnl("    _xml->IncLogLevel(-1);");
+    printfnl("    _xml->Log(\"</%%s>\",node_name);");
 
     code_end_marker("SaveXml_2");
     printnl("    return OK;")

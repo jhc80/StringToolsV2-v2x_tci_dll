@@ -169,7 +169,7 @@ for _,cls in pairs_ordered(g_classes) do
 
 	if cls.has_value then	
         print("    [value]");
-		printnl(" string value;");	
+		printfnl(" string %s;",value_member_name());	
 	end	
 	printfnl("}"..EOL);    
 end

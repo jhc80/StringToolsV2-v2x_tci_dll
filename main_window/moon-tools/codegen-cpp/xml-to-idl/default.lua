@@ -25,7 +25,13 @@ function array_member_name(name)
     return member_name(name).."Array";
 end
 
+function value_member_name()
+	return "xml_value";
+end
+
 function add_code_switches()
 	printnl("[CodeSwitch code_mark=true,weak_ref=true,xml2=true]");
 end
+
+
 
