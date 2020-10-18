@@ -3,7 +3,7 @@ require("english_table");
 
 local start = 1;
 local count = 50;
-local print_english = false;
+local print_english = true;
 local print_type = true;
 local print_chinese = true;
 
@@ -13,13 +13,13 @@ for i = start, start+count, 1 do
 	
 	printf("%d.  ",i-start+1);
 	if print_english then
-		printf("%s",v.english);
+		printf("%s\t",v.english);
 	else
 		printf("                 ");
 	end
 
 	if print_type then
-		printf("%s ",v.type);	
+		printf("%s \t",v.type);	
 	end	
 
 	if print_chinese then
