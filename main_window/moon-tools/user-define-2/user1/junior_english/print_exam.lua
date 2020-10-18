@@ -13,7 +13,7 @@ for i = start, start+count, 1 do
 	
 	printf("%d.  ",i-start+1);
 	if print_english then
-		printf("%s\t",v.english);
+		printf("%s\t\t",v.english);
 	else
 		printf("                 ");
 	end
