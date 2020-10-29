@@ -25,10 +25,12 @@ function array_member_name(name)
     return member_name(name).."Array";
 end
 
+--如何生成value的成员名字--
 function value_member_name()
 	return "xml_value";
 end
 
+--添加自定义的代码开关--
 function add_code_switches()
 	printnl("[CodeSwitch code_mark=true,weak_ref=true,xml2=true]");
 end
