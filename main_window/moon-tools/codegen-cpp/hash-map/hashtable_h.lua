@@ -11,8 +11,7 @@ function code_h(names)
 	maybe_printnl(g_cpp_base_codegen:Code_Includes());
 	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Inlcudes"));
 	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Inlcudes"));	
-	
-    maybe_printnl(g_cpp_base_codegen:Code_Includes());
+
 	printfnl("");
     maybe_printnl(g_cpp_base_codegen:Code_NameSpaceBegin());
 
@@ -73,6 +72,11 @@ function code_h(names)
 	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Getter_H"));
 	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Setter_H"));
 	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Setter_H"));
+	
+	if code_switch.xml2 then	
+		printfnl("    status_t SaveXml(CFileBase *_xml, const char *node_name);");
+		printfnl("    status_t SaveXml(const char *fn, const char *node_name);");
+	end
 	
 	printfnl("};");
 	printfnl("");

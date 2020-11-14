@@ -398,7 +398,42 @@ function code_cpp(names)
 	printfnl("    return OK;");
 	printfnl("}");
 
-	printfnl("");
+	if code_switch.xml2 then	
+		printfnl("");
+		printfnl("status_t %s::SaveXml(const char *fn, const char *node_name)",names.c_class_name);
+		printfnl("{");
+		printfnl("    ASSERT(fn && node_name);");
+		printfnl("    ");
+		printfnl("    CMemFile mf;");
+		printfnl("    mf.Init();");
+		printfnl("    mf.Log(\"<?xml version=\\\"1.0\\\" encoding=\\\"utf-8\\\"?>\");");
+		printfnl("    this->SaveXml(&mf,node_name);");
+		printfnl("    ");
+		printfnl("    return mf.WriteToFile(fn) > 0;");
+		printfnl("}");
+		printfnl("");
+		printfnl("status_t %s::SaveXml(CFileBase *_xml,const char *node_name)",names.c_class_name);
+		printfnl("{");
+		printfnl("    ASSERT(_xml && node_name);");
+		printfnl("  ");
+		printfnl("");
+		printfnl("    BEGIN_CLOSURE(save_xml)");
+		printfnl("    {");
+		printfnl("        CLOSURE_PARAM_PTR(%s*,node,0);",names.c_node_class_name);
+		printfnl("        CLOSURE_PARAM_PTR(const char*,node_name,10);");
+		printfnl("        CLOSURE_PARAM_PTR(CFileBase*,_xml,11);");
+		printfnl("        node->SaveXml(_xml,node_name);");
+		printfnl("        return OK;");
+		printfnl("    }");
+		printfnl("    END_CLOSURE(save_xml);");
+		printfnl("");
+		printfnl("    save_xml.SetParamPointer(10,(void*)node_name);");
+		printfnl("    save_xml.SetParamPointer(11,_xml);");
+		printfnl("    this->EnumAll(&save_xml);");
+		printfnl("    return OK;");
+		printfnl("}");
+	end
+	
 	printfnl("/*********************************************/");
 	printfnl("/*********************************************/");
 	printfnl("int %s::HashCode(%s *hashentry,int capacity)",names.c_class_name,names.c_node_class_name);

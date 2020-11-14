@@ -4201,6 +4201,30 @@ function code_cpp_load_xml_3(idl_class)
         printfnl("%s}",ptab(context.tab));            
     end
 
+    function pc_map(context)
+        local else_str = context.need_else and "else " or "";
+        context.need_else = true;
+        printfnl("%s%sif(strcmp(px->GetName(),\"%s\") == 0)",
+            ptab(context.tab),else_str,context.xml2_info.name);
+        printfnl("%s{",ptab(context.tab));
+        context.tab = context.tab + 1;
+                
+        printfnl("%s%s *tmp;",ptab(context.tab),
+            c_class_name(context.xml2_info.map_entry));
+        printfnl("%sNEW(tmp,%s);",ptab(context.tab),
+            c_class_name(context.xml2_info.map_entry));
+        printfnl("%stmp->Init();",ptab(context.tab));
+        printfnl("%stmp->LoadXml(px);",ptab(context.tab));
+        printfnl("%sif(!%s.PutPtr(tmp))",ptab(context.tab),
+            member_name(context.info.var.name));
+		printfnl("%s{",ptab(context.tab));            
+		printfnl("%s    DEL(tmp);",ptab(context.tab));            
+		printfnl("%s}",ptab(context.tab));            
+        context.tab = context.tab - 1;
+        printfnl("%s}",ptab(context.tab));            
+    end
+
+
     printnl("    ASSERT(_root);");
     printnl("    CXmlNode *px = _root;");
 
@@ -4252,6 +4276,8 @@ function code_cpp_load_xml_3(idl_class)
         
         if xml2_info.is_array then
             pc_array(context);
+		elseif xml2_info.is_map then
+            pc_map(context);
         elseif info.is_object and 
 			not info.is_array and 
 			not info.is_string and 

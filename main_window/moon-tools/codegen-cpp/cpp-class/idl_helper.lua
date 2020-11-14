@@ -169,6 +169,11 @@ IdlHelper.Var.GetXml2Info = function(var)
 				info.array_entry = mem:NextString();
 				hit = true;
 			end
+			if s == "map" then
+				info.is_map = true;
+				info.map_entry = mem:NextString();
+				hit = true;
+			end			
 			if s == "name" then
 				info.name = mem:NextString();			
 				hit = true;

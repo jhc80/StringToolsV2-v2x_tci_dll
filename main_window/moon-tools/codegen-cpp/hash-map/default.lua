@@ -11,6 +11,7 @@ name_space="";
 code_switch={
     weak_ref = false,
     task_container = false,
+	xml2 = false,
 }
 
 --如何转换字符串到类的名字--
