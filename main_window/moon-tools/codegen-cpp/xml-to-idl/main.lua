@@ -1,6 +1,8 @@
 require("common")
 require("user")
 
+g_cur_class = nil;
+
 local g_classes = {};
 
 function valid_var_name(name)
@@ -140,9 +142,11 @@ else
 	end
 end
 
-local all_lists={};
+local all_lists = {};
+local all_maps = {};
     
 for _,cls in pairs_ordered(g_classes) do	
+	g_cur_class = cls;
 	add_code_switches();
 	printfnl("class %s {", class_name(cls.name));
 	
@@ -159,10 +163,18 @@ for _,cls in pairs_ordered(g_classes) do
                 printf("    [name=%s]",child.name);
 				printfnl(" %s %s;",class_name(child.name),member_name(child.name));
 			else
-                printf("    [array=%s,name=%s]",class_name(child.name),child.name);
-				printfnl(" %s %s;",array_class_name(child.name),
-                    array_member_name(child.name));
-                all_lists[child.name] = child.name;
+				local is_map = array_is_map(g_classes[child.name],child);				
+				if not is_map then
+					printf("    [array=%s,name=%s]",class_name(child.name),child.name);			
+					printfnl(" %s %s;",array_class_name(child.name),
+						array_member_name(child.name));					
+					all_lists[child.name] = child.name;
+				else
+					printf("    [map=%s,name=%s]",class_name(child.name),child.name);			
+					printfnl(" %s %s;",map_class_name(child.name),
+						map_member_name(child.name));					
+					all_maps[child.name] = child.name;
+				end
 			end			
 		end
 	end
@@ -178,6 +190,13 @@ for _,name in pairs_ordered(all_lists) do
 	add_code_switches();
     printfnl("[Stack of %s]",class_name(name));
     printfnl("class %s{}",array_class_name(name));
+    printnl("");
+end
+
+for _,name in pairs_ordered(all_maps) do
+	add_code_switches();
+    printfnl("[HashMap of %s]",class_name(name));
+    printfnl("class %s{}",map_class_name(name));
     printnl("");
 end
 
