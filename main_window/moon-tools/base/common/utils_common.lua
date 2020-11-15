@@ -197,20 +197,24 @@ end
 
 
 --按字母顺序排列的pair函数--
-function pairs_ordered(tab)
+function pairs_ordered(tab,sort_func)
     local order_tab={};
     for k,v in pairs(tab) do
         local tmp = {key=k,val=v};
         table.insert(order_tab,tmp);
     end
 
-    table.sort(order_tab,function(e1,e2)
-        if type(e1.key) == "number" and type(e2.key) == number then
-            return e1.key < e2.key;
-        end
-        return string.lower(e1.key) < string.lower(e2.key);
-    end);
-
+	if sort_func then
+		table.sort(order_tab,sort_func);
+	else
+		table.sort(order_tab,function(e1,e2)
+			if type(e1.key) == "number" and type(e2.key) == number then
+				return e1.key < e2.key;
+			end
+			return string.lower(e1.key) < string.lower(e2.key);
+		end);
+	end
+	
     local i = 0;
     
     function iter()       

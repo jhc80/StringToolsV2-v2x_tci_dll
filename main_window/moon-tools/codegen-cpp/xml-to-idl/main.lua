@@ -4,6 +4,7 @@ require("user")
 g_cur_class = nil;
 
 local g_classes = {};
+local g_class_index = 1;
 
 function valid_var_name(name)
 	return string.gsub(name,"[^%w]","_");
@@ -32,14 +33,18 @@ end
 function parse_attributes(node)
 	local name = node:GetName();
 	if not g_classes[name] then
-		g_classes[name]={name=name};
+		g_classes[name]={
+			name=name,
+			index = g_class_index;
+		};
+		g_class_index = g_class_index+1;
 	end
 	
 	node:RestartAttrib();	
 	local key = new_mem();
 	local val = new_mem();	
 	local cls = g_classes[name];
-		
+	local index = 1;
 	while node:GetNextAttrib(key,val) do
 		if not cls.attributes then
 			cls.attributes={};
@@ -54,7 +59,9 @@ function parse_attributes(node)
 			cls.attributes[key:CStr()] = {
 				name = key:CStr(),
 				value = val:CStr(),
+				index = index,
 			}
+			index = index + 1;
 		end
 	end
 	
@@ -72,6 +79,7 @@ function parse_xml(root)
 	
 	local children = {};
 	local child = root:GetChild();
+	local index = 1;
 	while child do
 	    parse_xml(child);
 		local key = child:GetName();
@@ -79,7 +87,9 @@ function parse_xml(root)
 			children[key] = {
 				count=1,
                 name=key,
-			}
+				index = index,
+			};
+			index = index + 1;
 		else
 			children[key].count = children[key].count+1;
 		end
@@ -142,23 +152,27 @@ else
 	end
 end
 
+function ordered_by_index(e1,e2)
+	return e1.val.index < e2.val.index;
+end
+
 local all_lists = {};
 local all_maps = {};
     
-for _,cls in pairs_ordered(g_classes) do	
+for _,cls in pairs_ordered(g_classes,ordered_by_index) do	
 	g_cur_class = cls;
 	add_code_switches();
 	printfnl("class %s {", class_name(cls.name));
 	
 	if cls.attributes then
-		for _,attr in pairs_ordered(cls.attributes) do
+		for _,attr in pairs_ordered(cls.attributes,ordered_by_index) do
             printf("    [name=%s]",attr.name);
 			printfnl(" %s %s;", guess_value_type(attr.value), member_name(attr.name));
 		end
 	end
 	
-	if cls.children then
-		for _,child in pairs_ordered(cls.children) do			
+	if cls.children then	
+		for _,child in pairs_ordered(cls.children,ordered_by_index) do			
 			if child.count == 1 then
                 printf("    [name=%s]",child.name);
 				printfnl(" %s %s;",class_name(child.name),member_name(child.name));
