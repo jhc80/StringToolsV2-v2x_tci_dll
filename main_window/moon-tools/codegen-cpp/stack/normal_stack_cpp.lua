@@ -339,9 +339,9 @@ function code_normal_cpp(names)
     printfnl("    this->Destroy();");
     
 	if code_switch.task_container then
-		printfnl("    this->Init(GetTaskMgr(),_p->GetLen());");
+		printfnl("    this->Init(GetTaskMgr());");
 	else
-		printfnl("    this->Init(_p->GetLen());");
+		printfnl("    this->Init();");
 	end
 	
     printfnl("    for(i = 0; i < _p->GetLen(); i++)");
