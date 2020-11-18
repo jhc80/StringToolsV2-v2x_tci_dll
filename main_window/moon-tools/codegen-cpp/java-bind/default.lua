@@ -15,6 +15,11 @@ end
 function c_class_name(name)
 	return "C"..name;
 end
+
+--如何生成java的函数名称--
+function java_function_name(name)
+	return to_small_camel_case(name);
+end
 -------------------------------------
 --定义基本数据类型的映射表--
 -------------------------------------

@@ -19,6 +19,13 @@ function java_class_path(name)
 		"/"..java_class_name(name);
 end
 
+function java_method_name(name)
+    if string.byte(name,1) == 95 then
+        return name;
+    end
+    return java_function_name(name);
+end
+
 function jni_c_func_name(info)
     local name = string.lower(info.idl_class.name).."_"..
         string.lower(info.name);
@@ -42,7 +49,8 @@ function get_jni_type_info(jni_type_name)
             local tab = {
                 jni_type = info[1],
                 jni_c_type = info[2],
-				jni_array_type = info[5],
+                jni_array_type = info[5],
+                jni_type_signature = info[3],
             };            
             return tab;
         end    
@@ -207,42 +215,6 @@ function jni_param_define_list(params)
     return str,n;
 end
 
---返回值的定义列表，用于callback函数的声明--
-function return_define_list(ret_types)
-    local str="";    
-    local n = 0;
-    for_each_return_type(ret_types,function(info)      
-        if info.is_void then
-            return
-        end
-        if info.is_array then
-            if info.is_basic_type then
-                str = str..", "..info.type.name.." *";
-                str = str..string.lower(info.name);
-                str = str..", int *"..string.lower(info.name).."_len";
-                n = n + 1;
-            end
-        else
-            if info.is_string then
-                str = str..", CMem *";
-                str = str..string.lower(info.name);
-                n = n + 1;
-            elseif info.is_object then
-                str = str..", "..c_class_name(info.type.name).." **";
-                str = str..string.lower(info.name);
-                n = n + 1;
-            elseif info.is_basic_type then
-                str = str..", "..info.type.name.." *";
-                str = str..string.lower(info.name);
-                n = n + 1;
-            end
-        end
-    end);
-  
-    return str,n;
-end
-
-
 function auto_assign_func_id(idl_class)
     local counts = {};
     for_each_functions(idl_class.functions,function(info)
@@ -265,6 +237,60 @@ function auto_assign_func_id(idl_class)
     end);
 end
 
+function jni_function_ret_list(func_info)
+    local str = "";
+    for_each_return_type(func_info.ret_type,function(info)
+        if not info.is_array then
+            if info.is_basic_type then
+                str = str..info.jni_type.jni_type.." ";
+            elseif info.is_string then
+                str = str.."jstring ";
+            else
+                str = str.."jobject ";
+            end
+        else
+            if info.is_basic_type then
+                str = str..info.jni_type.jni_array_type.." ";
+            else
+                str = str.."jobjectArray ";
+            end
+        end
+    end)
+
+    return str;
+end
+
+function jni_function_signature(func_info)
+    local str="(";
+    for_each_params(func_info.params,function(info)
+        if info.is_array then
+            str=str.."[";
+        end
+        if info.is_basic_type then
+            str=str..info.jni_type.jni_type_signature;
+        elseif info.is_string then
+            str=str.."Ljava/lang/String;";
+        else
+            str=str.."L"..java_class_path(info.type.name)..";";
+        end
+    end);
+
+    str=str..")";
+
+    for_each_return_type(func_info.ret_type,function(info)
+        if info.is_array then
+            str=str.."[";
+        end
+        if info.is_basic_type then
+            str=str..info.jni_type.jni_type_signature;
+        elseif info.is_string then
+            str=str.."Ljava/lang/String;";
+        else
+            str=str.."L"..java_class_path(info.type.name)..";";
+        end
+    end)
+    return str;
+end
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
 --生成头文件--
@@ -357,24 +383,14 @@ function code_create_java_obj(idl_class)
 	printfnl("}");
 end
 
---生成所有jni函数的代码--
-function code_all_jni_functions(idl_class)
-    auto_assign_func_id(idl_class);   
-    local overrides = {};    
-    for_each_functions(idl_class.functions,function(info)        
-        if not info.is_callback then                   
-            code_normal_jni_function(info);   
-        else
-            code_callback_jni_function(info);
-        end   
-    end);
-end
-
 --普通的lua函数生成--
 function code_normal_jni_function(func_info)
 	local thiz_str = ",jobject _thiz";
-	if func_info.is_static then thiz_str = "" end
-	printfnl("static status_t %s(JNIEnv* _env%s%s)",
+    if func_info.is_static then thiz_str = "" end
+    
+    printf("static ");
+    print(jni_function_ret_list(func_info));
+	printfnl("%s(JNIEnv* _env%s%s)",
 		jni_c_func_name(func_info),
 		thiz_str,
 		jni_param_define_list(func_info.params)
@@ -394,14 +410,52 @@ end
 function code_callback_jni_function(func_info)
 end
 
+--生成所有jni函数的代码--
+function code_all_jni_functions(idl_class)
+    auto_assign_func_id(idl_class);   
+    local overrides = {};    
+    for_each_functions(idl_class.functions,function(info)        
+        if not info.is_callback then                   
+            code_normal_jni_function(info);   
+        else
+            code_callback_jni_function(info);
+        end   
+    end);
+end
+
+
+--生成native method table的代码--
+function code_native_method_table(idl_class)
+    printfnl("static const JNINativeMethod %s_native_methods[]={",
+        string.lower(idl_class.name));
+
+    printfnl([[    {"_gc","",(void*)%s__gc},]],
+        string.lower(idl_class.name)
+    );
+
+    for_each_functions(idl_class.functions,function(info)        
+        if not info.is_callback then
+            printfnl([[    {"%s","%s",(void*)%s},]],
+                java_method_name(info.name),
+                jni_function_signature(info),
+                jni_c_func_name(info)
+            );
+        end   
+    end);
+    printfnl("};");
+end
+
 --生成cpp代码--
 function code_cpp(idl_class)
 	code_includes_cpp(idl_class);
 	code_get(idl_class);
 	code_gc(idl_class);
 	printnl("");
-	code_create_java_obj(idl_class);
-	code_all_jni_functions(idl_class);
+    code_create_java_obj(idl_class);
+    printnl("");
+    code_all_jni_functions(idl_class);
+    printnl("");
+    code_native_method_table(idl_class);
 end
 
 function code_java(idl_class)
