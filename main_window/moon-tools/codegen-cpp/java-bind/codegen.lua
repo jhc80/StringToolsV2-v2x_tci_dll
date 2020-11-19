@@ -48,7 +48,7 @@ function get_jni_type_info(jni_type_name)
         if info[1] == jni_type_name then
             local tab = {
                 jni_type = info[1],
-                jni_c_type = info[2],
+                java_type = info[2],
                 jni_array_type = info[5],
                 jni_type_signature = info[3],
             };            
@@ -445,6 +445,23 @@ function code_native_method_table(idl_class)
     printfnl("};");
 end
 
+
+--生成register函数的代码--
+function code_register(idl_class)
+	printfnl("status_t register_%s_native_methods(JNIEnv* env)",string.lower(idl_class.name));
+	printfnl("{");
+	printfnl("    jclass clazz;");
+	printfnl("    clazz = env->FindClass(\"%s\");",java_class_path(idl_class.name));
+	printfnl("    ASSERT(clazz);");
+	printfnl("    int32_t size = sizeof(%s_native_methods)/sizeof(%s_native_methods[0]);",
+		string.lower(idl_class.name),
+		string.lower(idl_class.name));
+	printfnl("    ASSERT(env->RegisterNatives(clazz, %s_native_methods , size) == JNI_OK);",
+		string.lower(idl_class.name));
+	printfnl("    return OK;");
+	printfnl("}");
+end
+
 --生成cpp代码--
 function code_cpp(idl_class)
 	code_includes_cpp(idl_class);
@@ -456,8 +473,117 @@ function code_cpp(idl_class)
     code_all_jni_functions(idl_class);
     printnl("");
     code_native_method_table(idl_class);
+	code_register(idl_class);
 end
 
-function code_java(idl_class)
-	printnl("I am java file");
+--参数java声明的列表，带类型--
+function java_param_define_list(params)
+    local pbuf = PrintBuffer.new();
+    local n = 0;
+    
+	for_each_params(params,function(info)
+		local arr = "";
+		if info.is_array then arr = "[]"; end
+		if info.is_string then
+			if n > 0 then pbuf:Printf(", "); end
+			pbuf:Printf("String%s %s", arr,string.lower(info.name));
+			n = n + 1;
+		elseif info.is_object then
+			if n > 0 then pbuf:Printf(", "); end
+			pbuf:Printf("%s%s %s",
+				java_class_name(info.type.name),
+				arr,string.lower(info.name)
+			);
+			n = n + 1;
+		elseif info.is_basic_type then
+			if n > 0 then pbuf:Printf(", "); end
+			pbuf:Printf("%s%s %s",
+				info.jni_type.java_type,
+				arr,string.lower(info.name)
+			);
+			n = n + 1;
+		end		
+				
+    end);
+	
+    return pbuf:GetText(),n;
+end
+
+--生成java代码的参数调用列表--
+function java_param_call_list(func_info)
+
+	local str = "";
+	for_each_params(func_info.params,function(info)
+		if not info.is_first then
+			str = str .. ",";
+		end
+		str = str..string.lower(info.name);		
+	end);
+	return str;
+end
+
+--生成java ctor函数的代码--
+function code_java_ctor_function(func_info)
+	printf("    public ");
+    local param_def = java_param_define_list(func_info.params);	
+	printfnl("%s(%s)",java_class_name(func_info.idl_class.name),param_def);
+	printfnl("    {");
+	printfnl("        this._new(%s);",java_param_call_list(func_info));
+	printfnl("    }");
+end
+
+--生成java的函数代码--
+function code_java_function(func_info)
+	printf("    public native ");
+	for_each_return_type(func_info.ret_type,function(info)    
+		if info.is_string then
+			printf("String");
+		elseif info.is_object then
+			printf("%s",java_class_name(info.type.name));
+		else
+			printf("%s",info.jni_type.java_type);
+		end
+		
+		if info.is_array then
+			printf("[]");
+		end
+    end)
+	
+	local param_def = java_param_define_list(func_info.params);	
+	printfnl(" %s(%s);",java_method_name(func_info.name),param_def);
+end
+
+function code_java(idl_class)	
+	printfnl("package %s;",package_name);
+	printnl("");	
+	printfnl("public class %s{", java_class_name(idl_class.name));
+	printfnl("    private long __obj = 0;");
+	printfnl("    private void __dummy(){}");
+	printnl("");
+	for_each_functions(idl_class.functions,function(info)        
+        if not info.is_ctor then            
+			code_java_ctor_function(info);
+        end   
+    end);
+	printnl("");
+	
+	printfnl("    public void destroy()");
+	printfnl("    {");
+	printfnl("        this._gc();");
+	printfnl("    }");
+	printnl("");
+	printfnl("    protected void finalize()");
+	printfnl("    {");
+	printfnl("        this.destroy();");
+	printfnl("    }");
+	printnl("");
+	printfnl("    public native void _gc()");
+
+	for_each_functions(idl_class.functions,function(info)        
+        if not info.is_callback then            
+			code_java_function(info);
+        end   
+    end);
+	
+	printnl("}");
 end
