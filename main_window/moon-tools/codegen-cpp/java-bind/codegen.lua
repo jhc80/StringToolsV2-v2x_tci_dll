@@ -216,6 +216,7 @@ function jni_param_define_list(params)
     return str,n;
 end
 
+--自动给重名的函数分配id--
 function auto_assign_func_id(idl_class)
     local counts = {};
     for_each_functions(idl_class.functions,function(info)
@@ -238,6 +239,7 @@ function auto_assign_func_id(idl_class)
     end);
 end
 
+--生成函数返回值类型的列表--
 function jni_function_ret_list(func_info)
     local str = "";
     for_each_return_type(func_info.ret_type,function(info)
@@ -257,10 +259,10 @@ function jni_function_ret_list(func_info)
             end
         end
     end)
-
     return str;
 end
 
+--生成jni函数的签名--
 function jni_function_signature(func_info)
     local str="(";
     for_each_params(func_info.params,function(info)
@@ -291,6 +293,33 @@ function jni_function_signature(func_info)
         end
     end)
     return str;
+end
+
+--生成本地方法调用返回值的列表--
+function jni_call_ret_list(func_info)
+    local str = "";
+    local part2 = "";
+    for_each_return_type(func_info.ret_type,function(info)
+        if info.is_void then return end
+        if not info.is_array then
+            if info.is_string then
+                str = str.."const char* "..info.name;
+                part2 = part2.."    ASSERT(_"..info.name..");"..EOL;
+                part2 = part2..string.format("    jstring %s = _env->NewStringUTF(_%s);",
+                    info.name, info.name
+                );
+            elseif info.is_basic_type then
+                str = str..info.jni_type.jni_type.." _"..info.name;                
+            else
+                str = str..c_class_name(info.type.name).."* _"..info.name;
+                part2 = part2.."    ASSERT(_"..info.name..");"..EOL;
+                part2 = part2..string.format("    jobject %s = create_java_%s(_env,_%s,true);",
+                   info.name, string.lower(info.type.name),info.name
+                );            
+            end
+        end
+    end)
+    return str,part2;
 end
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
@@ -334,7 +363,7 @@ end
 
 --生成get_xxx函数的代码--
 function code_get(idl_class)
-	printfnl("JNI_GET_OBJ_FROM_USER_DATA_FUNC(%s,%s)",
+	printfnl("JNI_GET_OBJ_FUNC(%s,%s)",
 		c_class_name(idl_class.name),
 		string.lower(idl_class.name)
 	);
@@ -351,37 +380,9 @@ end
 
 --生成create_java_xxx的代码--
 function code_create_java_obj(idl_class)
-	printfnl("jobject create_java_%s(JNIEnv* _env,%s *%s, bool _is_weak)",
-		string.lower(idl_class.name),
-		c_class_name(idl_class.name),
-		string.lower(idl_class.name));
-
-	printfnl("{");
-	printfnl("    ASSERT(%s);",string.lower(idl_class.name));	
-	printfnl("    jclass class_%s = _env->FindClass(\"%s\");",
-		string.lower(idl_class.name),
-		java_class_path(idl_class.name)
-	);
-	
-	printfnl("    ASSERT(class_%s);",string.lower(idl_class.name));
-	printfnl("    jmethodID m_id = _env->GetMethodID(class_%s, \"__dummy\", \"()V\");  ",
-		string.lower(idl_class.name));
-	printfnl("    ASSERT(m_id);");
-	printfnl("    jobject obj = _env->NewObject(class_%s,m_id);",
-		string.lower(idl_class.name));
-	printfnl("    ASSERT(obj);");
-	printfnl("    jfieldID id_obj=_env->GetFieldID(class_%s,\"__obj\",\"L\");",
-		string.lower(idl_class.name));
-	printfnl("    ");
-	printfnl("    CJniObject *jni_obj;");
-	printfnl("    NEW(jni_obj,CJniObject);");
-	printfnl("    jni_obj->Init();");
-	printfnl("    jni_obj->SetLocalObj(%s);",string.lower(idl_class.name));
-	printfnl("    jni_obj->SetWeakRef(_is_weak);");
-	printfnl("    ");
-	printfnl("    _env->SetLongField(obj,id_obj,(jlong)jni_obj);    ");
-	printfnl("    return obj;");
-	printfnl("}");
+    printfnl("CREATE_JAVA_OBJ_FUNC(%s,\"%s\")",
+        c_class_name(idl_class.name),
+        java_class_path(idl_class.name));
 end
 
 --生成把参数从jni参数列表中解出来的代码--
@@ -423,8 +424,37 @@ function code_extract_params(func_info)
 					info.type.name,string.lower(info.name));
 			end
 		end
-	
 	end);
+end
+
+--生成释放局部变量的代码--
+function code_release_params(func_info)
+    for_each_params(func_info.params,function(info)
+        if info.is_array then
+            if info.is_object then
+                printfnl("    ReleaseObjectArrayElements<%s>(_%s,%s,0);",
+                    c_class_name(info.type.name),
+                    string.lower(info.name),
+                    string.lower(info.name)
+                );
+            elseif info.is_string then
+                --nothing?
+            elseif info.is_basic_type then
+                printfnl("    _env->Release%sElements(_%s,%s,0);",
+                    info.jni_type.jni_array_func_name,
+                    string.lower(info.name),
+                    string.lower(info.name)
+                ); 
+            end
+        else
+            if info.is_string then
+                printfnl("    _env->ReleaseStringUTFChars(_%s,%s,0);",
+                    string.lower(info.name),
+                    string.lower(info.name)
+                ); 
+            end
+        end
+    end);
 end
 
 --生成jni的构造函数代码--
@@ -433,11 +463,53 @@ function code_jni_ctor_function(func_info)
 	printnl("");
 	printfnl("    %s *_this = NULL;",c_class_name(func_info.idl_class.name));
 	printfnl("    NEW(_this,%s);",c_class_name(func_info.idl_class.name));
-	printfnl("    _this->Init(%s);",param_call_list(func_info.params));
+    printfnl("    _this->Init(%s);",param_call_list(func_info.params));
+    printnl("");
+    code_release_params(func_info);
+    printfnl("    return OK;");
+end
+
+function code_jni_normal_function(func_info)
+    if not func_info.is_static then
+        printfnl("    %s *_this = get_%s(_env,_this_obj);",
+            c_class_name(func_info.idl_class.name),
+            string.lower(func_info.idl_class.name)
+        );
+        printfnl("    ASSERT(_this);");
+        printnl("");        
+    end
+
+    code_extract_params(func_info);
+    printnl("");
+    print("    ");
+    local call_ret_list,part2 =  jni_call_ret_list(func_info);
+
+    if call_ret_list ~= "" then
+        printf("%s = ",call_ret_list);
+    end
+
+    if not func_info.is_static then
+        printf("_this->");
+    else
+        printf("%s::",c_class_name(func_info.idl_class.name));
+    end
+
+    printfnl("%s(%s);",func_info.name,param_call_list(func_info.params));
+
+    if part2 ~= "" then
+        printnl(part2);
+    end
+
+    printnl("");
+    code_release_params(func_info);
+    printnl("");
+    if not IdlHelper.Func.IsVoid(func_info) then
+        printfnl("    return ret0;");
+    end
 end
 
 --普通的lua函数生成--
-function code_normal_jni_function(func_info)
+function code_jni_function(func_info)
 	local thiz_str = ",jobject _this_obj";
     if func_info.is_static then thiz_str = "" end
     
@@ -457,6 +529,7 @@ function code_normal_jni_function(func_info)
     if func_info.is_ctor then
 		code_jni_ctor_function(func_info);
     else           
+        code_jni_normal_function(func_info);
     end
     
     printnl("}");
@@ -473,13 +546,12 @@ function code_all_jni_functions(idl_class)
     local overrides = {};    
     for_each_functions(idl_class.functions,function(info)        
         if not info.is_callback then                   
-            code_normal_jni_function(info);   
+            code_jni_function(info);   
         else
             code_callback_jni_function(info);
         end   
     end);
 end
-
 
 --生成native method table的代码--
 function code_native_method_table(idl_class)
@@ -502,7 +574,6 @@ function code_native_method_table(idl_class)
     printfnl("};");
 end
 
-
 --生成register函数的代码--
 function code_register(idl_class)
 	printfnl("status_t register_%s_native_methods(JNIEnv* env)",string.lower(idl_class.name));
@@ -524,7 +595,6 @@ function code_cpp(idl_class)
 	code_includes_cpp(idl_class);
 	code_get(idl_class);
 	code_gc(idl_class);
-	printnl("");
     code_create_java_obj(idl_class);
     printnl("");
     code_all_jni_functions(idl_class);
@@ -568,7 +638,6 @@ end
 
 --生成java代码的参数调用列表--
 function java_param_call_list(func_info)
-
 	local str = "";
 	for_each_params(func_info.params,function(info)
 		if not info.is_first then
