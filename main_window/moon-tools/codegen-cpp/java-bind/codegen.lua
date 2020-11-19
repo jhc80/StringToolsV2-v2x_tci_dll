@@ -50,6 +50,7 @@ function get_jni_type_info(jni_type_name)
                 jni_type = info[1],
                 java_type = info[2],
                 jni_array_type = info[5],
+				jni_array_func_name = info[4],
                 jni_type_signature = info[3],
             };            
             return tab;
@@ -383,13 +384,69 @@ function code_create_java_obj(idl_class)
 	printfnl("}");
 end
 
+--生成把参数从jni参数列表中解出来的代码--
+function code_extract_params(func_info)
+	for_each_params(func_info.params,function(info)
+		if info.is_array then
+			if info.is_string then
+				printfnl("    CMemStk %s;",string.lower(info.name));
+				printfnl("    %s.Init();",string.lower(info.name));
+				printfnl("    GetStringArrayElements(_env,_%s,&%s);",
+					string.lower(info.name),string.lower(info.name));
+				printnl("");
+			elseif info.is_basic_type then
+				printfnl("    %s *%s = (%s*)_env->Get%sElements(_%s,0);",
+					info.type.name, string.lower(info.name), info.type.name,
+					info.jni_type.jni_array_func_name,string.lower(info.name));
+				printfnl("    ASSERT(%s);",string.lower(info.name));
+				printfnl("    int %s_len = env->GetArrayLength(_%s);",
+					string.lower(info.name),string.lower(info.name));
+			else
+				printfnl("    int %s_len = 0;",string.lower(info.name));
+				printfnl("    %s *%s = GetObjectArrayElements<%s>(_env,%s,&%s_len);",
+					c_class_name(info.type.name),string.lower(info.name),
+					c_class_name(info.type.name),string.lower(info.name),string.lower(info.name));
+				printfnl("    ASSERT(%s);",string.lower(info.name));
+			end
+		else
+			if info.is_string then
+				printfnl("    const char *%s = _env->GetStringUTFChars(_%s,NULL);",
+					string.lower(info.name),string.lower(info.name));
+				printfnl("    ASSERT(%s);",string.lower(info.name));
+			elseif info.is_object then
+				printfnl("    %s *%s = get_%s(_env,_%s);",
+					c_class_name(info.type.name),string.lower(info.name),
+					string.lower(info.type.name),string.lower(info.name));
+				printfnl("    ASSERT(%s);",string.lower(info.name));
+			else
+				printfnl("    %s %s = (%s)_%s;",info.type.name, string.lower(info.name),
+					info.type.name,string.lower(info.name));
+			end
+		end
+	
+	end);
+end
+
+--生成jni的构造函数代码--
+function code_jni_ctor_function(func_info)
+	code_extract_params(func_info);
+	printnl("");
+	printfnl("    %s *_this = NULL;",c_class_name(func_info.idl_class.name));
+	printfnl("    NEW(_this,%s);",c_class_name(func_info.idl_class.name));
+	printfnl("    _this->Init(%s);",param_call_list(func_info.params));
+end
+
 --普通的lua函数生成--
 function code_normal_jni_function(func_info)
-	local thiz_str = ",jobject _thiz";
+	local thiz_str = ",jobject _this_obj";
     if func_info.is_static then thiz_str = "" end
     
     printf("static ");
-    print(jni_function_ret_list(func_info));
+	if func_info.is_ctor then
+		printf("jint ");
+	else
+		print(jni_function_ret_list(func_info));
+	end
 	printfnl("%s(JNIEnv* _env%s%s)",
 		jni_c_func_name(func_info),
 		thiz_str,
@@ -397,8 +454,8 @@ function code_normal_jni_function(func_info)
 	);
     
     printnl("{");    
-    
     if func_info.is_ctor then
+		code_jni_ctor_function(func_info);
     else           
     end
     
