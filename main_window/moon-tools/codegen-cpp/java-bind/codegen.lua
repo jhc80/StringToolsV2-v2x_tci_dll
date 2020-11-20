@@ -240,24 +240,28 @@ function auto_assign_func_id(idl_class)
 end
 
 --生成函数返回值类型的列表--
-function jni_function_ret_list(func_info)
+function jni_function_ret_list_define(func_info)
     local str = "";
     for_each_return_type(func_info.ret_type,function(info)
-        if not info.is_array then
-            if info.is_basic_type then
-                str = str..info.jni_type.jni_type.." ";
-            elseif info.is_string then
-                str = str.."jstring ";
-            else
-                str = str.."jobject ";
-            end
-        else
-            if info.is_basic_type then
-                str = str..info.jni_type.jni_array_type.." ";
-            else
-                str = str.."jobjectArray ";
-            end
-        end
+		if info.is_void then
+			str = str.."jint "; --void function still return int
+		else
+			if not info.is_array then
+				if info.is_basic_type then
+					str = str..info.jni_type.jni_type.." ";
+				elseif info.is_string then
+					str = str.."jstring ";
+				else
+					str = str.."jobject ";
+				end
+			else
+				if info.is_basic_type then
+					str = str..info.jni_type.jni_array_type.." ";
+				else
+					str = str.."jobjectArray ";
+				end
+			end
+		end
     end)
     return str;
 end
@@ -321,6 +325,26 @@ function jni_call_ret_list(func_info)
     end)
     return str,part2;
 end
+
+--生成jni函数返回值的列表
+function jni_function_ret_list(func_info)
+    local str = "";
+    for_each_return_type(func_info.ret_type,function(info)
+        if info.is_void then 
+			str = str.."OK";
+		else
+		
+			if info.is_string then
+				str = str.."ret0";
+			elseif info.is_basic_type then
+				str = str.."_ret0";
+			else
+				str = str.."ret0";
+			end
+		end
+    end)
+    return str;
+end
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
 --生成头文件--
@@ -331,7 +355,7 @@ function code_h(idl_class)
 	printfnl("#ifndef __%s_H",upper_file_name);
 	printfnl("#define __%s_H",upper_file_name);
 	printfnl("");
-	printfnl("#include \"jni_object.h\"");
+	printfnl("#include \"jni_helper.h\"");
 	printfnl("#include \"%s.h\"",to_file_name(idl_class.name));
 	printfnl("");
 	printfnl("%s* get_%s(JNIEnv* env,jobject obj);",
@@ -359,6 +383,9 @@ function code_includes_cpp(idl_class)
     printnl("#include \"mem_tool.h\"");
     printnl("#include \"syslog.h\"");    
     printnl("");
+	
+	printfnl("#define THIS_JAVA_CLASS_PATH \"%s\"", java_class_path(idl_class.name));
+	printnl("");
 end
 
 --生成get_xxx函数的代码--
@@ -380,9 +407,10 @@ end
 
 --生成create_java_xxx的代码--
 function code_create_java_obj(idl_class)
-    printfnl("CREATE_JAVA_OBJ_FUNC(%s,\"%s\")",
+    printfnl("JNI_CREATE_JAVA_OBJ_FUNC(%s,%s)",
         c_class_name(idl_class.name),
-        java_class_path(idl_class.name));
+		string.lower(idl_class.name)
+	);
 end
 
 --生成把参数从jni参数列表中解出来的代码--
@@ -503,9 +531,8 @@ function code_jni_normal_function(func_info)
     printnl("");
     code_release_params(func_info);
     printnl("");
-    if not IdlHelper.Func.IsVoid(func_info) then
-        printfnl("    return ret0;");
-    end
+	
+	printfnl("    return %s;",jni_function_ret_list(func_info));
 end
 
 --普通的lua函数生成--
@@ -517,7 +544,7 @@ function code_jni_function(func_info)
 	if func_info.is_ctor then
 		printf("jint ");
 	else
-		print(jni_function_ret_list(func_info));
+		print(jni_function_ret_list_define(func_info));
 	end
 	printfnl("%s(JNIEnv* _env%s%s)",
 		jni_c_func_name(func_info),
@@ -579,7 +606,7 @@ function code_register(idl_class)
 	printfnl("status_t register_%s_native_methods(JNIEnv* env)",string.lower(idl_class.name));
 	printfnl("{");
 	printfnl("    jclass clazz;");
-	printfnl("    clazz = env->FindClass(\"%s\");",java_class_path(idl_class.name));
+	printfnl("    clazz = env->FindClass(THIS_JAVA_CLASS_PATH);");
 	printfnl("    ASSERT(clazz);");
 	printfnl("    int32_t size = sizeof(%s_native_methods)/sizeof(%s_native_methods[0]);",
 		string.lower(idl_class.name),
@@ -687,7 +714,7 @@ function code_java(idl_class)
 	printfnl("    private void __dummy(){}");
 	printnl("");
 	for_each_functions(idl_class.functions,function(info)        
-        if not info.is_ctor then            
+        if info.is_ctor then            
 			code_java_ctor_function(info);
         end   
     end);
@@ -703,7 +730,7 @@ function code_java(idl_class)
 	printfnl("        this.destroy();");
 	printfnl("    }");
 	printnl("");
-	printfnl("    public native void _gc()");
+	printfnl("    public native void _gc();");
 
 	for_each_functions(idl_class.functions,function(info)        
         if not info.is_callback then            

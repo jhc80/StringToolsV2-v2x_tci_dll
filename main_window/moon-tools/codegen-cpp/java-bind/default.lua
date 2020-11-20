@@ -1,4 +1,4 @@
-package_name="com.cv-test.native";
+package_name="com.cvtest.jni";
 
 --idl源文件，如果为空，则从文本框读取--
 idl_source="";
