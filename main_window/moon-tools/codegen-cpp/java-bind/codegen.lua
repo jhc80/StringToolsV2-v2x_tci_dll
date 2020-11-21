@@ -317,6 +317,7 @@ function jni_call_ret_list(func_info)
             end
 		else
 			if info.is_string then
+				str = str..string.format("CMem *_%s",info.name);
 			elseif info.is_basic_type then				
 				str = str..info.jni_type.jni_type.." *_"..info.name;
 			end
@@ -346,6 +347,14 @@ function jni_call_ret_list_part2(func_info)
             end
 		else
 			if info.is_string then
+				local this_str = "_this->";
+				if func_info.is_static then this_str = "" end
+				part2 = part2..string.format("    ASSERT(_%s);"..EOL,info.name);
+				part2 = part2..string.format("    int _%s_len = %s%sSize();"..EOL,
+					info.name,this_str,func_info.name);					
+				part2 = part2..string.format(
+					"    jobjectArray %s = BuildJavaStringArray(_env,_%s,_%s_len);"..EOL,
+					info.name,info.name,info.name);				
 			elseif info.is_basic_type then				
 				part2 = part2.."    ASSERT(_"..info.name..");"..EOL;
 				local this_str = "_this->";
