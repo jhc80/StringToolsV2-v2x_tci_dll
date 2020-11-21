@@ -215,6 +215,34 @@ function jni_param_define_list(params)
     return str,n;
 end
 
+--生成回调函数的参数列表，带c类型
+function callback_function_param_define_list(func_info)
+    local str = "";
+    for_each_params(func_info.params,function(info)      
+        if info.is_array then
+            if info.is_string then
+                str = str..string.format(",CMemStk *_%s", string.lower(info.name));
+            elseif info.is_basic_type then
+                str = str..string.format(",%s *_%s, int _%s_len", 
+                    info.type.name, string.lower(info.name),string.lower(info.name));
+            elseif info.is_object then
+                str = str..string.format(",%s* _%s, int _%s_len", 
+                    c_class_name(info.type.name),string.lower(info.name),string.lower(info.name));
+            end
+            
+        else
+            if info.is_string then
+                str = str..string.format(",const char* _%s", string.lower(info.name));
+            elseif info.is_basic_type then
+                str = str..string.format(",%s _%s", info.type.name, string.lower(info.name));
+            elseif info.is_object then
+                str = str..string.format(",%s* _%s", c_class_name(info.type.name),string.lower(info.name));
+            end            
+        end
+    end);
+    return str;
+end
+
 --自动给重名的函数分配id--
 function auto_assign_func_id(idl_class)
     local counts = {};
@@ -259,6 +287,27 @@ function jni_function_ret_list_define(func_info)
 				else
 					str = str.."jobjectArray ";
 				end
+			end
+		end
+    end)
+    return str;
+end
+
+--生成回调函数返回值类型的列表--
+function jni_callback_function_ret_list_define(func_info)
+    local str = "";
+    for_each_return_type(func_info.ret_type,function(info)
+		if info.is_void then
+			str = str.."int "; --void型强制变成int类型
+		else
+			if not info.is_array then
+				if info.is_string then
+					str = str.."const char* ";           
+				elseif info.is_basic_type then
+					str = str..info.type.name.." ";
+				else
+					str = str..c_class_name(info.type.name).."* ";
+				end           
 			end
 		end
     end)
@@ -642,6 +691,14 @@ end
 
 --生成callback函数调用--
 function code_callback_jni_function(func_info)
+    printfnl("static %s %s_callback_%s(JNIEnv* _env, jobject _cb_obj, jmethodID method%s)",
+        jni_callback_function_ret_list_define(func_info),
+        string.lower(func_info.idl_class.name),
+        string.lower(func_info.name),
+        callback_function_param_define_list(func_info)
+    );
+    printfnl("{");
+    printfnl("}");
 end
 
 --生成所有jni函数的代码--
