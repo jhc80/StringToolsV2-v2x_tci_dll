@@ -379,7 +379,7 @@ function jni_call_ret_list_part2(func_info)
 				part2 = part2..string.format("    jobjectArray %s = NULL;"..EOL, info.name);
 				
 				part2 = part2..string.format(
-					"    BuildJavaObjectArrayReturnValue(_env,_%s,_%s_len,JAVA_CLASS_PATH_%s,create_java_%s,true,%s);"..EOL,
+					"    BuildJavaObjectArray(_env,_%s,_%s_len,JAVA_CLASS_PATH_%s,create_java_%s,true,%s);"..EOL,
 					info.name, info.name,string.upper(info.type.name),
 					string.lower(info.type.name),info.name);
 			end
@@ -505,9 +505,14 @@ function code_extract_params(func_info)
 					string.lower(info.name),string.lower(info.name));
 			else
 				printfnl("    int %s_len = 0;",string.lower(info.name));
-				printfnl("    %s *%s = GetObjectArrayElements<%s>(_env,%s,&%s_len);",
-					c_class_name(info.type.name),string.lower(info.name),
-					c_class_name(info.type.name),string.lower(info.name),string.lower(info.name));
+				printfnl("    %s **%s = NULL;",c_class_name(info.type.name),string.lower(info.name));
+				
+				printfnl("    GetNativeObjectArray(_env,_%s,%s,%s,%s_len,JAVA_CLASS_PATH_%s,get_%s);",
+					string.lower(info.name), c_class_name(info.type.name),string.lower(info.name), 
+					string.lower(info.name),string.upper(info.type.name),
+					string.lower(info.type.name));
+					
+				
 				printfnl("    ASSERT(%s);",string.lower(info.name));
 			end
 		else
@@ -533,9 +538,7 @@ function code_release_params(func_info)
     for_each_params(func_info.params,function(info)
         if info.is_array then
             if info.is_object then
-                printfnl("    ReleaseObjectArrayElements<%s>(_%s,%s,0);",
-                    c_class_name(info.type.name),
-                    string.lower(info.name),
+                printfnl("    ReleaseNativeObjectArray(%s);",
                     string.lower(info.name)
                 );
             elseif info.is_string then
