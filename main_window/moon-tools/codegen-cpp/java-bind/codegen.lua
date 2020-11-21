@@ -305,28 +305,63 @@ end
 --生成本地方法调用返回值的列表--
 function jni_call_ret_list(func_info)
     local str = "";
-    local part2 = "";
     for_each_return_type(func_info.ret_type,function(info)
         if info.is_void then return end
         if not info.is_array then
             if info.is_string then
                 str = str.."const char* _"..info.name;
+            elseif info.is_basic_type then
+                str = str..info.jni_type.jni_type.." _"..info.name;                
+            else
+                str = str..c_class_name(info.type.name).."* _"..info.name;
+            end
+		else
+			if info.is_string then
+			elseif info.is_basic_type then				
+				str = str..info.jni_type.jni_type.." *_"..info.name;
+			end
+        end
+    end)
+    return str;
+end
+
+
+--生成本地方法调用返回值的列表,第二部分--
+function jni_call_ret_list_part2(func_info)
+    local part2 = "";
+    for_each_return_type(func_info.ret_type,function(info)
+        if info.is_void then return end
+        if not info.is_array then
+            if info.is_string then
                 part2 = part2.."    ASSERT(_"..info.name..");"..EOL;
                 part2 = part2..string.format("    jstring %s = _env->NewStringUTF(_%s);",
                     info.name, info.name
                 );
             elseif info.is_basic_type then
-                str = str..info.jni_type.jni_type.." _"..info.name;                
             else
-                str = str..c_class_name(info.type.name).."* _"..info.name;
                 part2 = part2.."    ASSERT(_"..info.name..");"..EOL;
                 part2 = part2..string.format("    jobject %s = create_java_%s(_env,_%s,true);",
                    info.name, string.lower(info.type.name),info.name
                 );            
             end
+		else
+			if info.is_string then
+			elseif info.is_basic_type then				
+				part2 = part2.."    ASSERT(_"..info.name..");"..EOL;
+				local this_str = "_this->";
+				if func_info.is_static then this_str = "" end
+				part2 = part2..string.format("    int _%s_len = %s%sSize();"..EOL,
+					info.name,this_str,func_info.name);
+				part2 = part2..string.format("    %s %s = _env->New%s(_%s_len);"..EOL,
+					info.jni_type.jni_array_type, info.name, 
+					info.jni_type.jni_array_func_name,info.name);
+				part2 = part2..string.format("    _env->Set%sRegion(%s,0,_%s_len,_%s);"..EOL,
+					info.jni_type.jni_array_func_name,info.name,
+					info.name,info.name);
+			end
         end
     end)
-    return str,part2;
+    return part2;
 end
 
 --生成jni函数返回值的列表
@@ -335,15 +370,19 @@ function jni_function_ret_list(func_info)
     for_each_return_type(func_info.ret_type,function(info)
         if info.is_void then 
 			str = str.."OK";
-		else
+			return
+		end
 		
+		if info.is_array then
+			str = str.."ret0";
+		else
 			if info.is_string then
 				str = str.."ret0";
 			elseif info.is_basic_type then
 				str = str.."_ret0";
 			else
 				str = str.."ret0";
-			end
+			end			
 		end
     end)
     return str;
@@ -431,7 +470,7 @@ function code_extract_params(func_info)
 					info.type.name, string.lower(info.name), info.type.name,
 					info.jni_type.jni_array_func_name,string.lower(info.name));
 				printfnl("    ASSERT(%s);",string.lower(info.name));
-				printfnl("    int %s_len = env->GetArrayLength(_%s);",
+				printfnl("    int %s_len = _env->GetArrayLength(_%s);",
 					string.lower(info.name),string.lower(info.name));
 			else
 				printfnl("    int %s_len = 0;",string.lower(info.name));
@@ -515,7 +554,7 @@ function code_jni_normal_function(func_info)
     code_extract_params(func_info);
     printnl("");
     print("    ");
-    local call_ret_list,part2 =  jni_call_ret_list(func_info);
+    local call_ret_list = jni_call_ret_list(func_info);
 
     if call_ret_list ~= "" then
         printf("%s = ",call_ret_list);
@@ -528,10 +567,9 @@ function code_jni_normal_function(func_info)
     end
 
     printfnl("%s(%s);",func_info.name,param_call_list(func_info.params));
-
-    if part2 ~= "" then
-        printnl(part2);
-    end
+	
+	local part2 = jni_call_ret_list_part2(func_info);
+    if part2 ~= "" then printnl(part2) end
 
     printnl("");
     code_release_params(func_info);
