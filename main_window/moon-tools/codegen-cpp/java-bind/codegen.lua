@@ -76,7 +76,6 @@ function for_each_functions(functions, callback)
         info.idl_class = func.idl_class;
         
         if info.is_ctor then
-            info.is_static = true;
             info.name = "_new";
         end
         
@@ -244,7 +243,7 @@ function jni_function_ret_list_define(func_info)
     local str = "";
     for_each_return_type(func_info.ret_type,function(info)
 		if info.is_void then
-			str = str.."jint "; --void function still return int
+			str = str.."jboolean "; --void型强制变成boolean类型
 		else
 			if not info.is_array then
 				if info.is_basic_type then
@@ -285,6 +284,10 @@ function jni_function_signature(func_info)
     str=str..")";
 
     for_each_return_type(func_info.ret_type,function(info)
+		if info.is_void then
+			str = str.."Z"; --JNI函数强制不生成void类型的返回值
+			return;
+		end
         if info.is_array then
             str=str.."[";
         end
@@ -307,7 +310,7 @@ function jni_call_ret_list(func_info)
         if info.is_void then return end
         if not info.is_array then
             if info.is_string then
-                str = str.."const char* "..info.name;
+                str = str.."const char* _"..info.name;
                 part2 = part2.."    ASSERT(_"..info.name..");"..EOL;
                 part2 = part2..string.format("    jstring %s = _env->NewStringUTF(_%s);",
                     info.name, info.name
@@ -476,7 +479,7 @@ function code_release_params(func_info)
             end
         else
             if info.is_string then
-                printfnl("    _env->ReleaseStringUTFChars(_%s,%s,0);",
+                printfnl("    _env->ReleaseStringUTFChars(_%s,%s);",
                     string.lower(info.name),
                     string.lower(info.name)
                 ); 
@@ -494,6 +497,8 @@ function code_jni_ctor_function(func_info)
     printfnl("    _this->Init(%s);",param_call_list(func_info.params));
     printnl("");
     code_release_params(func_info);
+	
+	printfnl("    JNI_WRAP_NATIVE_OBJECT(_env,_this_obj, _this,false);");
     printfnl("    return OK;");
 end
 
@@ -585,7 +590,7 @@ function code_native_method_table(idl_class)
     printfnl("static const JNINativeMethod %s_native_methods[]={",
         string.lower(idl_class.name));
 
-    printfnl([[    {"_gc","",(void*)%s__gc},]],
+    printfnl([[    {"_gc","()I",(void*)%s__gc},]],
         string.lower(idl_class.name)
     );
 
@@ -689,6 +694,10 @@ end
 function code_java_function(func_info)
 	printf("    public native ");
 	for_each_return_type(func_info.ret_type,function(info)    
+		if info.is_void then
+			printf("boolean"); --强制void类型的函数返回boolean型
+			return;
+		end
 		if info.is_string then
 			printf("String");
 		elseif info.is_object then
@@ -730,7 +739,7 @@ function code_java(idl_class)
 	printfnl("        this.destroy();");
 	printfnl("    }");
 	printnl("");
-	printfnl("    public native void _gc();");
+	printfnl("    public native int _gc();");
 
 	for_each_functions(idl_class.functions,function(info)        
         if not info.is_callback then            
