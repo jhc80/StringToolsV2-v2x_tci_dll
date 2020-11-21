@@ -320,6 +320,9 @@ function jni_call_ret_list(func_info)
 				str = str..string.format("CMem *_%s",info.name);
 			elseif info.is_basic_type then				
 				str = str..info.jni_type.jni_type.." *_"..info.name;
+			elseif info.is_object then
+				str = str..string.format("%s *_%s",
+					c_class_name(info.type.name),info.name);
 			end
         end
     end)
@@ -367,6 +370,18 @@ function jni_call_ret_list_part2(func_info)
 				part2 = part2..string.format("    _env->Set%sRegion(%s,0,_%s_len,_%s);"..EOL,
 					info.jni_type.jni_array_func_name,info.name,
 					info.name,info.name);
+			elseif info.is_object then			
+				local this_str = "_this->";
+				if func_info.is_static then this_str = "" end
+				part2 = part2..string.format("    ASSERT(_%s);"..EOL,info.name);
+				part2 = part2..string.format("    int _%s_len = %s%sSize();"..EOL,
+					info.name,this_str,func_info.name);					
+				part2 = part2..string.format("    jobjectArray %s = NULL;"..EOL, info.name);
+				
+				part2 = part2..string.format(
+					"    BuildJavaObjectArrayReturnValue(_env,_%s,_%s_len,JAVA_CLASS_PATH_%s,create_java_%s,true,%s);"..EOL,
+					info.name, info.name,string.upper(info.type.name),
+					string.lower(info.type.name),info.name);
 			end
         end
     end)
@@ -409,6 +424,11 @@ function code_h(idl_class)
 	printfnl("#include \"jni_helper.h\"");
 	printfnl("#include \"%s.h\"",to_file_name(idl_class.name));
 	printfnl("");
+	printfnl("#define JAVA_CLASS_PATH_%s \"%s\"",
+		string.upper(idl_class.name),	
+		java_class_path(idl_class.name));
+		
+	printfnl("");
 	printfnl("%s* get_%s(JNIEnv* env,jobject obj);",
 		c_class_name(idl_class.name),
 		lower_class_name);
@@ -435,7 +455,9 @@ function code_includes_cpp(idl_class)
     printnl("#include \"syslog.h\"");    
     printnl("");
 	
-	printfnl("#define THIS_JAVA_CLASS_PATH \"%s\"", java_class_path(idl_class.name));
+	printfnl("#define THIS_JAVA_CLASS_PATH JAVA_CLASS_PATH_%s",
+		string.upper(idl_class.name)
+	);
 	printnl("");
 end
 
