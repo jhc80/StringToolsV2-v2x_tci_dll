@@ -185,8 +185,13 @@ end
 function jni_param_define_list(params)
     local str="";    
     local n = 0;
-    for_each_params(params,function(info)      
-        if info.is_array then
+    for_each_params(params,function(info)
+		if info.is_callback then
+			str = str..", ".."jobject ";
+            str = str.."_"..string.lower(info.name).."_callback_obj";
+			str = str..", ".."jstring ";
+			str = str.."_"..string.lower(info.name).."_callback_name";	
+        elseif info.is_array then
             if info.is_basic_type then
 				str = str..", "..info.jni_type.jni_array_type.." ";
 				str = str.."_"..string.lower(info.name);
@@ -327,16 +332,18 @@ end
 function jni_function_signature(func_info)
     local str="(";
     for_each_params(func_info.params,function(info)
-        if info.is_array then
-            str=str.."[";
-        end
-        if info.is_basic_type then
-            str=str..info.jni_type.jni_type_signature;
-        elseif info.is_string then
-            str=str.."Ljava/lang/String;";
-        else
-            str=str.."L"..java_class_path(info.type.name)..";";
-        end
+		if info.is_callback then
+			str=str.."Ljava/lang/Object;Ljava/lang/String;";
+		else
+			if info.is_array then str=str.."["; end
+			if info.is_basic_type then
+				str=str..info.jni_type.jni_type_signature;
+			elseif info.is_string then
+				str=str.."Ljava/lang/String;";
+			else
+				str=str.."L"..java_class_path(info.type.name)..";";
+			end
+		end
     end);
 
     str=str..")";
@@ -547,7 +554,18 @@ end
 --生成把参数从jni参数列表中解出来的代码--
 function code_extract_params(func_info)
 	for_each_params(func_info.params,function(info)
-		if info.is_array then
+		if info.is_callback then
+			printfnl("    //please do it youself");
+			
+			printfnl("    jobject %s_callback_obj = _env->NewGlobalRef(_%s_callback_obj);",
+				string.lower(info.name),string.lower(info.name));
+			printfnl("    const char *%s_callback_name = _env->GetStringUTFChars(_%s_callback_name,NULL);",
+				string.lower(info.name),string.lower(info.name));
+			printfnl("    ASSERT(%s_callback_name);",string.lower(info.name));
+			printfnl("    _env->ReleaseStringUTFChars(_%s_callback_name,%s_callback_name);",
+				string.lower(info.name),string.lower(info.name));
+			
+		elseif info.is_array then
 			if info.is_string then
 				printfnl("    CMemStk %s;",string.lower(info.name));
 				printfnl("    %s.Init();",string.lower(info.name));
@@ -1033,28 +1051,32 @@ function java_param_define_list(params)
     local n = 0;
     
 	for_each_params(params,function(info)
-		local arr = "";
-		if info.is_array then arr = "[]"; end
-		if info.is_string then
-			if n > 0 then pbuf:Printf(", "); end
-			pbuf:Printf("String%s %s", arr,string.lower(info.name));
-			n = n + 1;
-		elseif info.is_object then
-			if n > 0 then pbuf:Printf(", "); end
-			pbuf:Printf("%s%s %s",
-				java_class_name(info.type.name),
-				arr,string.lower(info.name)
-			);
-			n = n + 1;
-		elseif info.is_basic_type then
-			if n > 0 then pbuf:Printf(", "); end
-			pbuf:Printf("%s%s %s",
-				info.jni_type.java_type,
-				arr,string.lower(info.name)
-			);
-			n = n + 1;
-		end		
-				
+		if info.is_callback then
+			pbuf:Printf("Object %s_callback_obj, String %s_callback_name",
+				string.lower(info.name),string.lower(info.name));
+		else
+			local arr = "";
+			if info.is_array then arr = "[]"; end
+			if info.is_string then
+				if n > 0 then pbuf:Printf(", "); end
+				pbuf:Printf("String%s %s", arr,string.lower(info.name));
+				n = n + 1;
+			elseif info.is_object then
+				if n > 0 then pbuf:Printf(", "); end
+				pbuf:Printf("%s%s %s",
+					java_class_name(info.type.name),
+					arr,string.lower(info.name)
+				);
+				n = n + 1;
+			elseif info.is_basic_type then
+				if n > 0 then pbuf:Printf(", "); end
+				pbuf:Printf("%s%s %s",
+					info.jni_type.java_type,
+					arr,string.lower(info.name)
+				);
+				n = n + 1;
+			end		
+		end
     end);
 	
     return pbuf:GetText(),n;
