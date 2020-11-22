@@ -49,14 +49,14 @@ basic_type_table={
 
 --JNI类型映射表--
 jni_type_table={
-{"jfloat","float","F","FloatArray","jfloatArray"},
-{"jdouble","double","D","DoubleArray","jdoubleArray"},
-{"jint","int","I","IntArray","jintArray"},
-{"jlong","long","L","LongArray","jlongArray"},
-{"jstring","String","Ljava/lang/String;","","jobjectArray"},
-{"jboolean","boolean","Z","BooleanArray","jbooleanArray"},
-{"jshort","short","S","ShortArray","jshortArray"},
-{"jbyte","byte","B","ByteArray","jbyteArray"},
-{"void","void","V","",""},
-{"jchar","char","C","CharArray","jcharArray"},
+{"jfloat","float","F","FloatArray","jfloatArray","Float"},
+{"jdouble","double","D","DoubleArray","jdoubleArray","Double"},
+{"jint","int","I","IntArray","jintArray","Int"},
+{"jlong","long","L","LongArray","jlongArray","Long"},
+{"jstring","String","Ljava/lang/String;","","jobjectArray","Object"},
+{"jboolean","boolean","Z","BooleanArray","jbooleanArray","Boolean"},
+{"jshort","short","S","ShortArray","jshortArray","Short"},
+{"jbyte","byte","B","ByteArray","jbyteArray","Byte"},
+{"void","void","V","","","Void"},
+{"jchar","char","C","CharArray","jcharArray","Char"},
 };

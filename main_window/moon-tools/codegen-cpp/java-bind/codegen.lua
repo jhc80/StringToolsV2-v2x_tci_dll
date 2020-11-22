@@ -52,6 +52,7 @@ function get_jni_type_info(jni_type_name)
                 jni_array_type = info[5],
 				jni_array_func_name = info[4],
                 jni_type_signature = info[3],
+				callback_func_name = info[6],
             };            
             return tab;
         end    
@@ -308,6 +309,14 @@ function jni_callback_function_ret_list_define(func_info)
 				else
 					str = str..c_class_name(info.type.name).."* ";
 				end           
+			else
+				if info.is_string then
+					str = str.."CMemStk* ";
+				elseif info.is_basic_type then
+					str = str..info.type.name.."* ";
+				elseif info.is_object then
+					str = str..c_class_name(info.type.name).."* ";
+				end
 			end
 		end
     end)
@@ -689,16 +698,270 @@ function code_jni_function(func_info)
     printnl("");
 end
 
+--生成callback函数第一部分代码，ASSERT相关的--
+function code_callback_function_assert(func_info)
+	printfnl("    ASSERT(_env && _cb_obj && _method_name);");
+	
+	 for_each_params(func_info.params,function(info)      
+        if info.is_array then
+            if info.is_string then
+                printfnl("    ASSERT(_%s);", string.lower(info.name));
+            elseif info.is_basic_type then
+				printfnl("    ASSERT(_%s);", string.lower(info.name));
+            elseif info.is_object then
+				printfnl("    ASSERT(_%s);", string.lower(info.name));
+            end
+            
+        else
+            if info.is_string then
+                printfnl("    ASSERT(_%s);", string.lower(info.name));
+            elseif info.is_basic_type then
+				--nothing
+            elseif info.is_object then
+                printfnl("    ASSERT(_%s);", string.lower(info.name));
+            end            
+        end
+    end);    
+end
+
+--生成callback函数中把c语言的参数包装成java参数的部分--
+function code_build_callback_java_params(func_info)
+	for_each_params(func_info.params,function(info)
+		if info.is_array then
+			if info.is_string then
+				printfnl("    jobjectArray %s = BuildJavaStringArray(_env,_%s);",
+					string.lower(info.name),string.lower(info.name));
+			elseif info.is_basic_type then
+				
+				printfnl("    %s %s = _env->New%s(_%s_len);",
+					info.jni_type.jni_array_type,
+					string.lower(info.name),
+					info.jni_type.jni_array_func_name,
+					string.lower(info.name)
+				);
+				
+				printfnl("    _env->Set%sRegion(%s,0,_%s_len,_%s);",
+					info.jni_type.jni_array_func_name,
+					string.lower(info.name),
+					string.lower(info.name),
+					string.lower(info.name)
+				);
+			else
+				printfnl("    jobjectArray %s = NULL;",info.name);
+				printfnl("    BuildJavaObjectArray(_env,_%s,_%s_len,JAVA_CLASS_PATH_%s,create_java_%s,true,%s);",
+					string.lower(info.name), string.lower(info.name),
+					string.upper(info.type.name),string.lower(info.type.name),
+					string.lower(info.name));
+			end
+		else
+			if info.is_string then
+				printfnl("    jstring %s = env->NewStringUTF(_%s);",
+					string.lower(info.name),
+					string.lower(info.name));
+				
+			elseif info.is_object then
+				printfnl("    jobject %s = create_java_%s(_env,_%s,true);",
+                   string.lower(info.name), 
+				   string.lower(info.type.name),
+				   string.lower(info.name)
+                );
+			else
+				printfnl("    %s %s = _%s;",info.jni_type.jni_type, 
+					string.lower(info.name),string.lower(info.name));			
+			end
+		end
+	end);
+end
+
+--生成在调用java函数后的返回值列表定义--
+function callback_function_call_ret_list(func_info)
+    local str = "";
+    for_each_return_type(func_info.ret_type,function(info)
+		if info.is_void then return end
+		if not info.is_array then
+			if info.is_basic_type then
+				str = str..info.jni_type.jni_type.." _"..info.name.." = ";
+			elseif info.is_string then
+				str = str.."jstring _"..info.name.." = ";
+			else
+				str = str.."jobject _"..info.name.." = ";
+			end		
+		else
+			str = str.."jobject _"..info.name.." = ";
+		end
+    end)
+    return str;
+end
+
+--得到调用java的 CallXXXMethod函数的名字--
+function call_method_name(func_info)
+	local str = "";
+    for_each_return_type(func_info.ret_type,function(info)
+		if info.is_void then 
+			str = str.."CallVoidMethod";
+			return 
+		end
+		if not info.is_array then
+			if info.is_basic_type then
+				str = str.."Call"..info.jni_type.callback_func_name.."Method";
+			elseif info.is_string then
+				str = str.."CallObjectMethod";
+			else
+				str = str.."CallObjectMethod";
+			end		
+		end
+    end)
+    return str;
+end
+
+--回调函数参数调用的列表--
+function callback_param_call_list(func_info)
+    local str="";    
+    for_each_params(func_info.params,function(info)
+		str = str..","..string.lower(info.name);        		
+    end);  
+    return str;
+end
+
+--把java的返回值列表中的c数据解出来--
+function code_extract_callback_ret_values(func_info)
+	for_each_return_type(func_info.ret_type,function(info)
+		if info.is_void then
+			return
+		end
+		
+		if info.is_array then
+			if info.is_string then
+				printfnl("    CMemStk %s;",string.lower(info.name));
+				printfnl("    %s.Init();",string.lower(info.name));
+				printfnl("    GetStringArrayElements(_env,_%s,&%s);",
+					string.lower(info.name),string.lower(info.name));
+				printnl("");
+			elseif info.is_basic_type then
+				printfnl("    %s *%s = (%s*)_env->Get%sElements(_%s,0);",
+					info.type.name, string.lower(info.name), info.type.name,
+					info.jni_type.jni_array_func_name,string.lower(info.name));
+				printfnl("    ASSERT(%s);",string.lower(info.name));
+				printfnl("    int %s_len = _env->GetArrayLength(_%s);",
+					string.lower(info.name),string.lower(info.name));
+			else
+				printfnl("    int %s_len = 0;",string.lower(info.name));
+				printfnl("    %s **%s = NULL;",c_class_name(info.type.name),string.lower(info.name));
+				
+				printfnl("    GetNativeObjectArray(_env,_%s,%s,%s,%s_len,JAVA_CLASS_PATH_%s,get_%s);",
+					string.lower(info.name), c_class_name(info.type.name),string.lower(info.name), 
+					string.lower(info.name),string.upper(info.type.name),
+					string.lower(info.type.name));
+					
+				
+				printfnl("    ASSERT(%s);",string.lower(info.name));
+			end
+		else
+			if info.is_string then
+				printfnl("    const char *%s = _env->GetStringUTFChars(_%s,NULL);",
+					string.lower(info.name),string.lower(info.name));
+				printfnl("    ASSERT(%s);",string.lower(info.name));
+			elseif info.is_object then
+				printfnl("    %s *%s = get_%s(_env,_%s);",
+					c_class_name(info.type.name),string.lower(info.name),
+					string.lower(info.type.name),string.lower(info.name));
+				printfnl("    ASSERT(%s);",string.lower(info.name));
+			else
+				printfnl("    %s %s = (%s)_%s;",info.type.name, string.lower(info.name),
+					info.type.name,string.lower(info.name));
+			end
+		end
+	end);
+end
+
+--生成释放callback返回值的代码--
+function code_release_callback_ret_list(func_info)
+    for_each_return_type(func_info.ret_type,function(info)
+        if info.is_array then
+            if info.is_object then
+                printfnl("    ReleaseNativeObjectArray(%s);",
+                    string.lower(info.name)
+                );
+            elseif info.is_string then
+                --nothing?
+            elseif info.is_basic_type then
+                printfnl("    _env->Release%sElements(_%s,%s,0);",
+                    info.jni_type.jni_array_func_name,
+                    string.lower(info.name),
+                    string.lower(info.name)
+                ); 
+            end
+        else
+            if info.is_string then
+                printfnl("    _env->ReleaseStringUTFChars(_%s,%s);",
+                    string.lower(info.name),
+                    string.lower(info.name)
+                ); 
+            end
+        end
+    end);
+end
+
+function callback_function_ret_list(func_info)
+    local str = "";
+    for_each_return_type(func_info.ret_type,function(info)
+        if info.is_void then 
+			str = str.."OK";
+			return
+		end
+		
+		if info.is_array then
+			str = str.."ret0";
+		else
+			if info.is_string then
+				str = str.."ret0";
+			elseif info.is_basic_type then
+				str = str.."ret0";
+			else
+				str = str.."ret0";
+			end			
+		end
+    end)
+    return str;
+end
+
+
 --生成callback函数调用--
 function code_callback_jni_function(func_info)
-    printfnl("static %s %s_callback_%s(JNIEnv* _env, jobject _cb_obj, jmethodID method%s)",
+    printfnl("static %s %s_callback_%s(JNIEnv* _env, jobject _cb_obj, const char *_method_name%s)",
         jni_callback_function_ret_list_define(func_info),
         string.lower(func_info.idl_class.name),
         string.lower(func_info.name),
         callback_function_param_define_list(func_info)
     );
+	
     printfnl("{");
-    printfnl("}");
+	
+	code_callback_function_assert(func_info);   
+	printnl("");
+	code_build_callback_java_params(func_info);
+	printnl("");
+	
+	printfnl("    jclass _class = _env->GetObjectClass(_cb_obj);");
+	printfnl("    ASSERT(_class);");
+	
+	printfnl("    jmethodID _method_id = _env->GetMethodID(_class,_method_name, \"%s\");",
+		jni_function_signature(func_info));
+	printfnl("    ASSERT(_method_id);");
+	printnl("");
+	
+	printfnl("    /**please check youself if the below code is correct.**/");
+	printfnl("    %s_env->%s(_cb_obj,_method_id%s);",
+		callback_function_call_ret_list(func_info),
+		call_method_name(func_info),
+		callback_param_call_list(func_info)
+	);
+	code_extract_callback_ret_values(func_info);
+	printnl("");	
+	code_release_callback_ret_list(func_info);
+	printnl("");	
+	printfnl("    return %s;",callback_function_ret_list(func_info));	
+	printfnl("}");
 end
 
 --生成所有jni函数的代码--
