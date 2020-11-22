@@ -1059,6 +1059,7 @@ function java_param_define_list(params)
 		if info.is_callback then
 			pbuf:Printf("Object %s_callback_obj, String %s_callback_name",
 				string.lower(info.name),string.lower(info.name));
+            n = n + 1;
 		else
 			local arr = "";
 			if info.is_array then arr = "[]"; end
