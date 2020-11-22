@@ -162,9 +162,16 @@ function param_call_list(params)
     local str="";
     
     for_each_params(params,function(info)
+		
         if not info.is_first then
             str = str..",";
         end
+
+		if info.is_callback then
+			str = str..string.format("%s_callback_obj,%s_callback_name",
+				string.lower(info.name),string.lower(info.name));
+			return;
+		end
         
         if info.is_string and info.is_array then
             str = str.."&";
@@ -554,17 +561,12 @@ end
 --生成把参数从jni参数列表中解出来的代码--
 function code_extract_params(func_info)
 	for_each_params(func_info.params,function(info)
-		if info.is_callback then
-			printfnl("    //please do it youself");
-			
-			printfnl("    jobject %s_callback_obj = _env->NewGlobalRef(_%s_callback_obj);",
+		if info.is_callback then	
+			printfnl("    jobject %s_callback_obj = _%s_callback_obj;",
 				string.lower(info.name),string.lower(info.name));
 			printfnl("    const char *%s_callback_name = _env->GetStringUTFChars(_%s_callback_name,NULL);",
 				string.lower(info.name),string.lower(info.name));
-			printfnl("    ASSERT(%s_callback_name);",string.lower(info.name));
-			printfnl("    _env->ReleaseStringUTFChars(_%s_callback_name,%s_callback_name);",
-				string.lower(info.name),string.lower(info.name));
-			
+			printfnl("    ASSERT(%s_callback_name);",string.lower(info.name));	
 		elseif info.is_array then
 			if info.is_string then
 				printfnl("    CMemStk %s;",string.lower(info.name));
@@ -612,7 +614,10 @@ end
 --生成释放局部变量的代码--
 function code_release_params(func_info)
     for_each_params(func_info.params,function(info)
-        if info.is_array then
+		if info.is_callback then
+			printfnl("    _env->ReleaseStringUTFChars(_%s_callback_name,%s_callback_name);",
+				string.lower(info.name),string.lower(info.name));
+        elseif info.is_array then
             if info.is_object then
                 printfnl("    ReleaseNativeObjectArray(%s);",
                     string.lower(info.name)
