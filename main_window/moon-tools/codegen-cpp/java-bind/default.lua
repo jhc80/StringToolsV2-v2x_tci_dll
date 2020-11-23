@@ -45,6 +45,7 @@ basic_type_table={
 {"status_t","jboolean"},	
 {"BOOL","jboolean"},	
 {"wchar_t","jchar"},
+{"int_ptr_t","jlong"},
 };
 
 --JNI类型映射表--
