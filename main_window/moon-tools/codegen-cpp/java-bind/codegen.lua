@@ -19,11 +19,14 @@ function java_class_path(name)
 		"/"..java_class_name(name);
 end
 
-function java_method_name(name)
-    if string.byte(name,1) == 95 then
-        return name;
+function java_method_name(func_info)
+    if string.byte(func_info.name,1) == 95 then
+        return func_info.name;
     end
-    return java_function_name(name);
+	if func_info.is_static then
+		return java_static_function_name(func_info.name);
+	end
+    return java_function_name(func_info.name);
 end
 
 function jni_c_func_name(info)
@@ -693,10 +696,9 @@ function code_jni_normal_function(func_info)
 	printfnl("    return %s;",jni_function_ret_list(func_info));
 end
 
---普通的lua函数生成--
+--普通的jni函数生成--
 function code_jni_function(func_info)
 	local thiz_str = ",jobject _this_obj";
-    if func_info.is_static then thiz_str = "" end
     
     printf("static ");
 	if func_info.is_ctor then
@@ -1012,7 +1014,7 @@ function code_native_method_table(idl_class)
     for_each_functions(idl_class.functions,function(info)        
         if not info.is_callback then
             printfnl([[    {"%s","%s",(void*)%s},]],
-                java_method_name(info.name),
+                java_method_name(info),
                 jni_function_signature(info),
                 jni_c_func_name(info)
             );
@@ -1112,7 +1114,12 @@ end
 
 --生成java的函数代码--
 function code_java_function(func_info)
-	printf("    public native ");
+	if func_info.is_static then
+		printf("    public static native ");
+	else
+		printf("    public native ");
+	end
+	
 	for_each_return_type(func_info.ret_type,function(info)    
 		if info.is_void then
 			printf("boolean"); --强制void类型的函数返回boolean型
@@ -1132,7 +1139,7 @@ function code_java_function(func_info)
     end)
 	
 	local param_def = java_param_define_list(func_info.params);	
-	printfnl(" %s(%s);",java_method_name(func_info.name),param_def);
+	printfnl(" %s(%s);",java_method_name(func_info),param_def);
 end
 
 function code_java(idl_class)	

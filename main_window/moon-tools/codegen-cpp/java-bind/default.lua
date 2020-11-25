@@ -1,4 +1,4 @@
-package_name="com.cvtest.jni";
+package_name="com.jni.cvtest";
 
 --idl源文件，如果为空，则从文本框读取--
 idl_source="";
@@ -19,6 +19,11 @@ end
 --如何生成java的函数名称--
 function java_function_name(name)
 	return to_small_camel_case(name);
+end
+
+--如何生成java static函数的名称--
+function java_static_function_name(name)
+	return to_big_camel_case(name);
 end
 -------------------------------------
 --定义基本数据类型的映射表--
