@@ -53,7 +53,7 @@ jni_type_table={
 {"jfloat","float","F","FloatArray","jfloatArray","Float"},
 {"jdouble","double","D","DoubleArray","jdoubleArray","Double"},
 {"jint","int","I","IntArray","jintArray","Int"},
-{"jlong","long","L","LongArray","jlongArray","Long"},
+{"jlong","long","J","LongArray","jlongArray","Long"},
 {"jstring","String","Ljava/lang/String;","","jobjectArray","Object"},
 {"jboolean","boolean","Z","BooleanArray","jbooleanArray","Boolean"},
 {"jshort","short","S","ShortArray","jshortArray","Short"},
