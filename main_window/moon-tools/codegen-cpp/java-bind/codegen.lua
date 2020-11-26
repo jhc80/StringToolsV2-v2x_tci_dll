@@ -1059,6 +1059,7 @@ function java_param_define_list(params)
     
 	for_each_params(params,function(info)
 		if info.is_callback then
+			if n > 0 then pbuf:Printf(", "); end
 			pbuf:Printf("Object %s_callback_obj, String %s_callback_name",
 				string.lower(info.name),string.lower(info.name));
             n = n + 1;
