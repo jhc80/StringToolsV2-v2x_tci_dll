@@ -55,6 +55,7 @@ function for_each_params(params, callback)
         info.is_pointer = IdlHelper.Type.IsPointer(p.type);        
         info.is_array,array_size = IdlHelper.Type.IsArray(p.type);
         info.is_string = IdlHelper.Type.IsString(p.type);
+		info.java_type = IdlHelper.Type.GetJavaType(p.type);
         info.is_basic_type = IdlHelper.Type.IsBasicType(p.type);        
         info.is_object = not info.is_basic_type;
         info.index = index;

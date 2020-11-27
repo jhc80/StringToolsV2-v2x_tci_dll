@@ -4,9 +4,19 @@ idl_source="";
 --如果不为空就保存到文件--
 save_path = "";
 
+--生成java代码的package name--
+function java_package_name(name)
+	return "com.linkrpc."..string.lower(name);
+end
+
 --如何转成c++的类名的方法--
 function c_class_name(name)
 	return "C"..name;
+end
+
+--如何转成Java的类名的方法--
+function java_class_name(name)
+	return to_big_camel_case(name);
 end
 
 --如何生成service 的函数名字--
@@ -57,30 +67,30 @@ end
 --定义基本数据类型的映射表--
 -------------------------------------
 basic_type_table={
-	{"int","%d","Int32"},
-	{"int8_t","%d","Int32"},
-	{"int16_t","%d","Int32"},
-	{"int32_t","%d","Int32"},
-	{"int64_t","%lld","Int64"},
-    {"fsize_t","%lld","Int64"},
-	{"int_ptr_t","%d","Int32"},
-	{"intptr_t","%d","Int32"},
-	{"char","%d","Int32"},
-	{"short","%d","Int32"},
-	{"long","%d","Int32"},
-	{"uint_t","%d","Int32"},
-	{"uint8_t","%d","Int32"},
-	{"uint16_t","%d","Int32"},
-	{"uint32_t","%d","Int32"},
-	{"uint64_t","%lld","Int64"},
-	{"uchar","%d","Int32"},
-	{"ushort","%d","Int32"},
-	{"ulong","%ld","Int32"},
-	{"float","%f","Double"},
-	{"double","%f","Double"},
-	{"bool","%d","Boolean"},
-	{"void","%x","Int32"},
-    {"status_t","%d","Int32"},
+	{"int","%d","Int32","int"},
+	{"int8_t","%d","Int32","byte"},
+	{"int16_t","%d","Int32","short"},
+	{"int32_t","%d","Int32","int"},
+	{"int64_t","%lld","Int64","long"},
+    {"fsize_t","%lld","Int64","long"},
+	{"int_ptr_t","%d","Int32","long"},
+	{"intptr_t","%d","Int32","long"},
+	{"char","%d","Int32","byte"},
+	{"short","%d","Int32","short"},
+	{"long","%d","Int32","int"},
+	{"uint_t","%d","Int32","int"},
+	{"uint8_t","%d","Int32","byte"},
+	{"uint16_t","%d","Int32","short"},
+	{"uint32_t","%d","Int32","int"},
+	{"uint64_t","%lld","Int64","long"},
+	{"uchar","%d","Int32","byte"},
+	{"ushort","%d","Int32","short"},
+	{"ulong","%ld","Int32","int"},
+	{"float","%f","Double","float"},
+	{"double","%f","Double","double"},
+	{"bool","%d","Boolean","boolean"},
+	{"void","%x","Int32","void"},
+    {"status_t","%d","Int32","boolean"},
 };
 
 

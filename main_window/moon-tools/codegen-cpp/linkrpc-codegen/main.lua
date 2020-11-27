@@ -3,12 +3,23 @@ require("user")
 require("codegen");
 require("codegen_lua");
 require("codegen_js");
+require("codegen_java");
 
 function make_file_name(idl_class,ext,postfix)
     if not postfix then postfix="" end
     return FileManager.ToAbsPath(
         save_path.."/"..
         to_lower_underline_case(idl_class.name)..
+        postfix.."."..ext          
+    );
+end
+
+--生成java的文件名，因为java的类名要求和文件名一致--
+function make_java_file_name(idl_class,ext,postfix)
+    if not postfix then postfix="" end
+    return FileManager.ToAbsPath(
+        save_path.."/"..
+        java_class_name(idl_class.name)..
         postfix.."."..ext          
     );
 end
@@ -79,8 +90,6 @@ end
 local all_idl_classes = string_to_table("{"..lua.."}");
 if not all_idl_classes then return end
 
-local save_str = "";
-
 local all_idl_classes_len = #all_idl_classes;
 for k=1,all_idl_classes_len,1 do  
     local ori_idl_class = all_idl_classes[k];
@@ -108,64 +117,83 @@ for _,idl_class in ipairs(all_idl_classes) do
     local message_lua_name = make_file_name(idl_class,"lua","_messages");
 	local js_name = make_file_name(idl_class,"js");
 	local message_js_name = make_file_name(idl_class,"js","_messages");
+	local java_name = make_java_file_name(idl_class,"java");
+	local message_java_name = make_java_file_name(idl_class,"java","Messages");
 
     if save_path and save_path ~= "" then
         App.ClearBuffer();
         code_h(idl_class);                
         if App.SaveBuffer(h_name) then
-            save_str = save_str .. "save to "..h_name..EOL;
-        else
-            save_str = save_str .. "fail to save "..h_name..EOL;
+			printfnl("save to %s ok.",h_name);
+        else            
+			printfnl("fail to save %s.",h_name);
         end
         
         App.ClearBuffer();
         code_cpp(idl_class);        
         if App.SaveBuffer(cpp_name) then
-            save_str = save_str .. "save to "..cpp_name..EOL;
+            printfnl("save to %s ok.",cpp_name);
         else
-            save_str = save_str .. "fail to save "..cpp_name..EOL;
+            printfnl("fail to save %s.",cpp_name);
         end
         
         App.ClearBuffer();
         code_lua(idl_class);        
         if App.SaveBuffer(lua_name) then
-            save_str = save_str .. "save to "..lua_name..EOL;
+            printfnl("save to %s ok.",lua_name);
         else
-            save_str = save_str .. "fail to save "..lua_name..EOL;
+            printfnl("fail to save %s.",lua_name);
         end
 
         App.ClearBuffer();
-        code_js(idl_class);   
+        code_js(idl_class);		
 
         if App.SaveBuffer(js_name) then
-            save_str = save_str .. "save to "..js_name..EOL;
+			printfnl("save to %s ok.",js_name);
         else
-            save_str = save_str .. "fail to save "..js_name..EOL;
+            printfnl("fail to save %s.",js_name);
         end
 
+        App.ClearBuffer();
+        code_java(idl_class);		
+
+        if App.SaveBuffer(java_name) then
+			printfnl("save to %s ok.",java_name);
+        else
+            printfnl("fail to save %s.",java_name);
+        end
+		
         App.ClearBuffer();
         code_message_define_h(idl_class);        
         if App.SaveBuffer(message_h_name) then
-            save_str = save_str .. "save to "..message_h_name..EOL;
-        else
-            save_str = save_str .. "fail to save "..message_h_name..EOL;
+			printfnl("save to %s ok.",message_h_name);
+        else            
+			printfnl("fail to save %s.",message_h_name);
         end
         
         App.ClearBuffer();
         code_lua_message_define(idl_class);        
         if App.SaveBuffer(message_lua_name) then
-            save_str = save_str .. "save to "..message_lua_name..EOL;
+			printfnl("save to %s ok.",message_lua_name);
         else
-            save_str = save_str .. "fail to save "..message_lua_name..EOL;
+            printfnl("fail to save %s.",message_lua_name);
         end
 		
         App.ClearBuffer();
         code_js_message_define(idl_class);        
         if App.SaveBuffer(message_js_name) then
-            save_str = save_str .. "save to "..message_js_name..EOL;
+            printfnl("save to %s ok.",message_js_name);
         else
-            save_str = save_str .. "fail to save "..message_js_name..EOL;
+            printfnl("fail to save %s.",message_js_name);
         end		
+		
+        App.ClearBuffer();
+        code_java_message_define(idl_class);        
+        if App.SaveBuffer(message_java_name) then
+            printfnl("save to %s ok.",message_java_name);
+        else
+            printfnl("fail to save %s.",message_java_name);
+        end			
     else
         printfnl("////////////////%s///////////////",message_h_name);
         code_message_define_h(idl_class);
@@ -182,11 +210,17 @@ for _,idl_class in ipairs(all_idl_classes) do
         printfnl("////////////////%s///////////////",js_name);
         code_js(idl_class);
 
+        printfnl("////////////////%s///////////////",java_name);
+        code_java(idl_class);
+		
         printfnl("////////////////%s///////////////",message_lua_name);
         code_lua_message_define(idl_class);
 		
         printfnl("////////////////%s///////////////",message_js_name);
         code_js_message_define(idl_class);
+		
+        printfnl("////////////////%s///////////////",message_java_name);
+        code_java_message_define(idl_class);		
     end
     ::continue::    
 end
@@ -200,9 +234,9 @@ end
 if save_path and save_path ~= "" then
     local idl_name = make_file_name({name="linkrpc_all"},"idl"); 
     if App.SaveBuffer(idl_name) then
-        save_str = save_str .. "save to "..idl_name..EOL;
+        printfnl("save to %s ok.",idl_name);
     else
-        save_str = save_str .. "fail to save "..idl_name..EOL;
+        printfnl("fail to save %s.",idl_name);
     end
 end
 
@@ -247,9 +281,9 @@ for peer_name, idl_class_tab in pairs(peer_name_idl_table) do
 
     if common_h_file then
         if App.SaveBuffer(common_h_file) then
-            save_str = save_str .. "save to "..common_h_file..EOL;
+			printfnl("save to %s ok.",common_h_file);
         else
-            save_str = save_str .. "fail to save "..common_h_file..EOL;
+			printfnl("fail to save %s.",common_h_file);
         end
     end    
 end
@@ -275,14 +309,11 @@ for peer_name, idl_class_tab in pairs(peer_name_idl_table) do
     
     if common_lua_file then
         if App.SaveBuffer(common_lua_file) then
-            save_str = save_str .. "save to "..common_lua_file..EOL;
+			printfnl("save to %s ok.",common_lua_file);
         else
-            save_str = save_str .. "fail to save "..common_lua_file..EOL;
+            printfnl("fail to save %s.",common_lua_file);
         end
     end    
 end
 --------------------------------------------
-if save_str ~= "" then 
-    App.ClearScreen();
-    printnl(save_str);
-end
+

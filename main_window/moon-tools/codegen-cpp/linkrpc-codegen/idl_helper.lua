@@ -84,6 +84,15 @@ IdlHelper.Type.GetBsonType=function(type)
 	return "<??>";
 end
 
+IdlHelper.Type.GetJavaType=function(type)
+	for _,b in ipairs(basic_type_table) do	
+		if type.name == b[1] then
+			return b[4];
+		end
+	end	
+	return "<??>";
+end
+
 IdlHelper.Func.IsVoid = function(func)
     if not func then return true end
     if not func.ret_type then return true end
