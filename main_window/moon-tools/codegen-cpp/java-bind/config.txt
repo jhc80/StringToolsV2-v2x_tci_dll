@@ -1,1 +1,1 @@
-name=Java绑定
+name=Java Jni绑定

@@ -1,11 +1,11 @@
 --idl源文件，如果为空，则从文本框读取--
-idl_source="";
+idl_source="z:\\tmp\\1.idl";
 
 --如果不为空就保存到文件--
-save_path = "";
+save_path = "Z:\\DevTools\\AndroidSDK\\Projects\\JNI-V2\\src\\com\\yueyuesoft\\globals";
 
 --java的package名字--
-java_package_name="com.cvtest.test";
+java_package_name="com.yueyuesoft.globals";
 
 --代码生成的一些选项--
 code_switch={
@@ -36,6 +36,11 @@ end
 --如何生成setter函数的名字
 function setter_name(name,info)
     return "set"..to_big_camel_case(name);
+end
+
+--如何生成alloc函数的名字--
+function alloc_name(name)
+    return "alloc"..to_big_camel_case(name);
 end
 -------------------------------------
 --定义基本数据类型的映射表--
