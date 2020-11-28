@@ -65,7 +65,7 @@ basic_type_table={
 	{"uchar","byte","Uint8"},
 	{"ushort","short","UInt16"},
 	{"ulong","int","UInt32"},
-	{"float","float","Float"},
+	{"float","float","Double"},
 	{"double","double","Double"},
 	{"bool","boolean","Boolean"},
 	{"void","void","Void"},

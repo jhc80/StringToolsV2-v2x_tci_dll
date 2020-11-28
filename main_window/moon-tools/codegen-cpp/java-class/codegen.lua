@@ -57,6 +57,7 @@ function for_each_variables(variables,callback)
 		info.is_no_setter = IdlHelper.Var.IsNoSetter(var);
 		info.is_no_getter = IdlHelper.Var.IsNoGetter(var);
 		info.java_type = IdlHelper.Type.GetJavaType(var_type);
+		info.bson_type = IdlHelper.Type.GetBsonType(var_type);
 	    callback(info);
     end
 end
@@ -111,6 +112,15 @@ end
 function code_java_ctor_function(idl_class)
 	printfnl("    public %s()",java_class_name(idl_class.name));
 	printfnl("    {");
+	
+	for_each_variables(idl_class.variables,function(info)
+		if not info.is_array and info.is_object then
+			printfnl("        this.%s = new %s();",
+				member_name(info.var.name),
+				java_type_name(info));
+		end	
+	end);
+	
 	printfnl("    }");
 end
 
@@ -317,11 +327,95 @@ function code_java_clone(idl_class)
 	printfnl("    }");
 end
 
+function code_java_save_bson_1(idl_class)
+	printfnl("    public boolean saveBson(CMiniBson _bson)");
+	printfnl("    {");
+	
+	local tab = 2;
+	for_each_variables_sorted(idl_class.variables,function(info)			
+		if info.is_array then
+			printfnl("%sif(this.%s != null)",ptab(tab),member_name(info.var.name));
+			printfnl("%s{",ptab(tab));
+			tab = tab + 1;
+			
+			printfnl("%slong _offset = _bson.startArray(\"%s\");",ptab(tab),info.var.name);
+			
+			printfnl("%sfor(int i = 0; i < this.%s.length; i++)",ptab(tab),
+				member_name(info.var.name));
+			printfnl("%s{",ptab(tab));
+			tab = tab + 1;
+			
+			if info.is_string then
+				printfnl("%s_bson.putString(\"\"+i,CMiniBson.BsonString(this.%s[i]));",ptab(tab),
+					member_name(info.var.name));
+			elseif info.is_basic_type then
+				printfnl("%s_bson.put%s(\"\"+i,this.%s[i]);",ptab(tab),
+					info.bson_type,
+					member_name(info.var.name)
+				);	
+			elseif info.is_object then				
+				printfnl("%slong _off = _bson.startDocument(\"\"+i);",ptab(tab));
+				printfnl("%sthis.%s[i].saveBson(_bson);",ptab(tab),member_name(info.var.name));
+				printfnl("%s_bson.endDocument(_off);",ptab(tab));			
+			end
+			
+			tab = tab - 1;
+			printfnl("%s}",ptab(tab));
+			printfnl("%s_bson.endArray(_offset,this.%s.length);",ptab(tab),
+				member_name(info.var.name));
+			
+			tab = tab - 1;
+			printfnl("%s}",ptab(tab));
+		else
+			if info.is_string then			
+				printfnl("%s_bson.putString(\"%s\",CMiniBson.BsonString(this.%s));",ptab(tab),
+					info.var.name,
+					member_name(info.var.name)
+				);	
+			elseif info.is_basic_type then
+				printfnl("%s_bson.put%s(\"%s\",this.%s);",ptab(tab),
+					info.bson_type,
+					info.var.name,
+					member_name(info.var.name)
+				);	
+			elseif info.is_object then
+				printfnl("%sif(this.%s != null)",ptab(tab),member_name(info.var.name));
+				printfnl("%s{",ptab(tab));
+				tab = tab+1;
+				printfnl("%slong _off = _bson.startDocument(\"%s\");",ptab(tab),info.var.name);
+				printfnl("%sthis.%s.saveBson(_bson);",ptab(tab),
+					member_name(info.var.name));
+				printfnl("%s_bson.endDocument(_off);",ptab(tab));	
+				tab = tab-1;
+				printfnl("%s}",ptab(tab));
+			end
+		end
+	end);
+		
+	printfnl("        return true;");
+	printfnl("    }");
+end
+
+function code_java_save_bson_2(idl_class)
+	printfnl("    public boolean saveBson(CMem _mem)");
+	printfnl("    {");
+	printfnl("        CMiniBson bson = new CMiniBson();");
+	printfnl("        bson.setRawBuf(_mem);");
+	printfnl("        bson.startDocument();");
+	printfnl("        boolean ret = this.saveBson(bson);");
+	printfnl("        bson.endDocument();        ");
+	printfnl("        _mem.setSize(bson.getDocumentSize());        ");
+	printfnl("        return ret;");
+	printfnl("    }");
+end
+
 --生成所有的java代码--
 function code_java(idl_class)	
 	code_begin_marker("Header");	
-	printfnl("package %s;",java_package_name);	
+	printfnl("package %s;",java_package_name);		
 	printnl("");
+	printfnl("import com.jni.common.CMiniBson;");
+	printfnl("import com.jni.common.CMem;");
 	code_end_marker("Header");
 	printnl("");
 	
@@ -345,9 +439,16 @@ function code_java(idl_class)
 	code_java_all_getter_function(idl_class);
 	printnl("");
 	code_java_all_setter_function(idl_class);
+	printnl("");
 	code_java_to_string_1(idl_class);
+	printnl("");
 	code_java_to_string_2(idl_class);
+	printnl("");
 	code_java_clone(idl_class);
+	printnl("");	
+	code_java_save_bson_1(idl_class);
+	printnl("");	
+	code_java_save_bson_2(idl_class);	
 	printnl("}");
 	
 end
