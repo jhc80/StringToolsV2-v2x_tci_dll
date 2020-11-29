@@ -98,6 +98,7 @@ end
 
 --生成所有的成员变量的代码--
 function code_java_all_members(idl_class)
+	code_begin_marker("Members");
 	for_each_variables(idl_class.variables,function(info)	
 		printf("    private %s ",java_type_name(info));					
 		printf("%s",member_name(info.var.name));		
@@ -106,13 +107,14 @@ function code_java_all_members(idl_class)
 		end		
 		printnl(";");		
 	end)
+	code_end_marker("Members");
 end
 
 --生成一个构造函数
 function code_java_ctor_function(idl_class)
 	printfnl("    public %s()",java_class_name(idl_class.name));
 	printfnl("    {");
-	
+	code_begin_marker("InitMembers");	
 	for_each_variables(idl_class.variables,function(info)
 		if not info.is_array and info.is_object and not info.is_string then
 			printfnl("        this.%s = new %s();",
@@ -120,13 +122,14 @@ function code_java_ctor_function(idl_class)
 				java_type_name(info));
 		end	
 	end);
-	
+	code_end_marker("InitMembers");
 	printfnl("    }");
 end
 
 function code_all_java_array_alloc_function(idl_class)
 	for_each_variables(idl_class.variables,function(info)
-		if info.is_array then		
+		if info.is_array then	
+			code_begin_extra(alloc_name(info.var.name));
 			printfnl("    public %s %s(int size)",
 				java_type_name(info),
 				alloc_name(info.var.name)
@@ -145,25 +148,29 @@ function code_all_java_array_alloc_function(idl_class)
 			printfnl("[size];");
 			printfnl("        return this.%s;",member_name(info.var.name));
 			printfnl("    }");		
-			printnl("");
+			code_end_extra(alloc_name(info.var.name));
+			printnl("");			
 		end		
 	end);
 end
 
 function code_java_all_getter_function(idl_class)
 	for_each_variables(idl_class.variables,function(info)	
+		code_begin_extra(getter_name(info.var.name));
 		printfnl("    public %s %s()",
 			java_type_name(info),
 			getter_name(info.var.name));
 		printfnl("    {");
 		printfnl("        return this.%s;",member_name(info.var.name));
 		printfnl("    }");		
+		code_end_extra(getter_name(info.var.name));
 		printnl("");
 	end);
 end
 
 function code_java_all_setter_function(idl_class)
 	for_each_variables(idl_class.variables,function(info)	
+		code_begin_extra(setter_name(info.var.name));
 		printfnl("    public void %s(%s _%s)",			
 			setter_name(info.var.name),
 			java_type_name(info),
@@ -175,6 +182,7 @@ function code_java_all_setter_function(idl_class)
 			string.lower(info.var.name)
 		);
 		printfnl("    }");		
+		code_end_extra(setter_name(info.var.name));
 		printnl("");
 	end);
 end
@@ -191,7 +199,7 @@ end
 function code_java_to_string_2(idl_class)
 	printfnl("    public void toString(StringBuilder _buf)");
 	printfnl("    {");
-	
+	code_begin_marker("toString");
 	for_each_variables(idl_class.variables,function(info)	
 		if info.is_array then			
 			printfnl("        if(this.%s != null)",member_name(info.var.name));
@@ -248,7 +256,7 @@ function code_java_to_string_2(idl_class)
 			end		
 		end
 	end);
-	
+	code_end_marker("toString");
 	printfnl("    }");
 end
 
@@ -260,7 +268,7 @@ function code_java_clone(idl_class)
 		java_class_name(idl_class.name),
 		java_class_name(idl_class.name)
 	);
-	
+	code_begin_marker("clone");
 	for_each_variables(idl_class.variables,function(info)		
 		if info.is_array then		
 			printfnl("        if(this.%s() != null)", getter_name(info.var.name));
@@ -322,7 +330,7 @@ function code_java_clone(idl_class)
 			
 		end	
 	end);
-	
+	code_end_marker("clone");
 	printfnl("        return _tmp;");
 	printfnl("    }");
 end
@@ -330,7 +338,7 @@ end
 function code_java_save_bson_1(idl_class)
 	printfnl("    public boolean saveBson(CMiniBson _bson)");
 	printfnl("    {");
-	
+	code_begin_marker("saveBson");
 	local tab = 2;
 	for_each_variables_sorted(idl_class.variables,function(info)			
 		if info.is_array then
@@ -391,7 +399,7 @@ function code_java_save_bson_1(idl_class)
 			end
 		end
 	end);
-		
+	code_end_marker("saveBson");
 	printfnl("        return true;");
 	printfnl("    }");
 end
@@ -414,7 +422,7 @@ function code_java_load_bson_1(idl_class)
 	printfnl("%spublic boolean loadBson(CMiniBson _bson)",ptab(tab));
 	printfnl("%s{",ptab(tab));
 	tab = tab + 1;
-	
+	code_begin_marker("loadBson");
 	for_each_variables_sorted(idl_class.variables,function(info)			
 		if info.is_array then
 			
@@ -450,6 +458,10 @@ function code_java_load_bson_1(idl_class)
 				printfnl("%sCMiniBson _doc = new CMiniBson();",ptab(tab));
 				printfnl("%s_doc_%s.getDocument(null,_doc);",ptab(tab),
 					string.lower(info.var.name));
+				
+				printfnl("%s_arr_%s[i] = new %s();",ptab(tab),
+					string.lower(info.var.name),
+					java_class_name(info.var.type.name));
 				printfnl("%s_arr_%s[i].loadBson(_doc);",ptab(tab),
 					string.lower(info.var.name));
 			end
@@ -493,9 +505,8 @@ function code_java_load_bson_1(idl_class)
 				printfnl("%s}",ptab(tab));
 			end
 		end
-	end);
-	
-	
+	end);	
+	code_end_marker("loadBson");
 	printfnl("%sreturn true;",ptab(tab));
 	tab = tab - 1;
 	printfnl("%s}",ptab(tab));
@@ -558,13 +569,20 @@ function code_java(idl_class)
 	printnl("");
 	code_java_clone(idl_class);
 	printnl("");	
-	code_java_save_bson_1(idl_class);
+	if code_switch.bson then
+		code_java_save_bson_1(idl_class);
+		printnl("");	
+		code_java_save_bson_2(idl_class);	
+		printnl("");	
+		code_java_load_bson_1(idl_class);
+		printnl("");
+		code_java_load_bson_2(idl_class);
+	end
+	
 	printnl("");	
-	code_java_save_bson_2(idl_class);	
+	printfnl("    /*@@ Insert Function Here @@*/");
 	printnl("");	
-	code_java_load_bson_1(idl_class);
-	printnl("");
-	code_java_load_bson_2(idl_class);
+	
 	printnl("}");
 	
 end

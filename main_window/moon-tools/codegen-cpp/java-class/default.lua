@@ -1,8 +1,8 @@
 --idl源文件，如果为空，则从文本框读取--
-idl_source="z:\\tmp\\1.idl";
+idl_source="";
 
 --如果不为空就保存到文件--
-save_path = "Z:\\DevTools\\AndroidSDK\\Projects\\JNI-V2\\src\\com\\yueyuesoft\\globals";
+save_path = "";
 
 --java的package名字--
 java_package_name="com.yueyuesoft.globals";
@@ -65,7 +65,7 @@ basic_type_table={
 	{"uchar","byte","Uint8"},
 	{"ushort","short","UInt16"},
 	{"ulong","int","UInt32"},
-	{"float","float","Double"},
+	{"float","float","Float"},
 	{"double","double","Double"},
 	{"bool","boolean","Boolean"},
 	{"void","void","Void"},
