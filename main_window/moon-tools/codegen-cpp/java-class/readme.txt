@@ -1,5 +1,7 @@
 一个完整的例子，展示了能够支持的所有类型
 
+[CodeSwitch code_mark=true,bson=true]
+
 class Test:Base{
 	int a; //基本类型
 	string str; //字符串类型
