@@ -307,7 +307,6 @@ end
 
 --生成单个返回值的idl代码--
 function code_single_return_idl(peer_name,info)
-
     local class_name = return_class_name(peer_name,info.name);
     printnl("[CodeSwitch code_mark=true,bson=true]");
     printfnl("class %s:RpcParamBase{",class_name);

@@ -75,7 +75,8 @@ function code_java_header(idl_class)
         import android.util.Log;
         import com.cvtest.common.RpcServiceBase;
         import com.cvtest.common.RpcParamBase;
-        import com.cvtest.common.RpcCallContext;
+        import com.cvtest.common.RpcCallContext;        
+        import com.cvtest.common.RpcCallback;
         import com.cvtest.common.Callback;
         import com.jni.common.CMiniBson;
 		
@@ -93,7 +94,7 @@ function code_java_header(idl_class)
 end
 
 --生成java函数的声明代码--
-function code_java_service_function_declaration(info,is_async)
+function code_java_service_function_declaration(info,version2)
     local func_name;
     if info.is_service then
         func_name = string.lower_first_char(
@@ -101,7 +102,7 @@ function code_java_service_function_declaration(info,is_async)
         );
     else
         func_name = string.lower_first_char(
-            not_service_func_name(info.name,is_async)
+            not_service_func_name(info.name)
         );
     end
     
@@ -129,11 +130,15 @@ function code_java_service_function_declaration(info,is_async)
             printf(" _%s",to_lower_underline_case(p.name));
         end);
         
-        if not info.is_void and not is_async then
+        if not info.is_void then
             if info.params then
                 print(", ");
             end
-            print("Callback _callback");        
+			if version2 then
+				print("RpcCallback _callback");        
+			else			
+				print("Callback _callback");        
+			end
         end
                 
         printf(")");        
@@ -179,6 +184,23 @@ function code_java_not_service_function(idl_class,info)
     printnl("}");
 end
 
+--生成第二个版本的client端代码--
+function code_java_not_service_function_2(idl_class,info)
+	printf("public boolean ");
+    code_java_service_function_declaration(info,true); 
+    printnl("");
+    printnl("{");
+	printfnl("    _callback.ret = new %s();",return_class_name(idl_class.peer_name,info.name))
+    
+    
+    printf("    return this.%s(",java_function_name(not_service_func_name(info.name)));    
+    for_each_params(info.params,function(p,index)                
+        printf("_%s, ",to_lower_underline_case(p.name));
+    end);    
+    printfnl("(Callback)_callback);");
+    printnl("}");
+end
+
 --生成java service function 的函数体--
 function code_java_service_function(idl_class,info)
 	printf("public boolean ");	
@@ -193,7 +215,7 @@ function code_java_service_function(idl_class,info)
     if info.params then
         printf(long_text([[
             %s _param = new %s();
-            if(!_param.LoadBson(_msg_body))
+            if(!_param.loadBson(_bson))
             {
                 Log.e("rpc","load params fail %s");
                 return false;
@@ -237,6 +259,10 @@ function code_java(idl_class)
             printnl(begin_java_extra("Method",not_service_func_name(info.name)));
             code_java_not_service_function(idl_class,info);
             printnl(end_java_extra("Method",not_service_func_name(info.name)));
+			printnl("");
+			printnl(begin_java_extra("Method",not_service_func_name(info.name).."_V2"));
+			code_java_not_service_function_2(idl_class,info);
+			printnl(end_java_extra("Method",not_service_func_name(info.name).."_V2"));
         end        
         
         printnl("");
@@ -244,12 +270,12 @@ function code_java(idl_class)
     
 	printfnl("public void onSocketConnected()");
 	printfnl("{");
-	printfnl("     // TODO Auto-generated method stub");
+	printfnl("     super.onSocketConnected();");
 	printfnl("}");
 	printnl("");
 	printfnl("public void onSocketDisconnected()");
 	printfnl("{");
-	printfnl("     // TODO Auto-generated method stub");
+	printfnl("     super.onSocketDisconnected();");
 	printfnl("}");
 
 	printnl("");
