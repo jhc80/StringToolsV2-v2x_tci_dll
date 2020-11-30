@@ -27,17 +27,17 @@ end
 --生成java 的 onRequest函数代码--
 function code_java_request_function(idl_class)
 
-    printfnl("public boolean onRequest(RpcCallContext _context,RpcParamBase _param)",
+    printfnl("public void onRequest(Message msg)",
         java_class_name(idl_class.name)
     );
     
     printfnl("{");    
-	printfnl("    this.setDestPeerName(_context.from);");
-	printnl("");
-	
+
+	printfnl("    RpcCallContext context = this.getCallContext(msg);");
+
     printnl(begin_java_marker("Request"));
     
-    printfnl("    switch(_context.method)");
+    printfnl("    switch(context.getMethod())");
     printfnl("    {");
     
     for_each_functions(idl_class.functions,function(info)
@@ -46,7 +46,7 @@ function code_java_request_function(idl_class)
 				java_class_name(idl_class.name.."Messages"),
 				func_id_name(idl_class.peer_name,info.name));
 				
-            printfnl("            this.%s(_context,_param);",
+            printfnl("            this.%s(context,msg.body);",
                 string.lower_first_char(service_func_name(info.name))
             );
             printfnl("            break;");
@@ -55,7 +55,7 @@ function code_java_request_function(idl_class)
     
     printfnl("        default:");
     printfnl("            Log.e(\"linkrpc\",");
-    printnl("                \"unknown method: \"+_context.method");
+    printnl("                \"unknown method: \"+context.getMethod()");
     printfnl("            );");    
     printfnl("            break;");
     printfnl("    }");    
@@ -72,13 +72,16 @@ function code_java_header(idl_class)
     printf(long_text([[
         package %s;
 
-        import com.android.log;
-        import com.cvtest.common.PeerServiceBase;
+        import android.util.Log;
+        import com.cvtest.common.RpcServiceBase;
         import com.cvtest.common.RpcParamBase;
+        import com.cvtest.common.RpcCallContext;
+        import com.cvtest.common.Callback;
+        import com.jni.common.CMiniBson;
 		
-        public class %s extends PeerServiceBase{
+        public class %s extends RpcServiceBase{
 
-        %s()
+        public %s()
         {
             super();
         }        
@@ -103,7 +106,7 @@ function code_java_service_function_declaration(info,is_async)
     end
     
     if info.is_service then
-        printf("%s(RpcCallContext _context,MiniBson _msg_body)",func_name);    
+        printf("%s(RpcCallContext _context,CMiniBson _bson)",func_name);    
     else
         printf("%s(",func_name); 
         for_each_params(info.params,function(p,index)        
@@ -159,7 +162,7 @@ function code_java_not_service_function(idl_class,info)
     end
     
     if not info.is_void then
-        printfnl("    int _cbid = this.addCallback(_callback);");    
+        printfnl("    int _cbid = this.addCallback(_callback,0);");
     else
         printfnl("    int _cbid = 0;");
     end
@@ -169,7 +172,7 @@ function code_java_not_service_function(idl_class,info)
     printfnl(
         "    return this.sendRequest(%s,%s.%s,_cbid);",
         param_str,
-		java_class_name(idl_class.name.."Messages"),
+		java_class_name(idl_class.peer_idl_class.name.."Messages"),
         func_id_name(idl_class.peer_name,info.name)
     );
         
@@ -239,6 +242,17 @@ function code_java(idl_class)
         printnl("");
     end);        
     
+	printfnl("public void onSocketConnected()");
+	printfnl("{");
+	printfnl("     // TODO Auto-generated method stub");
+	printfnl("}");
+	printnl("");
+	printfnl("public void onSocketDisconnected()");
+	printfnl("{");
+	printfnl("     // TODO Auto-generated method stub");
+	printfnl("}");
+
+	printnl("");
     printnl("/*@@ Insert Method Here @@*/");
     
     printnl("");

@@ -536,15 +536,26 @@ function code_java(idl_class)
 	code_begin_marker("Header");	
 	printfnl("package %s;",java_package_name);		
 	printnl("");
+	
 	printfnl("import com.jni.common.CMiniBson;");
 	printfnl("import com.jni.common.CMem;");
 	printfnl("import com.jni.common.CFileBase;");
+	
+	local all_bases = IdlHelper.Class.GetAllBases(idl_class);	
+	if all_bases then
+		for _, base in ipairs(all_bases) do		
+			local _package = class_package_table[base.name];
+			if _package then
+				printfnl("import %s;",_package);
+			end
+		end	
+	end
+
 	code_end_marker("Header");
 	printnl("");
 	
 	printf("public class %s",java_class_name(idl_class.name));
-	
-	local all_bases = IdlHelper.Class.GetAllBases(idl_class);	
+		
 	if all_bases then	
 		print(" extends ");
 		for i, base in ipairs(all_bases) do

@@ -72,3 +72,7 @@ basic_type_table={
     {"status_t","boolean","Boolean"},
 };
 
+--通过类名找package的名字--
+class_package_table={
+	["RpcParamBase"]="com.cvtest.common.RpcParamBase",
+}

@@ -30,6 +30,10 @@ function make_client_idl_class(idl_class)
     
     local client_idl_class = clone_table(idl_class);
     
+	--make peer idl_class
+	client_idl_class.peer_idl_class = idl_class;
+	idl_class.peer_idl_class = client_idl_class;
+	
     client_idl_class.name = name;
     client_idl_class.start_id = start_id;
     
@@ -244,10 +248,12 @@ end
 local peer_name_idl_table = {};
 
 for _,idl_class in ipairs(all_idl_classes) do
-    if not peer_name_idl_table[idl_class.peer_name] then
-        peer_name_idl_table[idl_class.peer_name] = {};
-    end
-    table.insert(peer_name_idl_table[idl_class.peer_name],idl_class);
+	if check_idl_class_hints(idl_class) then
+		if not peer_name_idl_table[idl_class.peer_name] then
+			peer_name_idl_table[idl_class.peer_name] = {};
+		end
+		table.insert(peer_name_idl_table[idl_class.peer_name],idl_class);
+	end
 end
 
 for peer_name, idl_class_tab in pairs(peer_name_idl_table) do

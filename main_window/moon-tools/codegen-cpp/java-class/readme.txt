@@ -33,4 +33,7 @@ class Test{
 	[noget,noset] int c; //既不生成get方法，也不生成set 方法
 }
 
+可以通过 [import com.cvtest.common.RpcParamBase]加入自定义的导入模块
+
+
 
