@@ -2201,7 +2201,7 @@ function code_cpp(idl_class)
         printnl("");        
     end
     
-    if code_switch.xml2 or code_switch.xm1 then
+    if code_switch.xml2 or code_switch.xml then
         code_cpp_load_xml_2(idl_class);
         printnl("");        
         code_cpp_save_xml_2(idl_class);
