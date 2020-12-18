@@ -336,10 +336,13 @@ function code_normal_cpp(names)
     printfnl("    int i;");
     printfnl("");
     printfnl("    ASSERT(_p);");
+	if code_switch.task_container then
+		printfnl("    CTaskMgr *taskmgr = this->GetTaskMgr();");
+	end	
     printfnl("    this->Destroy();");
     
 	if code_switch.task_container then
-		printfnl("    this->Init(GetTaskMgr());");
+		printfnl("    this->Init(taskmgr);");
 	else
 		printfnl("    this->Init();");
 	end
