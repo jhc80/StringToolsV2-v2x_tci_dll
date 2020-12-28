@@ -63,6 +63,20 @@ end
 function param_set_func_name(name)
     return "Set"..to_big_camel_case(name);
 end
+
+--java client和service类通用import的packages--
+function java_common_import_packages()
+return [[
+import android.util.Log;
+import com.cvtest.common.RpcServiceBase;
+import com.cvtest.common.RpcParamBase;
+import com.cvtest.common.RpcCallContext;        
+import com.cvtest.common.RpcCallback;
+import com.cvtest.common.Callback;
+import com.jni.common.CMiniBson;
+]]
+end
+
 -------------------------------------
 --定义基本数据类型的映射表--
 -------------------------------------
@@ -92,5 +106,4 @@ basic_type_table={
 	{"void","%x","Int32","void"},
     {"status_t","%d","Int32","boolean"},
 };
-
 

@@ -52,5 +52,11 @@ class Test{
 可以通过 [Includes hello world] 这样的hint给文件加入自定义的include
 头文件
 
+class Test{	
+	[noxml] Foo foo;
+	[nobson] Bar bar;	
+}
+
+可以在前面加上 [noxml] 和 [nobson] 来使生产成的代码没有这两个的成员的 Xml和Bson相关的调用
 
 

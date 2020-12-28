@@ -68,26 +68,18 @@ end
 
 --生成java文件头的内容--
 function code_java_header(idl_class)
-
+	printfnl("package %s;",java_package_name(idl_class.peer_name));
+	printfnl("");
+	printfnl(java_common_import_packages());
+	
     printf(long_text([[
-        package %s;
-
-        import android.util.Log;
-        import com.cvtest.common.RpcServiceBase;
-        import com.cvtest.common.RpcParamBase;
-        import com.cvtest.common.RpcCallContext;        
-        import com.cvtest.common.RpcCallback;
-        import com.cvtest.common.Callback;
-        import com.jni.common.CMiniBson;
-		
         public class %s extends RpcServiceBase{
 
         public %s()
         {
             super();
         }        
-    ]],8),
-		java_package_name(idl_class.peer_name),
+    ]],8),		
         java_class_name(idl_class.name),
 		java_class_name(idl_class.name)
     );    
@@ -116,7 +108,7 @@ function code_java_service_function_declaration(info,version2)
             end
 			
 			if p.is_string then
-				printf("string");			
+				printf("String");			
 			elseif p.is_basic_type then
 				printf("%s",p.java_type);
 			elseif p.is_object then
@@ -259,10 +251,13 @@ function code_java(idl_class)
             printnl(begin_java_extra("Method",not_service_func_name(info.name)));
             code_java_not_service_function(idl_class,info);
             printnl(end_java_extra("Method",not_service_func_name(info.name)));
-			printnl("");
-			printnl(begin_java_extra("Method",not_service_func_name(info.name).."_V2"));
-			code_java_not_service_function_2(idl_class,info);
-			printnl(end_java_extra("Method",not_service_func_name(info.name).."_V2"));
+			
+			if not info.is_void then
+				printnl("");
+				printnl(begin_java_extra("Method",not_service_func_name(info.name).."_V2"));
+				code_java_not_service_function_2(idl_class,info);
+				printnl(end_java_extra("Method",not_service_func_name(info.name).."_V2"));
+			end
         end        
         
         printnl("");
