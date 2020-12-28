@@ -152,6 +152,14 @@ IdlHelper.Var.IsNoGetter = function(var)
 	return IdlHelper.Class.FindHintSwitch (var,"noget");
 end
 
+IdlHelper.Var.IsNoXml = function(var)
+	return IdlHelper.Class.FindHintSwitch (var,"noxml");
+end
+
+IdlHelper.Var.IsNoBson = function(var)
+	return IdlHelper.Class.FindHintSwitch (var,"nobson");
+end
+
 IdlHelper.Var.GetXml2Info = function(var)
 	if not var then return end
 	if not var.hint then return end

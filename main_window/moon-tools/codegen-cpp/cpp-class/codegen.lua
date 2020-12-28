@@ -93,6 +93,8 @@ function for_each_variables(variables,callback)
         info.is_weak_ptr = is_weak_ptr;		
 		info.is_no_setter = IdlHelper.Var.IsNoSetter(var);
 		info.is_no_getter = IdlHelper.Var.IsNoGetter(var);
+		info.is_no_xml = IdlHelper.Var.IsNoXml(var);
+		info.is_no_bson = IdlHelper.Var.IsNoBson(var);
 		info.is_struct = is_struct;
 		var_type.is_struct = is_struct;
 		
@@ -2433,7 +2435,7 @@ function code_cpp_save_bson_1(idl_class)
     end
 
     for_each_variables_sorted(idl_class.variables,function(info)
-        if info.is_pointer or info.is_weak_ptr then
+        if info.is_pointer or info.is_weak_ptr or info.is_no_bson then
             return
         end
 
@@ -2752,7 +2754,7 @@ function code_cpp_load_bson_1(idl_class)
     end
 
     for_each_variables_sorted(idl_class.variables,function(info)
-        if info.is_pointer  or info.is_weak_ptr then
+        if info.is_pointer or info.is_weak_ptr or info.is_no_bson then
             return
         end
 
@@ -3911,9 +3913,8 @@ function code_cpp_load_xml_1(idl_class)
     end
 
     for_each_variables(idl_class.variables,function(info)
-        if info.is_pointer then
-            return 
-        end
+        if info.is_pointer then return end
+		if info.is_no_xml then return end
 
         if info.is_array then
             pc_array(info);
@@ -3944,7 +3945,8 @@ function code_cpp_save_xml_1(idl_class)
 	
 	local need_i = false;
     for_each_variables(idl_class.variables,function(info)
-        if info.is_pointer then   return   end
+        if info.is_pointer then return end
+		if info.is_no_xml then return end
 		if info.is_array then need_i = true end
 	end);
 	
@@ -4061,7 +4063,8 @@ function code_cpp_save_xml_1(idl_class)
 
     for_each_variables(idl_class.variables,function(info)
         if info.is_pointer then return end
-
+		if info.is_no_xml then return end
+		
         if info.is_array then
             pc_array(info);
             printnl(""); 
@@ -4239,6 +4242,7 @@ function code_cpp_load_xml_3(idl_class)
     local context={};
     for_each_variables(idl_class.variables,function(info)
         if info.is_pointer then return end
+		if info.is_no_xml then return end
         local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
         if not xml2_info then return end
 
@@ -4267,6 +4271,7 @@ function code_cpp_load_xml_3(idl_class)
     local context={};
     for_each_variables(idl_class.variables,function(info)
         if info.is_pointer then return end
+		if info.is_no_xml then return end
         local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
         if not xml2_info then return end
 
@@ -4291,6 +4296,7 @@ function code_cpp_load_xml_3(idl_class)
 
     for_each_variables(idl_class.variables,function(info)
         if info.is_pointer then return end
+		if info.is_no_xml then return end
         local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
         if not xml2_info then return end
         if xml2_info.is_value then
@@ -4389,6 +4395,7 @@ function code_cpp_save_xml_3(idl_class)
     local context={};
     for_each_variables(idl_class.variables,function(info)
         if info.is_pointer then return end
+		if info.is_no_xml then return end
         local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
         if not xml2_info then return end
 
@@ -4411,6 +4418,7 @@ function code_cpp_save_xml_3(idl_class)
 
     for_each_variables(idl_class.variables,function(info)
         if info.is_pointer then return end
+		if info.is_no_xml then return end
         local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
         if not xml2_info then return end
 
@@ -4428,9 +4436,9 @@ function code_cpp_save_xml_3(idl_class)
         end        
     end);  
 
-    
     for_each_variables(idl_class.variables,function(info)
         if info.is_pointer then return end
+		if info.is_no_xml then return end
         local xml2_info = IdlHelper.Var.GetXml2Info(info.var);
         if not xml2_info then return end
 
