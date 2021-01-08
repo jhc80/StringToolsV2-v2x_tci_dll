@@ -95,6 +95,9 @@ function for_each_variables(variables,callback)
 		info.is_no_getter = IdlHelper.Var.IsNoGetter(var);
 		info.is_no_xml = IdlHelper.Var.IsNoXml(var);
 		info.is_no_bson = IdlHelper.Var.IsNoBson(var);
+		info.is_no_copy = IdlHelper.Var.IsNoCopy(var);
+		info.is_no_print = IdlHelper.Var.IsNoPrint(var);
+		
 		info.is_struct = is_struct;
 		var_type.is_struct = is_struct;
 		
@@ -815,6 +818,7 @@ function code_cpp_copy(idl_class)
     end
     
     for_each_variables(idl_class.variables,function(info)         
+		if info.is_no_copy then return end
         if info.is_array then 
             pc_array(info);
         else 
@@ -1110,7 +1114,8 @@ function code_cpp_print(idl_class)
         end        
     end
     
-    for_each_variables(idl_class.variables,function(info)         
+    for_each_variables(idl_class.variables,function(info)  
+		if info.is_no_print then return end
         if info.is_array then        
             pc_array(info);
         else 

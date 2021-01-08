@@ -160,6 +160,14 @@ IdlHelper.Var.IsNoBson = function(var)
 	return IdlHelper.Class.FindHintSwitch (var,"nobson");
 end
 
+IdlHelper.Var.IsNoCopy = function(var)
+	return IdlHelper.Class.FindHintSwitch (var,"nocopy");
+end
+
+IdlHelper.Var.IsNoPrint = function(var)
+	return IdlHelper.Class.FindHintSwitch (var,"noprint");
+end
+
 IdlHelper.Var.GetXml2Info = function(var)
 	if not var then return end
 	if not var.hint then return end

@@ -53,10 +53,11 @@ class Test{
 头文件
 
 class Test{	
-	[noxml] Foo foo;
-	[nobson] Bar bar;	
+	[noxml,nocopy] Foo foo;
+	[nobson,noprint] Bar bar;	
 }
 
 可以在前面加上 [noxml] 和 [nobson] 来使生产成的代码没有这两个的成员的 Xml和Bson相关的调用
+[nocopy] 表示不生成Copy代码， [noprint] 表示不生成Print的代码。
 
 
