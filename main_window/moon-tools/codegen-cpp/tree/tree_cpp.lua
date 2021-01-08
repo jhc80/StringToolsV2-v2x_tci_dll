@@ -313,13 +313,13 @@ function code_cpp(names)
 		printfnl("            BSON_CHECK(entry->LoadBson(&elem));");
 		printfnl("            if(pre == NULL)");
 		printfnl("            {");
-		printfnl("                pre = entry;");
 		printfnl("                ASSERT(this->AddChild(entry));");
 		printfnl("            }");
 		printfnl("            else");
 		printfnl("            {");
 		printfnl("                ASSERT(pre->InsertAfter(entry));");
 		printfnl("            }");
+		printfnl("            pre = entry;");		
 		printfnl("        }");
 		printfnl("    }");
 		printfnl("    return OK;");
