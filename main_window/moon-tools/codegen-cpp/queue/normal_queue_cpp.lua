@@ -45,12 +45,12 @@ function code_normal_cpp(names)
 	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Init"));
 
     printfnl("");
-    printfnl("    NEW_ARRAY(this->m_Data,%s,size);",names.c_node_class_name);
-    printfnl("    for(i = 0; i < size; i++)");
+    printfnl("    NEW_ARRAY(this->m_Data,%s,init_size);",names.c_node_class_name);
+    printfnl("    for(i = 0; i < init_size; i++)");
     printfnl("    {");
     printfnl("        this->m_Data[i].Init();");
     printfnl("    }");
-    printfnl("    this->m_Size = size;");
+    printfnl("    this->m_Size = init_size;");
     printfnl("    return OK;");
     printfnl("}");
     printfnl("status_t %s::Destroy()",names.c_class_name);

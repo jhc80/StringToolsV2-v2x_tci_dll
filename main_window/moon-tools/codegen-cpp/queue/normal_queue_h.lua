@@ -34,7 +34,7 @@ function code_normal_h(names)
     printfnl("    %s* GetHead();    ",names.c_node_class_name);
     printfnl("    %s* GetTail();",names.c_node_class_name);
     printfnl("    %s* GetElem(int index);",names.c_node_class_name);
-    printfnl("    status_t EnQueue(%s *pos);",names.c_node_class_name);
+    printfnl("    status_t Enqueue(%s *pos);",names.c_node_class_name);
     printfnl("    bool IsFull();");
     printfnl("    bool IsEmpty();");
     printfnl("");
