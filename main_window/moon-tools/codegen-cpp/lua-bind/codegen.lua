@@ -55,7 +55,7 @@ function for_each_functions(functions, callback)
         
         if info.is_ctor then
             info.is_static = true;
-            info.name = "_new";
+            info.name = "new";
         end
         
         index = index + 1;
