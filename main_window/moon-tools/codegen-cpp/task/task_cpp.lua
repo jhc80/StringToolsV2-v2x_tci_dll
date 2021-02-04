@@ -43,11 +43,11 @@ function code_cpp(names)
     printfnl("}");
     printfnl("status_t %s::Destroy()",names.c_class_name);
     printfnl("{");
-	
-	printfnl("    CTask::Destroy();");
+		
     printfnl("    this->m_Callback.Destroy();");
 	maybe_printnl(g_cpp_base_codegen:Code_BeginMarker("Destroy"));
-	maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Destroy"));
+    maybe_printnl(g_cpp_base_codegen:Code_EndMarker("Destroy"));
+    printfnl("    CTask::Destroy();");    
     printfnl("    this->InitBasic();");
     printfnl("    return OK;");
     printfnl("}");
