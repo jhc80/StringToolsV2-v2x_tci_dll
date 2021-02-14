@@ -10,6 +10,7 @@ for _,folder in ipairs(from_folders) do
 end
 
 local from_files = CurrentFilesList();
+local from_files_table = {};
 
 ClearFilesList();
 
@@ -19,15 +20,14 @@ end
 
 local to_files = CurrentFilesList();
 
+for fn in pairs(from_files) do    
+    local fn_no_path = FileManager.SliceFileName(fn,FN_FILENAME);    
+    from_files_table[fn_no_path] = fn;
+end
+
 -----------------------------------------
-function find_from_file(to_name)
-    local to_name_no_path = FileManager.SliceFileName(to_name,FN_FILENAME);
-    for fn in pairs(from_files) do    
-        local fn_no_path = FileManager.SliceFileName(fn,FN_FILENAME);
-        if fn_no_path == to_name_no_path then
-            return fn;
-        end    
-    end
+function find_from_file(to_name_no_path)
+    return from_files_table[to_name_no_path];
 end
 -----------------------------------------
 function find_block_by_name(blocks, name)
@@ -110,23 +110,27 @@ function merge_two_file(to_fn, from_fn)
 end
 -----------------------------------------
 function auto_save_file(file, filename)
-    local old_file,old_file_file = new_file(filename);
+    local old_file = new_file(filename);
     if not old_file then return end
 
-    if FileManager.IsFileSame(file,old_file_file) then
+    if FileManager.IsFileSame(file,old_file) then
+        old_file:Destroy();
         return
     end
     
     if file:WriteToFile(filename) then
+        old_file:Destroy();
         return true;
     end
 end
 -----------------------------------------
 for to_name in pairs(to_files) do        
-    local from_file = find_from_file(to_name);
-    if from_file then            
-        local mf, mf_file = merge_two_file(to_name,from_file);        
-        if auto_save_file(mf_file,to_name) then
+    local to_name_no_path = FileManager.SliceFileName(to_name,FN_FILENAME);
+    local from_file = find_from_file(to_name_no_path);
+
+    if from_file then
+        local mf = merge_two_file(to_name,from_file);        
+        if auto_save_file(mf,to_name) then
             printfnl("merged file: %s ==> %s ",from_file,to_name);
         end        
         
@@ -135,6 +139,8 @@ for to_name in pairs(to_files) do
                 printfnl("delete file: %s",from_file);
             end
         end
+
+        mf:Destroy();
     end
 end
 

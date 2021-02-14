@@ -190,7 +190,6 @@ static int lexer_loadstring(lua_State *L)
     return 0;
 }
 
-
 static const luaL_Reg lexer_lib[] = {
 	{"new",lexer_new},
 	{"__gc",lexer_gc_},

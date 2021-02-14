@@ -28,7 +28,7 @@ function CodeSplitor:SplitSourceFile(file)
         lex_xx = LexerCpp.new();
         lex = lex_xx:Lexer();
     end
-    
+
     lex:LoadFile(file);
     
     local start_block_name;
@@ -133,6 +133,9 @@ function CodeSplitor:SplitSourceFile(file)
         });                
     end
     
+    lex_xx:Destroy();
+    mf:Destroy();
+    tmp:Destroy();
     file_ref:Destroy();    
     return tab;
 end
@@ -147,10 +150,10 @@ function CodeSplitor:GetBlockName_Common(line,start_tag, end_tag, name)
         return 
     end
 
-    local mem,mem_file = new_mem();
+    local mem = new_mem();
 
     line:Seek(string.len(start_tag));
-    line:ReadString(mem_file);
+    line:ReadString(mem);
 
     if mem:CStr() ~= name then
         return
@@ -160,13 +163,15 @@ function CodeSplitor:GetBlockName_Common(line,start_tag, end_tag, name)
     local end_pos = line:SearchStr(end_tag,true,false);
     if end_pos < 0 then return end
 
-    mem_file:SetSize(0);
+    mem:SetSize(0);
     line:Seek(offset);
-    line:Read(mem_file,end_pos - offset);
-    mem_file:Trim();
+    line:Read(mem,end_pos - offset);
+    mem:Trim();
 
-    if mem_file:StrLen() > 0 then
-        return mem:CStr();
+    if mem:StrLen() > 0 then
+        local ret = mem:CStr();
+        mem:Destroy();
+        return ret;
     end
 end
 
@@ -180,23 +185,26 @@ function CodeSplitor:GetExtraBlockName_Common(line,start_tag, end_tag, name)
         return 
     end
 
-    local mem,mem_file = new_mem();
+    local mem = new_mem();
     
     line:Seek(string.len(start_tag));
-    line:ReadString(mem_file);
+    line:ReadString(mem);
 
     if mem:CStr() ~= name then
+        mem:Destroy();
         return
     end
 
-    line:ReadString(mem_file);
+    line:ReadString(mem);
     local name1 = mem:CStr();
 
-    mem_file:SetSize(0);
-    line:Read(mem_file,line:GetSize()-line:GetOffset()-string.len(end_tag));
-    mem_file:Trim();
-    if mem_file:StrLen() > 0 then
-        return name1,mem:CStr();
+    mem:SetSize(0);
+    line:Read(mem,line:GetSize()-line:GetOffset()-string.len(end_tag));
+    mem:Trim();
+    if mem:StrLen() > 0 then
+        local ret = mem:CStr();
+        mem:Destroy();
+        return name1,ret;
     end
 end
 

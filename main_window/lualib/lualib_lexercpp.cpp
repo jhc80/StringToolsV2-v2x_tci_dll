@@ -51,6 +51,14 @@ static int lexercpp_lexer(lua_State *L)
 	lexer_new_userdata(L,plexercpp,1);
 	return 1;
 }
+static status_t lexercpp_destroy(lua_State *L)
+{
+	CLexerCpp *plexercpp = get_lexercpp(L,1);
+	ASSERT(plexercpp);
+	plexercpp->Destroy();
+	return 0;
+}
+
 static const luaL_Reg lexercpp_lib[] = {
 	{"new",lexercpp_new},
 	{"__gc",lexercpp_gc_},
@@ -58,6 +66,7 @@ static const luaL_Reg lexercpp_lib[] = {
 	{"IsSame",lexercpp_issame_},
 	{"NextToken",lexercpp_nexttoken},
 	{"Lexer",lexercpp_lexer},
+	{"Destroy",lexercpp_destroy},
 	{NULL, NULL}
 };
 

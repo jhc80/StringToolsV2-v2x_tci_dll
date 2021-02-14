@@ -35,6 +35,14 @@ static status_t lexerlua_new(lua_State *L)
     return 1;
 }
 
+static status_t lexerlua_destroy(lua_State *L)
+{
+	CLexerLua *plexerlua = get_lexerlua(L,1);
+	ASSERT(plexerlua);
+	plexerlua->Destroy();
+	return 0;
+}
+
 static int lexerlua_nexttoken(lua_State *L)
 {
 	CLexerLua *plexerlua = get_lexerlua(L,1);
@@ -61,6 +69,7 @@ static const luaL_Reg lexerlua_lib[] = {
 	{"__is_same",lexerlua_issame_},
 	{"NextToken",lexerlua_nexttoken},
 	{"Lexer",lexerlua_lexer},
+	{"Destroy",lexerlua_destroy},
 	{NULL, NULL}
 };
 
