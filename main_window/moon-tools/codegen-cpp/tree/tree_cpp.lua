@@ -189,6 +189,11 @@ function code_cpp(names)
     printfnl("    this->prev = node;");
     printfnl("    node->parent = this->parent;");
     printfnl("");
+    printfnl("    if(this->parent)        ");
+    printfnl("    {        ");
+    printfnl("        if(this->parent->child == this)");
+    printfnl("            this->parent->child = node;");
+    printfnl("    }");  
     printfnl("    return OK;");
     printfnl("}");
     printfnl("");
