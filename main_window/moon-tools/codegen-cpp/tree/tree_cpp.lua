@@ -69,6 +69,7 @@ function code_cpp(names)
     printfnl("        {            ");
     printfnl("            node->parent->child = node->next;");
     printfnl("        }");
+    printfnl("        node->parent = NULL;");
     printfnl("    }");
     printfnl("    ");
     printfnl("    if(node->prev)");
@@ -178,10 +179,10 @@ function code_cpp(names)
     printfnl("{   ");
     printfnl("    ASSERT(node);");
     printfnl("");
+    printfnl("    node->prev = this->prev;");    
     printfnl("    if(this->prev)");
     printfnl("    {");
-    printfnl("        this->prev->next = node;");
-    printfnl("        node->prev = this->prev;");
+    printfnl("        this->prev->next = node;");    
     printfnl("    }");
     printfnl("    ");
     printfnl("    node->next = this;");
@@ -195,9 +196,9 @@ function code_cpp(names)
     printfnl("{");
     printfnl("    ASSERT(node);");
     printfnl("");
+    printfnl("    node->next = this->next;");
     printfnl("    if(this->next)");
-    printfnl("    {");
-    printfnl("        node->next = this->next;");
+    printfnl("    {");    
     printfnl("        this->next->prev = node;");
     printfnl("    }");
     printfnl("    ");

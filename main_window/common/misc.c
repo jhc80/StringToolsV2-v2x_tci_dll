@@ -281,6 +281,7 @@ int64_t str2int_64(const char *str)
 
 uint32_t ac_x31_hash_string(const char *s)
 {
+    ASSERT(s);
     uint32_t h = (uint32_t)*s;
     if (h) for (++s ; *s; ++s) h = (h << 5) - h + (int32_t)*s;
     return h;
