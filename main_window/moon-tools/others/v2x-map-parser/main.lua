@@ -24,8 +24,11 @@ if not messageFrame then return end
 
 function dump_lane_point(point,refPos)
     local offsetLL = point.posOffset.offsetLL;
+    local offsetV = point.posOffset.offsetV;
+
     local lat = refPos.lat;
     local lon = refPos.long;
+    local alt = refPos.elevation;
 
     local off = nil;
 
@@ -51,7 +54,32 @@ function dump_lane_point(point,refPos)
         lat = lat + off.lat;
         lon = lon + off.lon;
     end
-    printfnl("        %f,%f",lat/10000000,lon/10000000);
+
+    local v_off = nil;
+    if offsetV then
+        if offsetV.present == 1 then
+            v_off = offsetV["offset1"];
+        elseif offsetV.present == 2 then
+            v_off = offsetV["offset2"];            
+        elseif offsetV.present == 3 then
+            v_off = offsetV["offset3"];            
+        elseif offsetV.present == 4 then
+            v_off = offsetV["offset4"];            
+        elseif offsetV.present == 5 then
+            v_off = offsetV["offset5"];            
+        elseif offsetV.present == 6 then
+            v_off = offsetV["offset6"];            
+        elseif offsetV.present == 7 then
+            local e = offsetV["elevation"];
+            alt = e;
+        end
+    end
+
+    if v_off then
+        alt = alt + v_off;
+    end
+
+    printfnl("        %f,%f,%f",lat/10000000,lon/10000000,alt/10);
 end
 
 function dump_map_message_points_2017(messageFrame)
