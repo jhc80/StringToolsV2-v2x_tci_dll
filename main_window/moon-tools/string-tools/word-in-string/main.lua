@@ -76,6 +76,8 @@ local function delete_from_head(line)
             c = c + 1;
         end
     end    
+
+    printnl("");
 end
 
 local function delete_from_tail(line)
@@ -100,7 +102,9 @@ local function delete_from_tail(line)
 
     for i=#str_tab,1,-1 do
         print(str_tab[i]);
-    end    
+    end
+
+    printnl("");
 end
 
 if not delete then
