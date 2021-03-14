@@ -1,0 +1,602 @@
+OBU 
+DEFINITIONS AUTOMATIC TAGS::=
+BEGIN
+
+IMPORTS;
+
+	OBUMessageFrame ::= CHOICE { 
+		loginFrame Login,
+		-- 登陆信息
+		ackFrame ACK,
+		-- 响应信息
+		localFrame LocalInfo,
+		-- 本车数据推送
+		v2vwFrame V2VW,
+		-- 车车预警
+		glosaFrame GLOSA,
+		-- 绿波车速引导 包含信号灯
+		slwFrame SLW,
+		-- 限速预警
+		vrucwFrame VRUCW,
+		-- 弱势交通参与者碰撞预警
+		hlwFrame HLW,
+		-- 道路危险状况提示
+		ivsFrame IVS,
+		-- 车内标牌
+        rlvwFrame RLVW,
+        -- 闯红灯预警
+		tjwFrame TJW,
+		-- 前方拥堵提示
+		virqFrame VIRQ,
+		-- 车辆意图请求
+		rscpFrame RSCP,
+		-- 协作信息回复
+		vstatFrame VSTAT,
+		-- 车辆状态
+		...
+	}
+	
+	-- 登陆信息
+	Login ::= SEQUENCE{
+		userName OCTET STRING (SIZE(32)),
+		-- 用户名
+		passWord OCTET STRING (SIZE(16))
+		-- 密码
+	}
+	
+	-- 响应信息
+	ACK ::= SEQUENCE{
+		errorCode ErrorCode
+	}
+	
+	-- 本车数据
+	LocalInfo ::= SEQUENCE{
+		pos Position3D,
+		-- 位置信息
+		speed Speed,
+		-- 车速
+		heading Heading
+		-- 航向角
+	}
+	
+	-- 远车信息
+	RemoteInfo ::= SEQUENCE{
+		pos Position3D,
+		-- 位置信息
+		speed Speed,
+		-- 车速
+		heading Heading,
+		-- 航向角
+		size VehicleSize,
+		-- 车辆尺寸信息
+		type VehicleType,
+		-- 车辆类型
+		events VehicleEvent
+		-- 车辆事件
+	}
+	
+	-- 弱势交通参与者信息
+	ParticipantInfo ::= SEQUENCE{
+		pos Position3D,
+		-- 位置信息
+		speed Speed,
+		-- 车速
+		heading Heading,
+		-- 航向角
+		size VehicleSize,
+		-- 车辆尺寸信息
+		type VehicleType
+		-- 车辆类型
+	}
+	
+	-- 车车预警
+	V2VW ::= SEQUENCE{
+		warnType WarnType,
+		-- 预警类型
+		warnState WarnState,
+		-- 预警状态
+		distance Distance,
+		-- 远车距离本车距离
+		direction Direction,
+		-- 远车相对于本车方向
+		remoteInfo RemoteInfo
+		-- 远车信息
+	}
+	
+	-- 绿波车速引导
+	GLOSA ::= SEQUENCE{
+		warnState WarnState,
+		-- 预警状态
+		recommendSpeed Speed,
+		-- 推荐速度
+		light LightState,
+		-- 灯态
+		timeCountDown TimeMark
+		-- 倒计时
+	}
+	
+	-- 弱势交通参与者碰撞预警
+	VRUCW ::= SEQUENCE{
+		warnState WarnState,
+		-- 预警状态
+		distance Distance,
+		-- 远车距离本车距离
+		direction Direction,
+		-- 远车相对于本车方向
+		participant ParticipantInfo
+		-- 弱势交通参与者信息
+	}
+	
+	-- 限速预警
+	SLW ::= SEQUENCE{
+		warnState WarnState,
+		-- 预警状态
+		limitSpeed Speed
+		-- 限速速度
+	}
+	
+	-- 道路危险状况提示
+	HLW ::= SEQUENCE{
+		warnState WarnState,
+		-- 预警状态
+		eventType EventType,
+		-- 道路事件类型 参考 GB/T 29100-2012
+		eventSource EventSource
+		-- 事件信息来源
+	}
+	
+	-- 车内标牌
+	IVS ::= SEQUENCE{
+		warnState WarnState,
+		-- 预警状态
+		signType SignType
+		-- 标牌类型 参考 GB 5768.2-2009
+	}
+
+    -- 闯红灯预警
+    RLVW ::= SEQUENCE{
+        warnState WarnState,
+        -- 预警状态
+        speedadvice SpeedAdvice,
+        -- 车速建议
+	    light LightState,
+	    -- 灯态
+	    timeCountDown TimeMark
+	    -- 倒计时
+    }
+	
+	-- 前方拥堵提醒
+	TJW ::= SEQUENCE{
+		warnState WarnState,
+		-- 预警状态
+		tjLevel TJLevel
+		-- 拥堵程度
+	}
+	
+	-- 车辆意图请求	
+	VIRQ ::= SEQUENCE{
+		-- 变道/清道请求
+		type BehaviorType,
+		-- 请求动作类型
+		state RequestState
+		-- 请求状态
+	}	
+	
+	-- 协作信息回复
+	RSCP ::= SEQUENCE{
+		coopIndict CooperateIndication,
+		-- 协作指示
+		laneId LaneID,
+		-- 车道ID
+		coopToast TextUTF8
+		-- 协作式变道提示 编码是UTF-8
+	}
+	
+	VSTAT ::= SEQUENCE{
+		id OCTET STRING (SIZE(8)),
+		-- temperary vehicle ID
+
+		long INTEGER (-2000..2001), 
+		-- 纵向加速度。向前加速为正，反向为负
+		-- Along the Vehicle Longitudinal axis
+		-- Units of 0.01 m/s^2
+		
+		lat INTEGER (-2000..2001), 
+		-- 横向加速度。向右加速为正，反向为负
+		-- Along the Vehicle Lateral axis
+		-- Units of 0.01 m/s^2
+		
+		vert INTEGER (-127..127),
+		-- 垂直加速度。沿重力方向向下为正，反向为负
+		-- Units of 0.02 G steps over -2.52 to +2.54 G
+		-- The value +127 shall be used for ranges >= 2.54 G
+		-- The value -126 shall be used for ranges <= 2.52 G 
+		-- The value -127 shall be used for unavailable
+		-- Along the Vehicle Vertical axis
+		
+		yaw INTEGER (-32767..32767),
+		-- 车辆横摆角速度。指汽车绕垂直轴的偏转，该偏转的大小代表汽车的稳定程度。
+		-- 如果偏转角速度达到一个阈值，说明汽车发生测滑或者甩尾等危险工况。
+		-- 顺时针旋转为正，逆时针为负。
+		-- Units of 0.01 degrees per second (signed)
+	
+		brakePadel INTEGER (0..2),
+		-- 指示刹车踏板状态，是否处在被踩下状态
+		-- unavailable (0) Vehicle brake pedal detector is unavailable
+		-- off (1) Vehicle's brake pedal is not pressed
+		-- on (2) Vehicle's brake pedal is pressed
+		
+		abs INTEGER (0..3),
+		-- 定义刹车防抱死系统（ABS）状态。
+		-- unavailable (0) Vehicle Not Equipped with ABS Brakes or ABS Brakes status is unavailable	
+		-- off (1) Vehicle's ABS are Off
+		-- on (2)  Vehicle's ABS are On ( but not Engaged )
+		-- engaged (3)Vehicle's ABS control is Engaged on any wheel
+		
+		
+		scs INTEGER (0..3),
+		-- 定义车辆动态稳定控制系统状态
+		-- unavailable (0) Not Equipped with SC, or SC status is unavailable
+		-- off (1) Off
+		-- on (2) On or active (but not engaged)
+		-- engaged (3) stability control is Engaged
+
+
+		lights BIT STRING { 
+			-- All lights off is indicated by no bits set
+			lowBeamHeadlightsOn (0),
+			highBeamHeadlightsOn (1),
+			leftTurnSignalOn (2),
+			rightTurnSignalOn (3),
+			hazardSignalOn (4),
+			automaticLightControlOn (5),
+			daytimeRunningLightsOn (6),
+			fogLightOn (7),
+			parkingLightsOn (8)
+		} (SIZE (9, ...)),
+		...
+	}
+
+	-- 错误码
+	ErrorCode ::= ENUMERATED {
+		noError (0),
+		-- 无错误
+		paramError (1),
+		-- 参数错误
+		systemError (2),
+		-- 系统错误
+		crcError(3)
+		-- crc校验出错
+	}
+	
+	
+	-- 三维的坐标位置 经纬度和高程。
+	Position3D ::= SEQUENCE {
+		lat Latitude, 
+		-- in 1/10th micro degrees
+		long Longitude, 
+		-- in 1/10th micro degrees
+		elevation Elevation OPTIONAL
+		-- in 10 cm units
+	}
+
+	-- 定义车辆尺寸大小。由车辆长宽高三个维度来定义尺寸，其中高度数值为可选项。
+	VehicleSize ::= SEQUENCE {
+		width VehicleWidth,
+		length VehicleLength,
+		height VehicleHeight OPTIONAL
+	}
+	
+	-- 预警类型
+	WarnType ::= ENUMERATED{
+		noWarning(0),
+		-- 无
+		fcw(1),
+		-- 前向碰撞预警
+		icw(2),
+		-- 交叉路口碰撞预警
+		lta(3),
+		-- 左转辅助
+		bsw(4),
+		-- 盲区预警
+		lcw(5),
+		-- 变道预警
+		dnpw(6),
+		-- 逆向超车预警
+		ebw(7),
+		-- 紧急制动预警
+		avw(8),
+		-- 异常车辆提醒
+		clw(9)
+		-- 车辆失控预警
+	}
+	
+	-- 预警状态
+	WarnState ::= ENUMERATED{
+		off (0),
+		-- 消失
+		on (1)
+		-- 产生
+	}
+	
+	-- 交通参与者类型
+	VehicleType ::= ENUMERATED{
+		unknown (0),
+		-- 未知
+		pedstrain (1),
+		-- 行人
+		bicycle(2),
+		-- 自行车
+		motorcycle(3),
+		-- 摩托车
+		car(4),
+		--小型汽车
+		...
+	}
+	
+	-- 方位
+	Direction ::= ENUMERATED{
+		others(0),
+		-- 其他方向 多数为两车会车之后的情况
+		ahead(1),
+		-- 前方
+		aheadLeft(2),
+		-- 左前方
+		aheadRight(3),
+		-- 右前方
+		behind(4),
+		-- 后方
+		behindLeft(5),
+		-- 左后方
+		behindRight(6),
+		-- 右后方
+		onComing(7),
+		-- 迎面而来
+		onComingLeft(8),
+		-- 左前方迎面而来
+		onComingRight(9),
+		-- 右前方迎面而来
+		intsLeft(10),
+		-- 左边交叉
+		intsRight(11)
+		-- 右边交叉
+	}
+	
+	-- 前方拥堵程度
+	TJLevel ::= ENUMERATED{
+		others(0),
+		-- 其他情况
+		clear(1),
+		-- 畅通
+		smooth(2),
+		-- 基本畅通
+		low(3),
+		-- 轻度拥堵
+		mid(4),
+		-- 中度拥堵
+		server(5)
+		-- 严重拥堵
+	} 
+    
+    SpeedAdvice ::= ENUMERATED{
+		null(0),
+		-- 无效
+		keep(1),
+		-- 保持当前车速
+		slamTheBrakes(2),
+		-- 急刹车
+		slowDownStop(3),
+		-- 减速至路口停车
+		fastAcceleration(4),
+		-- 快速加速到建议车速
+		acceleration(5),
+		-- 加速到建议车速
+		fastDeceleration(6),
+		-- 快速减速到建议车速
+		deceleration(7),
+		-- 减速到建议车速
+		speeding(8),
+		-- 车速大于最大车速
+		belowLimit(9),
+		-- 车速低于最小车速
+		farAway(16),
+		-- 距离路口过远，不提示
+		danger(17)
+		-- 危险
+    } 
+
+	
+	-- 请求行为类型
+	BehaviorType ::= ENUMERATED{
+		laneChangeToLeft(0),
+		-- 请求左变道
+		laneChangeToRight(1),
+		-- 请求右变道
+		rampIn(2),
+		-- 请求汇入匝道
+		cleartheway(3),
+		-- 请求清道
+		...
+	}
+	
+	-- 请求状态
+	RequestState ::= ENUMERATED{
+		off(0),
+		-- 取消
+		on(1)
+		-- 请求
+	}
+	
+	-- 车辆动作指示 
+	CooperateIndication ::= ENUMERATED{
+		leftChangeAllow(0),
+		-- 可左变道
+		leftChangeForbid(1),
+		-- 不允许转左
+		rightChangeAllow(2),
+		-- 可右变道
+		rightChangeForbid(3),
+		-- 不允许转右
+		rampInAllow(4),
+		-- 可汇入匝道
+		rampInForbid(5),
+		-- 不可汇入匝道
+		isntEV(6),
+		-- 非特殊车辆
+		laneClear(7),
+		-- 请快速通过车道已清空
+		laneIsntClear(8),
+		-- 请变道车道未清空
+		laneReserve(9),
+		-- 请预留车道A
+		laneAcquire(10),
+		-- 可使用车道A特殊车辆已驶出	
+		requestFaild(11)
+		-- 操作请求失败，具体失败描述通过cCooperateToast提示
+	}
+
+	-- 信号灯相位的灯色状态。支持GB 14886规定的红、绿、黄三种信号灯灯色，以及亮灯、闪烁和熄灭三种状态。
+	LightState ::= ENUMERATED {
+		unavailable (0),
+		-- This state is used for unknown or error
+		dark (1),
+		-- The signal is dark (unlit)
+		
+		-- Reds
+		flashing-red (2),
+		-- Reserved for special scenarios
+		red (3),
+		-- Driver Action:
+		-- Stop vehicle at stop line.
+		-- Do not proceed.
+		
+		-- Greens
+		flashing-green (4),
+		-- Reserved for special scenarios		
+		permissive-green (5),
+		-- Driver Action:
+		-- Proceed with caution,
+		-- must yield to all conflicting traffic
+		-- Conflicting traffic may be present
+		-- in the intersection conflict area
+		protected-green (6),
+		-- Driver Action:
+		-- Proceed, tossing caution to the wind,
+		-- in indicated (allowed) direction.
+		
+		-- Yellows / Ambers 
+		-- The vehicle is not allowed to cross the stop bar if it is possible 
+		-- to stop without danger.
+		yellow (7),
+		-- Driver Action:
+		-- Prepare to stop.
+		-- Proceed if unable to stop,
+		-- in indicated direction (to connected lane)
+		-- Clear Intersection.
+		
+		flashing-yellow (8) ,
+		-- Driver Action:
+		-- Proceed with caution,
+		-- Conflicting traffic may be present
+		-- in the intersection conflict area
+		
+		...
+	}
+
+	-- 定义道路交通事件的信息来源。
+	EventSource ::= ENUMERATED {
+		unknown(0),	-- 0 Unknown
+		police(1),	-- 1 traffic police
+		government(2),	-- 2 govenment
+		meteorological(3), -- 3 meteorological department
+		internet(4),	-- 4 internet services
+		detection(5),	-- 5 local detection
+		...
+	}
+	
+	-- 车辆事件
+	VehicleEvent ::= BIT STRING{
+		none(0),
+		-- 无
+		hazardLights (1),
+		-- 车辆警示灯亮起
+		stopLineViolation (2), 
+		-- 车辆在到达路口前预测自己可能会来不及刹车而越过停止线
+		absActivated (3),
+		-- ABS系统被触发并超过100毫秒
+		tractionControlLoss (4),
+		-- 电子系统控制牵引力被触发并超过100毫秒
+		stabilityControlactivated (5),
+		-- 车身稳定控制被触发并超过100毫秒
+		hazardousMaterials (6),
+		-- 危险品运输车
+		hardBraking (7),
+		-- 车辆急刹车，并且减速度大于0.4G
+		lightChanged (8),
+		-- 过去2秒内，车灯状态改变
+		wipersChanged (9),
+		-- 过去2秒内，车辆雨刷（前窗或后窗）状态改变
+		flatTire (10),
+		-- 车辆发现至少1个轮胎爆胎了
+		disabledVehicle (11),
+		-- 车辆故障，无法行驶
+		airBagDeployment (12)
+		-- 至少1个安全气囊弹出
+	}
+	
+	-- 定义1分钟内的毫秒级时刻。
+	-- 分辨率为1毫秒，有效范围是0~59999。60000及以上表示未知或无效数值。
+	DSecond ::= INTEGER (0..65535)
+	
+	-- 距离 单位厘米
+	Distance ::= INTEGER(0..50000)	
+
+	-- 定义纬度数值 北纬为正 南纬为负。
+	-- 分辨率1e-7°。
+	Latitude ::= INTEGER (-900000000..900000001)
+	
+	-- 定义经度数值 东经为正 西经为负。
+	-- 分辨率为1e-7°。
+	Longitude ::= INTEGER (-1799999999..1800000001) 
+	
+	-- 定义车辆海拔高程。
+	-- 分辨率为 0.1 米。数值-4096表示无效数值。
+	Elevation ::= INTEGER (-4096..61439)
+	
+	-- 车辆或其他交通参与者的速度大小。
+	-- 分辨率为0.02m/s。数值8191表示无效数值。
+	Speed ::= INTEGER (0..8191)
+	
+	-- 车辆或交通参与者的航向角 为运动方向与正北方向的顺时针夹角。
+	-- 分辨率为0.0125°。
+	Heading ::= INTEGER (0..28800) 	
+	
+	-- 车辆车身高度 分辨率为5cm 数值0表示无效数据。
+	VehicleHeight ::= INTEGER (0..127)
+	
+	-- 车辆车身长度 分辨率为1cm 数值0表示无效数据。
+	VehicleLength ::= INTEGER (0.. 4095)
+	
+	-- 车辆车身宽度 分辨率为1cm 数值0表示无效数据。
+	VehicleWidth ::= INTEGER (0..1023) 		
+	
+	-- 以0.1秒为单位，定义一小时中的时间。可以表示当前小时中的时刻，也可以表示长度不超过1小时的时间段。
+	-- 分辨率为0.1秒。有效范围是0~35999。数值36000表示大于1小时的时间长度。数值36001表示无效数值。
+	TimeMark ::= INTEGER (0..36001) 	
+
+	-- 定义车道ID。车道定义在每一条有向路段上，同一条有向路段上的每个车道，都拥有一个单独的ID。车道号，以该车道行驶方向为参考，自左向右从1开始编号。
+	-- ID为0表示无效ID。
+	LaneID ::= INTEGER (0..255) 
+	
+	-- 道路交通事件包括恶劣天气、异常路况和异常车况。GB/T 29100-2012中定义的事件分类代码作为该值的千位和百位，交通事件分类顺序码作为该值的十位和个位。
+	EventType ::= INTEGER (0..65535)
+	
+	-- 定义道路交通标志的类型。
+	-- 数值0表示未知类型，或文本描述信息。大于0数值表示交通标志标牌信息，其编号参照国标GB 5768.2-2009中“交通标志中文名称索引”表序号。
+	SignType ::= INTEGER (0..65535)
+
+	-- 定义文本描述信息 格式UTF8
+	TextUTF8 ::= OCTET STRING (SIZE(128))
+	
+END
+
