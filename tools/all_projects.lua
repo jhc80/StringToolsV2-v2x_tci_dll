@@ -20,8 +20,8 @@ g_all_dll_projects ={
         dll_name="asn1_v2x_gb2020.dll",
         src_dll_name="test.dll",     
     },{
-        path="asn1/v2x_gxx_obu_dll",
-        dll_name="asn1_v2x_gxx_obu.dll",
+        path="asn1/gxx_obu_dll",
+        dll_name="asn1_gxx_obu.dll",
         src_dll_name="test.dll",     
     }
 };
