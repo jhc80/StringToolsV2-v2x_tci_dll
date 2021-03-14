@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DLL_EXPORTS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "." /I "common" /I "platform" /I "lua" /I "share" /I "dshowInclude" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DLL_EXPORTS" /FR /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "." /I "..\main_window\common" /I "..\main_window\platform" /I "..\main_window\lua" /I "..\main_window\share" /I "dshowInclude" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DLL_EXPORTS" /FR /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -92,23 +92,23 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;h"
 # Begin Source File
 
-SOURCE=.\common\basicarray.h
+SOURCE=..\main_window\common\basicarray.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\closure.cpp
+SOURCE=..\main_window\common\closure.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\closure.h
+SOURCE=..\main_window\common\closure.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\closurelist.cpp
+SOURCE=..\main_window\common\closurelist.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\closurelist.h
+SOURCE=..\main_window\common\closurelist.h
 # End Source File
 # Begin Source File
 
@@ -116,19 +116,19 @@ SOURCE=.\config.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\cruntime.c
+SOURCE=..\main_window\common\cruntime.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\cruntime.h
+SOURCE=..\main_window\common\cruntime.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\dirmgr.cpp
+SOURCE=..\main_window\common\dirmgr.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\dirmgr.h
+SOURCE=..\main_window\common\dirmgr.h
 # End Source File
 # Begin Source File
 
@@ -140,159 +140,143 @@ SOURCE=.\dll.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\encoder.cpp
+SOURCE=..\main_window\common\encoder.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\encoder.h
+SOURCE=..\main_window\common\encoder.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\file.cpp
+SOURCE=..\main_window\common\file.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\file.h
+SOURCE=..\main_window\common\file.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\filebase.cpp
+SOURCE=..\main_window\common\filebase.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\filebase.h
+SOURCE=..\main_window\common\filebase.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\fileinfo.cpp
+SOURCE=..\main_window\lua\lapi.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\fileinfo.h
+SOURCE=..\main_window\lua\lapi.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\fileinfolist.cpp
+SOURCE=..\main_window\lua\lauxlib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\fileinfolist.h
+SOURCE=..\main_window\lua\lauxlib.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lapi.c
+SOURCE=..\main_window\lua\lbaselib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lapi.h
+SOURCE=..\main_window\lua\lbitlib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lauxlib.c
+SOURCE=..\main_window\lua\lcode.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lauxlib.h
+SOURCE=..\main_window\lua\lcode.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lbaselib.c
+SOURCE=..\main_window\lua\lcorolib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lbitlib.c
+SOURCE=..\main_window\lua\lctype.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lcode.c
+SOURCE=..\main_window\lua\lctype.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lcode.h
+SOURCE=..\main_window\lua\ldblib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lcorolib.c
+SOURCE=..\main_window\lua\ldebug.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lctype.c
+SOURCE=..\main_window\lua\ldebug.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lctype.h
+SOURCE=..\main_window\lua\ldo.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\ldblib.c
+SOURCE=..\main_window\lua\ldo.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\ldebug.c
+SOURCE=..\main_window\lua\ldump.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\ldebug.h
+SOURCE=..\main_window\lua\lfunc.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\ldo.c
+SOURCE=..\main_window\lua\lfunc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\ldo.h
+SOURCE=..\main_window\lua\lgc.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\ldump.c
+SOURCE=..\main_window\lua\lgc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lfunc.c
+SOURCE=..\main_window\lua\linit.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lfunc.h
+SOURCE=..\main_window\lua\liolib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lgc.c
+SOURCE=..\main_window\lua\llex.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lgc.h
+SOURCE=..\main_window\lua\llex.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\linit.c
+SOURCE=..\main_window\lua\llimits.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\liolib.c
+SOURCE=..\main_window\lua\lmathlib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\llex.c
+SOURCE=..\main_window\lua\lmem.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\llex.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\lua\llimits.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\lua\lmathlib.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\lua\lmem.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\lua\lmem.h
+SOURCE=..\main_window\lua\lmem.h
 # End Source File
 # Begin Source File
 
@@ -300,95 +284,95 @@ SOURCE=.\share\load_dll.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\loadlib.c
+SOURCE=..\main_window\lua\loadlib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lobject.c
+SOURCE=..\main_window\lua\lobject.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lobject.h
+SOURCE=..\main_window\lua\lobject.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lopcodes.c
+SOURCE=..\main_window\lua\lopcodes.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lopcodes.h
+SOURCE=..\main_window\lua\lopcodes.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\loslib.c
+SOURCE=..\main_window\lua\loslib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lparser.c
+SOURCE=..\main_window\lua\lparser.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lparser.h
+SOURCE=..\main_window\lua\lparser.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lprefix.h
+SOURCE=..\main_window\lua\lprefix.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lstate.c
+SOURCE=..\main_window\lua\lstate.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lstate.h
+SOURCE=..\main_window\lua\lstate.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lstring.c
+SOURCE=..\main_window\lua\lstring.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lstring.h
+SOURCE=..\main_window\lua\lstring.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lstrlib.c
+SOURCE=..\main_window\lua\lstrlib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\ltable.c
+SOURCE=..\main_window\lua\ltable.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\ltable.h
+SOURCE=..\main_window\lua\ltable.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\ltablib.c
+SOURCE=..\main_window\lua\ltablib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\ltm.c
+SOURCE=..\main_window\lua\ltm.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\ltm.h
+SOURCE=..\main_window\lua\ltm.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lua.c
+SOURCE=..\main_window\lua\lua.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lua.h
+SOURCE=..\main_window\lua\lua.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua_helper.cpp
+SOURCE=..\main_window\share\lua_helper.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua_helper.h
+SOURCE=..\main_window\share\lua_helper.h
 # End Source File
 # Begin Source File
 
@@ -400,15 +384,15 @@ SOURCE=.\lua_print.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\luac.c
+SOURCE=..\main_window\lua\luac.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\luaconf.h
+SOURCE=..\main_window\lua\luaconf.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lualib.h
+SOURCE=..\main_window\lua\lualib.h
 # End Source File
 # Begin Source File
 
@@ -420,135 +404,135 @@ SOURCE=.\lualib_webcamera.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\luavm.cpp
+SOURCE=..\main_window\common\luavm.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\luavm.h
+SOURCE=..\main_window\common\luavm.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lundump.c
+SOURCE=..\main_window\lua\lundump.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lundump.h
+SOURCE=..\main_window\lua\lundump.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lutf8lib.c
+SOURCE=..\main_window\lua\lutf8lib.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lvm.c
+SOURCE=..\main_window\lua\lvm.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lvm.h
+SOURCE=..\main_window\lua\lvm.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lzio.c
+SOURCE=..\main_window\lua\lzio.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua\lzio.h
+SOURCE=..\main_window\lua\lzio.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\mem.cpp
+SOURCE=..\main_window\common\mem.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\mem.h
+SOURCE=..\main_window\common\mem.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\mem_tool.c
+SOURCE=..\main_window\common\mem_tool.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\mem_tool.h
+SOURCE=..\main_window\common\mem_tool.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\memfile.cpp
+SOURCE=..\main_window\common\memfile.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\memfile.h
+SOURCE=..\main_window\common\memfile.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\memstk.cpp
+SOURCE=..\main_window\common\memstk.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\memstk.h
+SOURCE=..\main_window\common\memstk.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\minibson.cpp
+SOURCE=..\main_window\common\minibson.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\minibson.h
+SOURCE=..\main_window\common\minibson.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\misc.c
+SOURCE=..\main_window\common\misc.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\misc.h
+SOURCE=..\main_window\common\misc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\raw_weak_pointer.cpp
+SOURCE=..\main_window\common\raw_weak_pointer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\raw_weak_pointer.h
+SOURCE=..\main_window\common\raw_weak_pointer.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\syslog.c
+SOURCE=..\main_window\common\syslog.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\syslog.h
+SOURCE=..\main_window\common\syslog.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\taskmgr.cpp
+SOURCE=..\main_window\common\taskmgr.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\taskmgr.h
+SOURCE=..\main_window\common\taskmgr.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\tcp.cpp
+SOURCE=..\main_window\common\tcp.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\tcp.h
+SOURCE=..\main_window\common\tcp.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\userfunc.cpp
+SOURCE=..\main_window\common\userfunc.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\userfunc.h
+SOURCE=..\main_window\common\userfunc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\weak_pointer.h
+SOURCE=..\main_window\common\weak_pointer.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\weak_ref.h
+SOURCE=..\main_window\common\weak_ref.h
 # End Source File
 # Begin Source File
 
@@ -560,11 +544,11 @@ SOURCE=.\webcamera.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\wnd.cpp
+SOURCE=..\main_window\common\wnd.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\common\wnd.h
+SOURCE=..\main_window\common\wnd.h
 # End Source File
 # End Group
 # End Target

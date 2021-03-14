@@ -902,19 +902,19 @@ SOURCE=.\win32\lua_hdc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua_helper.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\lua_helper.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\lua_print.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\lua_print.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\share\lua_helper.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\share\lua_helper.h
 # End Source File
 # Begin Source File
 

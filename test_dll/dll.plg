@@ -6,70 +6,68 @@
 --------------------Configuration: dll - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP116.tmp" with contents
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSP1406.tmp" with contents
 [
-/nologo /MT /W3 /GX /O2 /I "." /I "common" /I "platform" /I "lua" /I "share" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DLL_EXPORTS" /FR"Release/" /Fo"Release/" /Fd"Release/" /FD /c 
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\closure.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\closurelist.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\cruntime.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\dirmgr.cpp"
+/nologo /MT /W3 /GX /O2 /I "." /I "..\main_window\common" /I "..\main_window\platform" /I "..\main_window\lua" /I "..\main_window\share" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DLL_EXPORTS" /FR"Release/" /Fo"Release/" /Fd"Release/" /FD /c 
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\closure.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\closurelist.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\cruntime.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\dirmgr.cpp"
 "Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\dll.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\encoder.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\file.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\filebase.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\fileinfo.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\fileinfolist.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lapi.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lauxlib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lbaselib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lbitlib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lcode.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lcorolib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lctype.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\ldblib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\ldebug.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\ldo.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\ldump.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lfunc.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lgc.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\linit.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\liolib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\llex.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lmathlib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lmem.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\loadlib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lobject.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lopcodes.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\loslib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lparser.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lstate.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lstring.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lstrlib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\ltable.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\ltablib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\ltm.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lua.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua_helper.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\encoder.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\file.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\filebase.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lapi.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lauxlib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lbaselib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lbitlib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lcode.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lcorolib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lctype.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\ldblib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\ldebug.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\ldo.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\ldump.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lfunc.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lgc.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\linit.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\liolib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\llex.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lmathlib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lmem.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\loadlib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lobject.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lopcodes.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\loslib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lparser.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lstate.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lstring.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lstrlib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\ltable.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\ltablib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\ltm.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lua.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\share\lua_helper.cpp"
 "Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua_print.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\luac.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lundump.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lutf8lib.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lvm.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\lzio.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\mem.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\mem_tool.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\memfile.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\memstk.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\minibson.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\misc.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\raw_weak_pointer.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\syslog.c"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\taskmgr.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\tcp.cpp"
-"Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\userfunc.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\luac.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lundump.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lutf8lib.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lvm.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\lzio.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\mem.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\mem_tool.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\memfile.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\memstk.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\minibson.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\misc.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\raw_weak_pointer.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\syslog.c"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\taskmgr.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\tcp.cpp"
+"Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\userfunc.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP116.tmp" 
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP117.tmp" with contents
+Creating command line "cl.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSP1406.tmp" 
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSP1407.tmp" with contents
 [
 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:no /pdb:"Release/dll.pdb" /machine:I386 /out:"Release/dll.dll" /implib:"Release/dll.lib" 
 .\Release\closure.obj
@@ -80,8 +78,6 @@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32
 .\Release\encoder.obj
 .\Release\file.obj
 .\Release\filebase.obj
-.\Release\fileinfo.obj
-.\Release\fileinfolist.obj
 .\Release\lapi.obj
 .\Release\lauxlib.obj
 .\Release\lbaselib.obj
@@ -131,7 +127,7 @@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32
 .\Release\tcp.obj
 .\Release\userfunc.obj
 ]
-Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP117.tmp"
+Creating command line "link.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSP1407.tmp"
 <h3>Output Window</h3>
 Compiling...
 closure.cpp
@@ -146,8 +142,6 @@ dll.cpp
 encoder.cpp
 file.cpp
 filebase.cpp
-fileinfo.cpp
-fileinfolist.cpp
 Generating Code...
 Compiling...
 lapi.c
@@ -160,7 +154,7 @@ lctype.c
 ldblib.c
 ldebug.c
 ldo.c
-Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\lua\ldo.c(506) : warning C4244: '=' : conversion from 'long ' to 'unsigned char ', possible loss of data
+Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\lua\ldo.c(506) : warning C4244: '=' : conversion from 'long ' to 'unsigned char ', possible loss of data
 ldump.c
 lfunc.c
 lgc.c
@@ -197,7 +191,7 @@ lzio.c
 Generating Code...
 Compiling...
 mem.cpp
-Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\mem.cpp(110) : warning C4244: '=' : conversion from '__int64' to 'int', possible loss of data
+Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\mem.cpp(110) : warning C4244: '=' : conversion from '__int64' to 'int', possible loss of data
 Generating Code...
 Compiling...
 mem_tool.c
@@ -219,7 +213,7 @@ Generating Code...
 Compiling...
 taskmgr.cpp
 tcp.cpp
-Z:\mydisk\Program\VC6\Projects\StringToolsV2\test_dll\common\tcp.cpp(158) : warning C4018: '==' : signed/unsigned mismatch
+Z:\mydisk\Program\VC6\Projects\StringToolsV2\main_window\common\tcp.cpp(158) : warning C4018: '==' : signed/unsigned mismatch
 userfunc.cpp
 Generating Code...
 Linking...
