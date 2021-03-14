@@ -1,1 +1,1 @@
-name=ASN1解码
+name=ASN1解析

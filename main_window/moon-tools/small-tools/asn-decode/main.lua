@@ -18,6 +18,11 @@ else
         printfnl("can not open %s",in_binary_file);
         return;
     end
+    if in_format ~= 0 then
+        local hex_data = binary_data;
+        binary_data = new_mem(hex_data:GetSize());
+        hex_file_to_bin_file(hex_data,binary_data);
+    end
 end
 
 if in_offset > 0 then
