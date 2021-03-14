@@ -38,9 +38,11 @@ PROGRAM := $(TARGET_NAME)
 # At least one path should be specified.
 # SRCDIRS := . # current directory
 SRCDIRS := .
-SRCDIRS += ../main_window/share 
-SRCDIRS += ../main_window/lua 
-SRCDIRS += ../main_window/common
+SRCDIRS += ../../main_window/share 
+SRCDIRS += ../../main_window/lua 
+SRCDIRS += ../../main_window/common
+SRCDIRS += ../../main_window/asn-to-x
+SRCDIRS += GB2019
 
 # The source file types (headers excluded).
 # At least one type should be specified.
@@ -55,10 +57,13 @@ SRCEXTS := .cpp .c
 # If it is a C and C++ merging program, set these flags for the C parts.
 CFLAGS := -O2 -Wall 
 CFLAGS += -I.
-CFLAGS += -I../main_window/share 
-CFLAGS += -I../main_window/lua 
-CFLAGS += -I../main_window/common
-CFLAGS += -I../main_window/platform
+CFLAGS += -I../../main_window/share 
+CFLAGS += -I../../main_window/lua 
+CFLAGS += -I../../main_window/common
+CFLAGS += -I../../main_window/platform
+CFLAGS += -I../../main_window/lualib
+CFLAGS += -I../../main_window/asn-to-x
+CFLAGS += -IGB2019
 
 CXXFLAGS := $(CFLAGS)
 

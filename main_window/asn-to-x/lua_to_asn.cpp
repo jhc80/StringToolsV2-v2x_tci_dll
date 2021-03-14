@@ -1,5 +1,5 @@
 #include "lua_to_asn.h"
-#include "xlog.h"
+#include "syslog.h"
 #include "mem_tool.h"
 #include "INTEGER.h"
 #include "OCTET_STRING.h"

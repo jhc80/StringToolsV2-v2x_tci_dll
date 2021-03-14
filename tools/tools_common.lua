@@ -22,15 +22,7 @@ function for_each_dll_projects(callback)
     for _, info in ipairs(g_all_dll_projects) do
         if not info.abs_path then
             info.abs_path = FileManager.ToAbsPath(ROOT_PATH.."/"..info.path);
-        end
-        
-        for k,v in pairs(info.sub_dirs) do
-            local new_k = "abs_"..k;            
-            if not info[new_k] then                
-                info[new_k] = FileManager.ToAbsPath(info.abs_path.."/"..v);                
-            end        
-        end        
-        
+        end 
         callback(info);
     end
 end
