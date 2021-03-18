@@ -39,7 +39,7 @@ elseif message_type == 2 then
     ASN1 = Asn1V2xGb2019;
 elseif message_type == 3 then
     require("asn1_v2x_gb2020");
-    ASN1 = Asn1V2xGb2019;
+    ASN1 = Asn1V2xGb2020;
 elseif message_type == 4 then
     require("asn1_gxx_obu");
     ASN1 = Asn1GxxObu;
