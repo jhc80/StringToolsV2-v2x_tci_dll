@@ -59,6 +59,7 @@ function main_thread(thread)
 		printnl("-------------------------");
 		client:GetAllPeers(function(ret,val)
 			if val and val.RetVal0 then
+				App.ClearScreen();
 				print_table(val.RetVal0);
 			else
 				print("fail.");
