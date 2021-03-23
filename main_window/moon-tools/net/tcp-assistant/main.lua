@@ -24,8 +24,8 @@ local _,_,UI_WND_WIDTH = Win32.GetClientRect(hwnd);
 local tcp_socket = nil;
 
 if as_tcp_server then
-    printfnl("listening on port %d",listen_port);
-    TcpSocket.NewTcpAcceptor(listen_port,function(e,socket)
+    printfnl("listening on port %d",port);
+    TcpSocket.NewTcpAcceptor(port,function(e,socket)
         if e == EVENT_NEW_CLIENT then
             printfnl("new tcp client %d",socket:GetSocketFd());
             tcp_socket = socket;
