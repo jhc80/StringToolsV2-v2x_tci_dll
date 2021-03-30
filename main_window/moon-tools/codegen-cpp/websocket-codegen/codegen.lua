@@ -225,6 +225,10 @@ function param_to_idl(param)
         str = str.."array<";    
     end
 
+	if param.type.namespace then
+		str = str..param.type.namespace.."::";
+	end
+	
     str = str..param.type.name;
     
     if param.is_array then    
