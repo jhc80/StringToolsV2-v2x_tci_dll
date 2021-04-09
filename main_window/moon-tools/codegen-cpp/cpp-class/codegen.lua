@@ -3421,7 +3421,7 @@ function code_cpp_load_json_1(idl_class)
         printfnl("%s{",tab);
 
         tab = "        ";
-        printfnl("%sint _len = cJSON_GetArraySize(p_%s);",tab,info.var.name);
+        printfnl("%sint _len = cJSON_GetArraySize(p_%s);",tab,string.lower(info.var.name));
 
         if not info.array_size then
             printfnl("%sthis->%s(_len);",tab,alloc_name(info.var.name));
