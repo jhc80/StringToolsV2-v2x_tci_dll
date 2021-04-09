@@ -3803,7 +3803,7 @@ function code_cpp_save_json_1(idl_class)
         end
     end);  
 
-    code_end_marker("LoadJson_1");
+    code_end_marker("SaveJson_1");
     printnl("    return OK;")
     printnl("}");
 end
