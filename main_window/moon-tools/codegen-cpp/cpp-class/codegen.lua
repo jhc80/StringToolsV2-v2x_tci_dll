@@ -3770,8 +3770,8 @@ function code_cpp_save_json_1(idl_class)
         tab = tab + 1;
         
         printfnl("%scJSON_AddItemToObject(_root,\"%s\",p_%s);",ptab(tab),                
-            string.lower(info.var.name),
-            info.var.name
+            info.var.name,
+            string.lower(info.var.name)
         );  
 
         tab = tab - 1;
