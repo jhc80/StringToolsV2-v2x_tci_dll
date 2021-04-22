@@ -22,7 +22,8 @@ for i,v in ipairs(tunnel_table) do
     client:Start();        
     client:StartListeningLocalPort(local_listening_port);
     client:StartAutoClearThread();
-    printfnl("listening on local port %d -> %d",local_listening_port,remote_port);
+    printfnl("listening on local port %d -> %s:%d",
+		local_listening_port,remote_server,remote_port);
     table.insert(clien_table,client);
 end
 
