@@ -1,6 +1,18 @@
 require("common");
 require("utils");
 
+CHAR_MINUS = 45;
+CHAR_SPACE = 32;
+
+function to_upper_minus_case(str)
+    return string.upper(to_lower_minus_case(str));
+end
+
+function to_lower_minus_case(str)
+    local t = to_lower_underline_case(str);
+    return string.gsub(t,"_","-");
+end
+
 mem_text = App.LoadText();
 mem_text_file = mem_text:FileBase();
 

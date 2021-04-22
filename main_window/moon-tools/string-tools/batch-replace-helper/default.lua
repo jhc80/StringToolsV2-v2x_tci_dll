@@ -13,5 +13,7 @@ for _,v in ipairs(rep_table) do
 	add(to_small_camel_case(v[1]),to_small_camel_case(v[2]));
 	add(to_lower_underline_case(v[1]),to_lower_underline_case(v[2]));
 	add(to_upper_underline_case(v[1]),to_upper_underline_case(v[2]));
+	add(to_lower_minus_case(v[1]),to_lower_minus_case(v[2]));
+	add(to_upper_minus_case(v[1]),to_upper_minus_case(v[2]));
 end
 
