@@ -36,6 +36,14 @@ IdlHelper.Type.GetSqliteType=function(type)
 	end	
 end
 
+IdlHelper.Type.GetSqliteType_2=function(type)
+	local t = IdlHelper.Type.GetSqliteType(type);
+	if t == "INTEGER64" then
+		return "INTEGER";
+	end
+	return t;
+end
+
 IdlHelper.Class.FindHintSwitch = function(var,the_str)
     if not var then return false end
     if not var.hint then return false end

@@ -7,6 +7,7 @@ class Student{
 	int age;
 	double score;
 	array<uint8_t> data;	
+	int64_t big;
 }
 
 

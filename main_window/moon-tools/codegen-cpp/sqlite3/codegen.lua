@@ -53,9 +53,11 @@ function for_each_variables(variables,callback)
     end
 end
 
-function sqlite_type_to_func_name(sql_type)
+function sqlite_type_to_func_name(sql_type)	
 	if sql_type == "INTEGER" then
 		return "Int";
+	elseif sql_type == "INTEGER64" then		
+		return "Int64";
 	elseif sql_type == "REAL" then
 		return "Double";
 	end
@@ -402,7 +404,7 @@ function code_cpp(idl_class,node_name)
 		elseif info.is_basic_type then
 			printfnl("        \"%s %s%s\"",
 				to_big_camel_case(info.var.name),
-				IdlHelper.Type.GetSqliteType(info.var_type),
+				IdlHelper.Type.GetSqliteType_2(info.var_type),
 				comma
 			);
 		end
