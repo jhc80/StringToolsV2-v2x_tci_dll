@@ -7,7 +7,7 @@ require("user");
 App.ClearScreen();
 App.StartNet();
 
-local clien_table={};
+local client_table={};
 
 for i,v in ipairs(tunnel_table) do
     local remote_server = v[1];
@@ -24,7 +24,7 @@ for i,v in ipairs(tunnel_table) do
     client:StartAutoClearThread();
     printfnl("listening on local port %d -> %s:%d",
 		local_listening_port,remote_server,remote_port);
-    table.insert(clien_table,client);
+    table.insert(client_table,client);
 end
 
 App.MainLoop();
