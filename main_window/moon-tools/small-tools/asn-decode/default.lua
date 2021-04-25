@@ -1,14 +1,11 @@
 --输入文件，如果为空则从编辑框读取--
 --注意从编辑框中读取时，不支持二进制，只支持十六进制串的形式--
-
 in_binary_file="";
 
 --数据文件的格式，支持二进制和十六进制串两种格式， 0是二进制，1是十六进制--
-
 in_format = 0;
 
 --输入文件的偏移量，可以用来跳过某些头部--
-
 in_offset = 0;
 
 --不是所有的asn1格式都支持，只支持以下的消息类型，
@@ -19,9 +16,10 @@ in_offset = 0;
 3 - V2X 国标 2020版
 4 - 高新兴 OBU 通讯协议
 --]]
+message_type = 3;
 
-message_type = 2;
+--生成的lua变量的名字
+var_name="messageFrame";
 
 --ASN1描述符的名字
-
 descriptor_name="MessageFrame";

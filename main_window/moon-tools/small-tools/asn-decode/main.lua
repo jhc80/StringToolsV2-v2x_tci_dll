@@ -62,6 +62,7 @@ App.ClearScreen();
 local str = ASN1.ToLua(binary_data:CStr(),descriptor);
 
 if str then
+    printf("%s = ",var_name);
     printnl(str);
 end
 
