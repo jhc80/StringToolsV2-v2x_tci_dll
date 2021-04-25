@@ -80,9 +80,11 @@ function code_h(idl_class,node_name)
 	printfnl("public:");
 	printfnl("    CSQLite3DataBase *p_DataBase;");
 	printfnl("    CSQLite3Stmt m_TmpStmt;");
+	printfnl("    CMem m_TableName;");
 	printfnl("public:");
 	printfnl("    bool IsTableExist();");
 	printfnl("    const char* GetTableName();");
+	printfnl("    status_t SetTableName(const char *table_name);");
 	printfnl("    status_t Delete(const char *where);");
 	printfnl("    status_t Update(const char *where, %s *row);",c_class_name(node_name));
 	printfnl("    int32_t RowCount();");
@@ -124,6 +126,7 @@ function code_cpp(idl_class,node_name)
 	printfnl("{");
 	printfnl("    this->p_DataBase = NULL;");
 	printfnl("    this->m_TmpStmt.InitBasic();");
+	printfnl("    this->m_TableName.InitBasic();");
 	printfnl("    return OK;");
 	printfnl("}");
 	printfnl("status_t %s::Init(CSQLite3DataBase *db)",c_class_name(idl_class.name));
@@ -131,10 +134,13 @@ function code_cpp(idl_class,node_name)
 	printfnl("    this->InitBasic();");
 	printfnl("    this->p_DataBase = db;");
 	printfnl("    this->m_TmpStmt.Init();");
+	printfnl("    this->m_TableName.Init();");
+	printfnl("    this->SetTableName(\"%s\");",table_name(idl_class.name));
 	printfnl("    return OK;");
 	printfnl("}");
 	printfnl("status_t %s::Destroy()",c_class_name(idl_class.name));
 	printfnl("{");
+	printfnl("    m_TableName.Destroy();");
 	printfnl("    m_TmpStmt.Destroy();");
 	printfnl("    this->InitBasic();");
 	printfnl("    return OK;");
@@ -145,7 +151,8 @@ function code_cpp(idl_class,node_name)
 	printfnl("bool %s::IsTableExist()",c_class_name(idl_class.name));
 	printfnl("{");
 	printfnl("    ASSERT(p_DataBase);");
-	printfnl("    return p_DataBase->IsTableExist(\"%s\");",table_name(idl_class.name));
+	printfnl("    ASSERT(this->GetTableName());");
+	printfnl("    return p_DataBase->IsTableExist(this->GetTableName());");
 	printfnl("}");
 	code_end_marker("IsTableExist");	
 	printfnl("");
@@ -153,17 +160,28 @@ function code_cpp(idl_class,node_name)
 	code_begin_marker("GetTableName");	
 	printfnl("const char* %s::GetTableName()",c_class_name(idl_class.name));
 	printfnl("{");
-	printfnl("    return \"%s\";",table_name(idl_class.name));
+	printfnl("    return m_TableName.CStr();");
 	printfnl("}");
 	code_end_marker("GetTableName");	
 	printfnl("");
 	
+	code_begin_marker("SetTableName");	
+	printfnl("status_t %s::SetTableName(const char *table_name)",c_class_name(idl_class.name));
+	printfnl("{");
+	printfnl("    ASSERT(table_name);");
+	printfnl("    CMem mem(table_name);");
+	printfnl("    return m_TableName.Copy(&mem);")
+	printfnl("}");
+	code_end_marker("SetTableName");	
+	printfnl("");
+
 	code_begin_marker("DropTable");	
 	printfnl("status_t %s::DropTable()",c_class_name(idl_class.name));
 	printfnl("{");
-	printfnl("    const char *sql = \"DROP TABLE IF EXISTS %s\";",table_name(idl_class.name));
 	printfnl("    ASSERT(this->p_DataBase);");
-	printfnl("    return this->p_DataBase->RunSqlCommand(sql);");
+	printfnl("    LOCAL_MEM(sql);");
+	printfnl("    sql.Printf(\"DROP TABLE IF EXISTS %%s\",this->GetTableName());");	
+	printfnl("    return this->p_DataBase->RunSqlCommand(sql.CStr());");
 	printfnl("}");	
 	code_end_marker("DropTable");
 	printfnl("");
@@ -252,10 +270,9 @@ function code_cpp(idl_class,node_name)
 	printfnl("status_t %s::Insert(%s *row)",c_class_name(idl_class.name),c_class_name(node_name));
 	printfnl("{");
 	printfnl("    ASSERT(row && this->p_DataBase);");
-	printfnl("    CSQLite3Stmt stmt;");
-		
-	printf("    this->p_DataBase->Prepare(\"INSERT INTO %s VALUES("
-		,table_name(idl_class.name));
+	printfnl("    LOCAL_MEM(sql);");
+	printfnl("    CSQLite3Stmt stmt;");		
+	printf("    sql.Printf(\"INSERT INTO %%s VALUES(");
 		
 	local total = get_total_members(idl_class);
 	for i=1,total,1 do
@@ -264,8 +281,8 @@ function code_cpp(idl_class,node_name)
 			print(",");
 		end
 	end	
-	printnl(")\",&stmt);");
-			
+	printfnl(")\",this->GetTableName());");
+	printfnl("    this->p_DataBase->Prepare(sql.CStr(),&stmt);");
 	printfnl("    this->BindRow(&stmt,row);");
 	printfnl("    status_t ret = stmt.Step();");
 	printfnl("    stmt.Finish();");
@@ -292,7 +309,7 @@ function code_cpp(idl_class,node_name)
 	printfnl("{");
 	printfnl("    ASSERT(where && stmt && this->p_DataBase);");
 	printfnl("    LOCAL_MEM(sql);");
-	printfnl("    sql.Puts(\"SELECT * FROM %s \");",table_name(idl_class.name));
+	printfnl("    sql.Printf(\"SELECT * FROM %%s \",this->GetTableName());");
 	printfnl("    sql.Puts(where);");
 	printfnl("    return this->p_DataBase->Prepare(sql.CStr(),stmt);");
 	printfnl("}");
@@ -323,7 +340,7 @@ function code_cpp(idl_class,node_name)
 	printfnl("{");
 	printfnl("    ASSERT(where && this->p_DataBase);");
 	printfnl("    LOCAL_MEM(sql);");
-	printfnl("    sql.Puts(\"SELECT count(*) FROM %s \");",table_name(idl_class.name));
+	printfnl("    sql.Printf(\"SELECT count(*) FROM %%s \",this->GetTableName());");
 	printfnl("    sql.Puts(where);");
 	printfnl("    CSQLite3Stmt stmt;");
 	printfnl("    this->p_DataBase->Prepare(sql.CStr(),&stmt);");
@@ -344,7 +361,7 @@ function code_cpp(idl_class,node_name)
 	printfnl("    ASSERT(row && where && this->p_DataBase);");
 	printfnl("");
 	printfnl("    LOCAL_MEM(sql);");
-	printfnl("    sql.Puts(\"UPDATE %s SET \");",table_name(idl_class.name));		
+	printfnl("    sql.Printf(\"UPDATE %%s SET \",this->GetTableName());");		
 	printfnl("    sql.Puts(");
 	
 	local total = get_total_members(idl_class);
@@ -375,7 +392,7 @@ function code_cpp(idl_class,node_name)
 	printfnl("    ASSERT(where && this->p_DataBase);");
 	printfnl("");
 	printfnl("    LOCAL_MEM(sql);");
-	printfnl("    sql.Puts(\"DELETE FROM %s \");",table_name(idl_class.name));
+	printfnl("    sql.Printf(\"DELETE FROM %%s \",this->GetTableName());");
 	printfnl("    sql.Puts(where);");
 	printfnl("    return this->p_DataBase->RunSqlCommand(sql.CStr());");
 	printfnl("}");
@@ -385,8 +402,9 @@ function code_cpp(idl_class,node_name)
 	code_begin_marker("CreateTable");
 	printfnl("status_t %s::CreateTable()",c_class_name(idl_class.name));
 	printfnl("{");
-	printfnl("    const char *sql = ");
-	printfnl("        \"CREATE TABLE IF NOT EXISTS %s (\"",table_name(idl_class.name));
+	printfnl("    ASSERT(this->p_DataBase);");
+	printfnl("    LOCAL_MEM(sql);");
+	printfnl("    sql.Printf(\"CREATE TABLE IF NOT EXISTS %%s (\"");
 	
 	for_each_variables(idl_class.variables,function(info)	
 		local comma = (info.index==total) and "" or ",";
@@ -411,11 +429,9 @@ function code_cpp(idl_class,node_name)
 		
 	end);
 	
-	printfnl("    \")\";");
-	printfnl("    ASSERT(this->p_DataBase);");
-	printfnl("    return this->p_DataBase->RunSqlCommand(sql);");
+	printfnl("    \")\",this->GetTableName());");
+	printfnl("    return this->p_DataBase->RunSqlCommand(sql.CStr());");
 	printfnl("}");
 	code_end_marker("CreateTable");
 	printfnl("");
 end
-
