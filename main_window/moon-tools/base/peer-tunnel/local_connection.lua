@@ -44,6 +44,11 @@ function LocalConnection:WriteThread(thread)
             local rs = send_qbuf:PeekData(tmp,tmp:GetMaxSize());
             assert(rs == tmp:GetSize(),"rs == tmp:GetSize()");            
             local ret = self.host_peer:WriteData_Async(thread,self.handle,tmp);
+            if not ret.value then 
+                printfnl("remote write fail: timoeut.");
+                break;
+            end
+
             local ws = ret.value.ws;
          
             if ws < 0 then
