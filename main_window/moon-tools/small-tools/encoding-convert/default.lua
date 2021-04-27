@@ -1,4 +1,5 @@
 --转换文件列表中的编码类型--
+--每一行是一个文件名--
 ENCODING_GBK      =  1;
 ENCODING_UTF8     =  2;
 ENCODING_UNICODE  =  3;
