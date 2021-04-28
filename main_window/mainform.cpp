@@ -33,12 +33,14 @@ int CMainForm::InitBasic()
 	this->m_WndRight = NULL;
 	this->m_WndEmbeddedUI = NULL;
 	this->m_EmbeddedUIWindowHeight = 0;
+	this->m_TrayIcon = NULL;
     ////////////////////
     this->menu_file = NULL;
     this->mitem_open = NULL;
 	this->mitem_load_image = NULL;
     this->mitem_save_as = NULL;
     this->mitem_property = NULL;
+	this->mitem_iconify = NULL;
     this->mitem_exit = NULL;
     this->menu_bar = NULL;
     this->menu_edit = NULL;
@@ -165,6 +167,13 @@ int CMainForm::OnCreate(WPARAM wparam,LPARAM lparam)
     this->SwitchPage(PAGE_NAME_IMAGE);
     this->SwitchPage(PAGE_NAME_TEXT);
 
+	NEW(m_TrayIcon,CTrayIcon);
+	m_TrayIcon->Init();
+	m_TrayIcon->SetIcon(IDI_ICON2);
+	m_TrayIcon->SetParent(this->hwnd);
+	m_TrayIcon->SetToolTip(L"string tools");
+	m_TrayIcon->SetCallBackMessage(WM_UNKNOWN);
+
 	return OK;
 }
 int CMainForm::CreateMenu()
@@ -187,10 +196,17 @@ int CMainForm::CreateMenu()
     this->mitem_save_as->Init();
     this->mitem_save_as->SetName(L"Save text &As");
     this->mitem_save_as->Create();
-    NEW(this->mitem_property,CMenu);
+    
+	NEW(this->mitem_property,CMenu);
     this->mitem_property->Init();
     this->mitem_property->SetName(L"&Property");
     this->mitem_property->Create();
+
+	NEW(this->mitem_iconify,CMenu);
+    this->mitem_iconify->Init();
+    this->mitem_iconify->SetName(L"&Iconify");
+    this->mitem_iconify->Create();
+
     NEW(this->mitem_exit,CMenu);
     this->mitem_exit->Init();
     this->mitem_exit->SetName(L"E&xit");
@@ -296,7 +312,6 @@ int CMainForm::CreateMenu()
 	this->mitem_choose_folder->Create();
 
 
-
     this->menu_bar->AddMenu(menu_file);
     this->menu_bar->AddMenu(menu_vm);
     this->menu_file->AddItem(mitem_open);
@@ -321,6 +336,8 @@ int CMainForm::CreateMenu()
     this->menu_bar->AddMenu(menu_view);
     this->menu_view->AddItem(mitem_text_window);
     this->menu_view->AddItem(mitem_image_window);
+	this->menu_view->AddSeparator();
+	this->menu_view->AddItem(mitem_iconify);
     this->menu_bar->AddMenu(menu_help);
     this->menu_help->AddItem(mitem_help);
     this->menu_help->AddItem(mitem_help_lua_doc);
@@ -360,6 +377,7 @@ int CMainForm::CreateMenu()
 }
 int CMainForm::Destroy()
 {
+	DEL(this->m_TrayIcon);
 	DEL(this->m_PageManager);
 	DEL(this->m_WndPageHost);
 	DEL(this->m_TreeView);
@@ -373,6 +391,7 @@ int CMainForm::Destroy()
 	DEL(this->mitem_load_image);
     DEL(this->mitem_save_as);
     DEL(this->mitem_property);
+	DEL(this->mitem_iconify);
     DEL(this->mitem_exit);
     DEL(this->menu_bar);
     DEL(this->menu_edit);
@@ -575,6 +594,10 @@ int CMainForm::OnCommand(WPARAM wparam,LPARAM lparam)
 	{
 		this->OnChooseFolder();
 	}
+	else if(mitem_iconify->IsMyCommand(wparam))
+	{
+		this->OnIconify();
+	}
 	return OK;
 }
 
@@ -646,13 +669,22 @@ int CMainForm::OnPosChanged(WPARAM wparam,LPARAM lparam)
 }
 int CMainForm::OnUnknown(WPARAM wparam, LPARAM lparam)
 {
+	if(m_TrayIcon->GetTrayMessage(wparam,lparam) == WM_LBUTTONDOWN)
+	{
+		this->Show();
+		m_TrayIcon->DeleteTrayIcon();
+	}
 	return OK;
 }
+
 LRESULT CMainForm::ProcessAllMsg(UINT message, WPARAM wparam, LPARAM lparam)
 {
+	if(message == CTrayIcon::s_uTaskbarRestart)
+	{
+		m_TrayIcon->AddTrayIcon();
+	}
 	return CWnd::ProcessAllMsg(message,wparam,lparam);
 }
-
 //////////////////////////////
 static int all_keys[256] = {0};
 
@@ -1131,4 +1163,20 @@ status_t CMainForm::OnChooseFolder()
 		eb.ReplaceSel(filename.CStrW());
 	}
     return OK;
+}
+
+status_t CMainForm::OnIconify()
+{
+	m_TrayIcon->DeleteTrayIcon();
+	m_TrayIcon->AddTrayIcon();
+	this->Hide();
+	return OK;
+}
+
+status_t CMainForm::SetTitle(const wchar_t *title)
+{
+	ASSERT(title);
+	this->SetText(title);
+	m_TrayIcon->SetToolTip(title);
+	return OK;
 }

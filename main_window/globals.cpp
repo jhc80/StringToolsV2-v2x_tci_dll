@@ -360,7 +360,7 @@ status_t CGlobals::SetCurIndexTreeNode(CIndexTreeNode *node)
 		name.Printf(" (%d)",node->GetCurrentUser()+1);
 		
 		CEncoder::Utf8ToUnicode(&name);
-		m_MainForm.SetText(name.CStrW());
+		m_MainForm.SetTitle(name.CStrW());
 	}
 	else
 	{

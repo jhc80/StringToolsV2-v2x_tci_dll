@@ -28,12 +28,14 @@ public:
 	CWnd *m_WndRight;
 	CWndEmbeddedUI *m_WndEmbeddedUI;
 	int m_EmbeddedUIWindowHeight;
+	CTrayIcon *m_TrayIcon;
 	//////////////////////////////////
     CMenu *menu_file;
     CMenu *mitem_open;
 	CMenu *mitem_load_image;
     CMenu *mitem_save_as;
     CMenu *mitem_property;
+	CMenu *mitem_iconify;
     CMenu *mitem_exit;
     CMenu *menu_bar;
     CMenu *menu_edit;
@@ -67,6 +69,8 @@ public:
     CMenu *mitem_r_help;
 
 public:
+	status_t SetTitle(const wchar_t *title);
+	status_t OnIconify();
 	status_t OnChooseFile();
 	status_t OnChooseFolder();
 	status_t OnShowContextMenu(MSG *msg);
