@@ -175,4 +175,19 @@ static status_t on_socketrwer_event(CClosure *closure)
 CClosure *callback = this->mSocketRwer->Callback();
 callback->SetFunc(on_socketrwer_event);
 callback->SetParamPointer(10,this);
-
+#####################################################
+ASSERT(!IsTask(m_task_read_rdb));
+BEGIN_MINI_TASK(task)
+{
+    CVtdRdbReader *self = NULL;
+    status_t Run(uint32_t interval)
+    {
+        self->TaskReadRdbRun(this,interval);
+        return OK;
+    }
+}
+END_MINI_TASK(task);
+task->Init(GetTaskMgr());
+task->self = this;
+task->Start(STEP_CONNECT_VTD_RDB);
+m_task_read_rdb = task->GetId();

@@ -4,12 +4,10 @@ App.ClearScreen();
 ----------------------------------------------------
 require("user");
 
-local map_file = new_mmapfile(bin_file,"r");
-if not map_file then return end
+local file = new_file(bin_file,"rb");
+if not file then return end
 
-local stream = map_file:Stream();
-
-local max_size = stream:GetSize() - start_pos;
+local max_size = file:GetSize() - start_pos;
 if max_size <= 0 then return end
 
 if view_size <= 0 or view_size > max_size then
@@ -18,7 +16,7 @@ end
 
 local blocks = math.ceil(view_size / 16);
 
-stream:Seek(start_pos);
+file:Seek(start_pos);
 
 local function to_char(int)
     if int >= 32 and int < 127 then
@@ -39,7 +37,7 @@ for i=1,blocks,1 do
             print("   ");
             str=str.." ";
         else
-            local c = (stream:GetInt8() & 0xff);
+            local c = (file:GetInt8() & 0xff);
             str = str..to_char(c);
             print(string.format("%02x ", c));  
             if j == 8 then
