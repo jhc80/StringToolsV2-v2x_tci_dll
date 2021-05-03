@@ -446,6 +446,74 @@ if code_switch.bson then
     printfnl("}");
 end
 
+if code_switch.cjson then
+    printfnl("status_t %s::LoadJson(const char *_json)",names.c_class_name);
+    printfnl("{");
+    printfnl("    ASSERT(_json);");
+    printfnl("    cJSON *p_root = cJSON_Parse(_json);");
+    printfnl("    if(!p_root)");
+    printfnl("    {");
+    printfnl("        XLOG(LOG_MODULE_USER,LOG_LEVEL_ERROR,");
+    printfnl("            \"error: load json fail at %%s\",");
+    printfnl("            cJSON_GetErrorPtr()");
+    printfnl("        );");
+    printfnl("        return ERROR;");
+    printfnl("    }");
+    printfnl("    status_t ret = this->LoadJson(p_root);");
+    printfnl("    cJSON_Delete(p_root);");
+    printfnl("    return ret;");
+    printfnl("}");
+    printfnl("");
+    printfnl("status_t %s::LoadJson(const cJSON *_json)",names.c_class_name);
+    printfnl("{");
+    printfnl("    ASSERT(_json);");
+
+    printfnl("    this->Clear();    ");
+    printfnl("    int _len = cJSON_GetArraySize(_json);");
+    printfnl("    for(int i = 0; i < _len; i++)");
+    printfnl("    {");
+    printfnl("        cJSON *json_obj = cJSON_GetArrayItem(_json,i);");
+    printfnl("        ASSERT(json_obj);");
+    printfnl("        %s tmp;",names.c_node_class_name);
+    printfnl("        tmp.Init();");
+    printfnl("        ASSERT(tmp.LoadJson(json_obj));");
+    printfnl("        this->Push(&tmp);");
+    printfnl("    }");
+    
+    printfnl("    return OK;");
+    printfnl("}");
+    printfnl("");
+    printfnl("status_t %s::SaveJson(CFileBase *_file)",names.c_class_name);
+    printfnl("{");
+    printfnl("    ASSERT(_file);");
+    printfnl("    cJSON *root = cJSON_CreateObject();");
+    printfnl("    this->SaveJson(root);");
+    printfnl("    char *str = cJSON_Print(root);");
+    printfnl("    if(str)");
+    printfnl("    {");
+    printfnl("        _file->Puts(str);");
+    printfnl("        free(str);");
+    printfnl("    }");
+    printfnl("    cJSON_Delete(root);");
+    printfnl("    return OK;");
+    printfnl("}");
+    printfnl("");
+    printfnl("status_t %s::SaveJson(cJSON *_root)",names.c_class_name);
+    printfnl("{");
+    printfnl("    ASSERT(_root);");
+    printfnl("    _root->type = cJSON_Array;");
+    printfnl("    for(int i = 0;i < GetLen(); i++)");
+    printfnl("    {");
+    printfnl("        %s *_p = GetElem(i);",names.c_node_class_name);
+    printfnl("        cJSON *json_obj = cJSON_CreateObject();");
+    printfnl("        ASSERT(json_obj);");
+    printfnl("        _p->SaveJson(json_obj);");
+    printfnl("        cJSON_AddItemToArray(_root,json_obj);");
+    printfnl("    }");  
+    printfnl("    return OK;");
+    printfnl("}");
+end
+
     printfnl("/////////////////////////////////////////////////////////////////////////////////////");
     printfnl("/////////////////////////////////////////////////////////////////////////////////////");
     printfnl("status_t %s::CopyNode(%s *dst, %s *src)",names.c_class_name,names.c_node_class_name,names.c_node_class_name);

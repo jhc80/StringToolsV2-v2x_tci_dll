@@ -297,6 +297,52 @@ if code_switch.bson then
     printfnl("");
 end
 
+if code_switch.cjson then
+    printfnl("status_t %s::LoadJson(const char *_json)",names.c_class_name);
+    printfnl("{");
+    printfnl("    ASSERT(_json);");
+    printfnl("    cJSON *p_root = cJSON_Parse(_json);");
+    printfnl("    if(!p_root)");
+    printfnl("    {");
+    printfnl("        XLOG(LOG_MODULE_USER,LOG_LEVEL_ERROR,");
+    printfnl("            \"error: load json fail at \\r\\n%%s\",");
+    printfnl("            cJSON_GetErrorPtr()");
+    printfnl("        );");
+    printfnl("        return ERROR;");
+    printfnl("    }");
+    printfnl("    status_t ret = this->LoadJson(p_root);");
+    printfnl("    cJSON_Delete(p_root);");
+    printfnl("    return ret;");
+    printfnl("}");
+    printfnl("");
+    printfnl("status_t %s::LoadJson(const cJSON *_json)",names.c_class_name);
+    printfnl("{");
+    printfnl("    ASSERT(_json);");
+    printfnl("    return OK;");
+    printfnl("}");
+    printfnl("");
+    printfnl("status_t %s::SaveJson(CFileBase *_file)",names.c_class_name);
+    printfnl("{");
+    printfnl("    ASSERT(_file);");
+    printfnl("    cJSON *root = cJSON_CreateObject();");
+    printfnl("    this->SaveJson(root);");
+    printfnl("    char *str = cJSON_Print(root);");
+    printfnl("    if(str)");
+    printfnl("    {");
+    printfnl("        _file->Puts(str);");
+    printfnl("        free(str);");
+    printfnl("    }");
+    printfnl("    cJSON_Delete(root);");
+    printfnl("    return OK;");
+    printfnl("}");
+    printfnl("");
+    printfnl("status_t %s::SaveJson(cJSON *_root)",names.c_class_name);
+    printfnl("{");
+    printfnl("    ASSERT(_root);");
+    printfnl("    return OK;");
+    printfnl("}");
+end
+
     printfnl("/***************************************************/");
     printfnl("status_t %s::Print(CFileBase *_buf)",names.c_class_name);
     printfnl("{");

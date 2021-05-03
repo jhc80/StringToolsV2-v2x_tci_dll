@@ -22,4 +22,5 @@ code_switch={
     bson = false,
     weak_ref = false,
     task_container = false,
+    cjson = false,
 }

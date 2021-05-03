@@ -106,6 +106,10 @@ function CppBaseCodeGen:Code_Includes(configs)
     if self.m_code_switch.bson then
         pb:Log("#include \"minibson.h\"");
     end
+    
+    if self.m_code_switch.cjson then
+        pb:Log("#include \"cJSON.h\"");
+    end
 
     if self.m_code_switch.xml or self.m_code_switch.xml2 then
         pb:Log("#include \"xml.h\"");

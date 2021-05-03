@@ -19,10 +19,21 @@ function code_basic_h(names)
     printfnl("    %s *m_Data;",names.node_class_name);
     printfnl("    int m_Top,m_Size;");
     printfnl("public:");
-    printfnl("    status_t SaveBson(CMiniBson *_bson);");
-    printfnl("    status_t SaveBson(CMem *_mem);");
-    printfnl("    status_t LoadBson(CMiniBson *_bson);");
-    printfnl("    status_t LoadBson(CFileBase *_file);");
+
+    if code_switch.bson then
+        printfnl("    status_t SaveBson(CMiniBson *_bson);");
+        printfnl("    status_t SaveBson(CMem *_mem);");
+        printfnl("    status_t LoadBson(CMiniBson *_bson);");
+        printfnl("    status_t LoadBson(CFileBase *_file);");
+    end
+
+    if code_switch.cjson then
+        printfnl("    status_t LoadJson(const cJSON *_json);");
+        printfnl("    status_t LoadJson(const char *_json);");
+        printfnl("    status_t SaveJson(cJSON *_root);");
+        printfnl("    status_t SaveJson(CFileBase *_file);");
+    end
+    
     printfnl("    int CompNode(%s node1, %s node2);    ",names.node_class_name,names.node_class_name);
     printfnl("    status_t AutoResize();");
     printfnl("    status_t Sort(int order);");

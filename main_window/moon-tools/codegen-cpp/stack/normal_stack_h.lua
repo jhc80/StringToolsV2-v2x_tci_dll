@@ -28,6 +28,13 @@ if code_switch.bson then
     printfnl("    status_t LoadBson(CFileBase *_file);");
 end
 
+if code_switch.cjson then
+    printfnl("    status_t LoadJson(const cJSON *_json);");
+    printfnl("    status_t LoadJson(const char *_json);");
+    printfnl("    status_t SaveJson(cJSON *_root);");
+    printfnl("    status_t SaveJson(CFileBase *_file);");
+end
+
     printfnl("    %s* RemoveElem(int index);",names.c_node_class_name);
     printfnl("    status_t InsElemPtr(int i, %s *node);",names.c_node_class_name);
     printfnl("    %s* PopPtr();",names.c_node_class_name);
