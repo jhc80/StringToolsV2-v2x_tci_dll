@@ -373,7 +373,7 @@ CLuaVm* CLuaThread::GetLuaVm()
 	return &m_LuaVm;
 }
 
-status_t CLuaThread::MainLoop()
+status_t CLuaThread::MainLoop(int sleep_time)
 {
     SetIsMainLoopRunning(true);
 	
@@ -384,7 +384,9 @@ status_t CLuaThread::MainLoop()
 			need_sleep = false;
 		if(m_TaskMgr.Schedule())
 			need_sleep = false;		
-		if(need_sleep)
+		if(sleep_time > 0)
+			crt_msleep(sleep_time);
+		else if(need_sleep)
 			m_Epoll.Wait(5);
 	}
     SetIsMainLoopRunning(false);

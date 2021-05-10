@@ -52,7 +52,7 @@ public:
 	status_t SetPrintBufferFlushInterval(uint32_t interval);
 	status_t GetCurrentPath(const char *rpath,CMem *out);
 	CTaskMgr* GetTaskMgr();
-	status_t MainLoop();
+	status_t MainLoop(int sleep_time);
 	CLuaVm* GetLuaVm();
 	status_t LoadText(CMem *utf8);
 	status_t OnThreadEnd();

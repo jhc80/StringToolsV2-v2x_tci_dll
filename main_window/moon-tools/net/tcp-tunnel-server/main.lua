@@ -21,4 +21,4 @@ server:Start();
 server:StartAutoClearThread();
 server:SetTimeout(timeout);
 
-App.MainLoop();
+App.MainLoop(1);

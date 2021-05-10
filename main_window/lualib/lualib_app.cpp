@@ -92,7 +92,8 @@ static int app_savetextbuf(lua_State *L)
 static int app_mainloop(lua_State *L)
 {   
 	GLOBAL_LUA_THREAD(lua_thread);
-	lua_thread->MainLoop();
+	int sleep_time = lua_tointeger(L,1);
+	lua_thread->MainLoop(sleep_time);
     return 0;
 }
 static int app_quitmainloop(lua_State *L)

@@ -27,5 +27,5 @@ for i,v in ipairs(tunnel_table) do
     table.insert(client_table,client);
 end
 
-App.MainLoop();
+App.MainLoop(1);
 
