@@ -14,7 +14,10 @@ for_each_line(mem_text_file,function(line)
 	end
 
 	if string.find(str,"%.ts$") then
-		printfnl("{\"wget --read-timeout=30 %s/%s -O %s\"},",url_prefix,str,str);
+		
+		local fn = FileManager.SliceFileName(str,FN_FILENAME);
+
+		printfnl("{\"wget --read-timeout=30 '%s%s' -O %s\"},",url_prefix,str,fn);
 	end
 
 
