@@ -70,6 +70,11 @@ int  CWndProperty::Destroy()
     DEL(this->tbb_3);
     DEL(this->tbb_4);
     DEL(this->tbb_5);
+    DEL(this->tbb_6);
+    DEL(this->tbb_7);
+    DEL(this->tbb_8);
+    DEL(this->tbb_9);
+    DEL(this->tbb_10);
     DEL(this->tbb_help);
     DEL(this->tbb_open_folder);
     CWnd::Destroy();
@@ -164,14 +169,39 @@ int CWndProperty::OnCreate(WPARAM wparam, LPARAM lparam)
     this->tbb_5->SetImgIndex(9);
     this->tbb_5->SetToolTip(L"user config 5");
 
+	NEW(this->tbb_6,CTBButton);
+    this->tbb_6->Init();
+    this->tbb_6->SetImgIndex(10);
+    this->tbb_6->SetToolTip(L"user config 6");
+    
+    NEW(this->tbb_7,CTBButton);
+    this->tbb_7->Init();
+    this->tbb_7->SetImgIndex(11);
+    this->tbb_7->SetToolTip(L"user config 7");
+    
+    NEW(this->tbb_8,CTBButton);
+    this->tbb_8->Init();
+    this->tbb_8->SetImgIndex(12);
+    this->tbb_8->SetToolTip(L"user config 8");
+    
+    NEW(this->tbb_9,CTBButton);
+    this->tbb_9->Init();
+    this->tbb_9->SetImgIndex(13);
+    this->tbb_9->SetToolTip(L"user config 9");
+    
+    NEW(this->tbb_10,CTBButton);
+    this->tbb_10->Init();
+    this->tbb_10->SetImgIndex(14);
+    this->tbb_10->SetToolTip(L"user config 10");
+
     NEW(this->tbb_open_folder,CTBButton);
     this->tbb_open_folder->Init();
-    this->tbb_open_folder->SetImgIndex(10);
+    this->tbb_open_folder->SetImgIndex(15);
     this->tbb_open_folder->SetToolTip(L"open this folder");
 
     NEW(this->tbb_help,CTBButton);
     this->tbb_help->Init();
-    this->tbb_help->SetImgIndex(11);
+    this->tbb_help->SetImgIndex(16);
     this->tbb_help->SetToolTip(L"help");
 
 	this->toolbar->AddButton(tbb_load);
@@ -185,6 +215,11 @@ int CWndProperty::OnCreate(WPARAM wparam, LPARAM lparam)
     this->toolbar->AddButton(tbb_3);
     this->toolbar->AddButton(tbb_4);
     this->toolbar->AddButton(tbb_5);
+    this->toolbar->AddButton(tbb_6);
+    this->toolbar->AddButton(tbb_7);
+    this->toolbar->AddButton(tbb_8);
+    this->toolbar->AddButton(tbb_9);
+    this->toolbar->AddButton(tbb_10);
     this->toolbar->AddSeparator();
   	this->toolbar->AddButton(tbb_help);
 
@@ -312,6 +347,27 @@ int CWndProperty::OnCommand(WPARAM wparam, LPARAM lparam)
     else if(tbb_5->IsMyCommand(wparam))
     {
         this->ChangeCurrentUser(4);
+    }
+
+	else if(tbb_6->IsMyCommand(wparam))
+    {
+        this->ChangeCurrentUser(5);
+    }
+    else if(tbb_7->IsMyCommand(wparam))
+    {
+        this->ChangeCurrentUser(6);
+    }
+    else if(tbb_8->IsMyCommand(wparam))
+    {
+        this->ChangeCurrentUser(7);
+    }
+    else if(tbb_9->IsMyCommand(wparam))
+    {
+        this->ChangeCurrentUser(8);
+    }
+    else if(tbb_10->IsMyCommand(wparam))
+    {
+        this->ChangeCurrentUser(9);
     }
 
     else if(tbb_open_folder->IsMyCommand(wparam))

@@ -24,9 +24,13 @@ public:
     CTBButton *tbb_3;
     CTBButton *tbb_4;
     CTBButton *tbb_5;
+    CTBButton *tbb_6;
+    CTBButton *tbb_7;
+    CTBButton *tbb_8;
+    CTBButton *tbb_9;
+    CTBButton *tbb_10;
 
     CTBButton *tbb_help;
-
     CTBButton *tbb_open_folder;
 
     CIndexTreeNode *cur_node;
