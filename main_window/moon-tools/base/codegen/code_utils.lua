@@ -22,10 +22,39 @@ function for_each_word(mem,callback)
     end
 end
 
+function set_user_data_by_hint(hints,user_data)
+    if not hints then return end
+    for_each_hint(hints,function(mem)        
+        mem:Seek(0);
+        local next_str = mem:NextString();
+         if next_str == "UserData" then
+            while not mem:IsEnd() do            
+                local key = mem:NextString();
+                local eq = mem:NextWord();
+                if eq ~= "=" then
+                    break;
+                end 
+
+                local w = mem:NextWord();
+                if w == '"' then
+                    local tmp = new_mem();
+                    mem:ReadQuoteStr("\\\"",tmp);
+                    user_data[key] = tmp:CStr();
+                else
+                    local value = mem:NextString();
+                    user_data[key] = value;
+                end
+            end
+        end
+    end);
+end
+
 function set_code_switch_by_hint(hints, code_switch)
     if not hints then return end
     for_each_hint(hints,function(mem)        
-        if mem:NextString()=="CodeSwitch" then        
+        mem:Seek(0);
+        local next_str = mem:NextString();
+        if next_str == "CodeSwitch" then        
             while not mem:IsEnd() do            
                 local key = mem:NextString();
                 local eq = mem:NextWord();
@@ -35,8 +64,13 @@ function set_code_switch_by_hint(hints, code_switch)
                 local value = mem:NextString();                
                 code_switch[key] = (value == "true");
             end
-        end    
+        end 
     end);
+
+    if not code_switch.ud then
+        code_switch.ud = {};
+    end
+    set_user_data_by_hint(hints,code_switch.ud);
 end
 
 -------------------------------------------------------------

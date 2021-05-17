@@ -60,4 +60,34 @@ class Test{
 可以在前面加上 [noxml] 和 [nobson] 来使生产成的代码没有这两个的成员的 Xml和Bson相关的调用
 [nocopy] 表示不生成Copy代码， [noprint] 表示不生成Print的代码。
 
+[UserData key1="hello world",key2=hahaha]
+class Test{
+}
+UserData字段用来定义用户自定义的数据， 存放在目前存放在code_switch.ud 对象中，是一系列的
+key-value, 支持引号引用长字符串
+-----------------------------------------------------------------------
+对于xml2的代码生成，例如
+[CodeSwitch code_mark=true,weak_ref=true,xml2=true]
+class XodrOpenDRIVE {
+    [name=header] XodrHeader header;
+    [map=,name=road] XodrRoadMap roadMap;
+    [map=XodrController,name=controller] XodrControllerMap controllerMap;
+    [map=XodrJunction,name=junction] XodrJunctionMap junctionMap;
+}
 
+name=header 表示xml文件中字段的名叫 header
+map=XodrRoad 表示使用成员类型为 XodrRoad的Map来保存 xml文件中的数据
+
+[CodeSwitch code_mark=true,weak_ref=true,xml2=true]
+class XodrGeoReference {
+    [value] string xml_value;
+}
+
+这个前面的 [value]表示这是一个纯Value而不是xml中的属性，例如 <test>123</test>
+
+[CodeSwitch code_mark=true,weak_ref=true,xml2=true]
+class XodrLateralProfile {
+    [array=XodrSuperelevation,name=superelevation] XodrSuperelevationArray superelevationArray;
+}
+
+这里的 array=XodrSuperelevation 表示使用一个Array类型来存放，数组的成员为 XodrSuperelevation 类型
