@@ -104,17 +104,27 @@ function get_base_classes(all_bases)
 end
 
 function get_type_name(p)
-        local type_name = p.type.name;
-        if p.is_string then
-            type_name = "字符串";
-        elseif p.is_object then
-            type_name = c_class_name(type_name);
-        end
-        
-        if p.is_array then
-            type_name = p.type.name.."型数组";
-        end
-        return type_name;
+    local type_name = "";
+    
+    if p.type then
+        type_name = p.type.name;
+    end
+
+    if p.is_string then
+        type_name = "字符串";
+    elseif p.is_object then
+        type_name = c_class_name(type_name);
+    end
+    
+    if p.is_array then
+        type_name = p.type.name.."型数组";
+    end
+
+    if p.is_callback then
+        type_name = type_name.."回调函数";
+    end
+
+    return type_name;
 end
 
 --生成单个函数的模板--
@@ -122,12 +132,17 @@ function code_function(info)
     printfnl("/*@@Begin Function %s@@*/",info.raw_source);
 
     printfnl("   /** ");
+
     printf("    * @brief 函数%s",info.name);
     
     if info.is_static then
         print("，静态类型");
     end
     
+    if info.is_callback then
+        print("，回调函数类型");
+    end
+        
     if info.is_ctor then
         printf("，构造函数，使用%s.new来创建",
             c_class_name(info.idl_class.name)

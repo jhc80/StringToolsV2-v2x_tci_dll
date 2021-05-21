@@ -192,5 +192,3 @@ IdlHelper.Common.GetRetComments=function(obj)
     return IdlHelper.Common.GetSomething(obj,"!");
 end
 
-
-
