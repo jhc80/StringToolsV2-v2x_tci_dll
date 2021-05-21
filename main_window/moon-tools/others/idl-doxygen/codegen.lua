@@ -119,7 +119,9 @@ end
 
 --生成单个函数的模板--
 function code_function(info)
-    printfnl("    /** ");
+    printfnl("/*@@Begin Function %s@@*/",info.raw_source);
+
+    printfnl("   /** ");
     printf("    * @brief 函数%s",info.name);
     
     if info.is_static then
@@ -156,6 +158,7 @@ function code_function(info)
     end
     
     printfnl("    */");    
+
 end
 
 --生成整个类的doxygen模板
@@ -186,9 +189,13 @@ function code_doxygen(idl_class)
             info.is_static and "static " or "",
             info.raw_source
         );
+        
+        printfnl("/*@@End Function %s@@*/",info.raw_source);
         printnl("");
     end);
     
-    
+    printnl("");
+    printfnl("/*@@ Insert Function Here @@*/");
+    printnl("");
     printnl("};");
 end
