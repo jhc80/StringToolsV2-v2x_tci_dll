@@ -13,11 +13,15 @@ end
 
 --如何生成函数名--
 function struct_to_lua_function_name(name)
-	return to_lower_underline_case(name).."_to_lua";
+	return name.."_to_lua";
 end
 
 function lua_to_struct_function_name(name)
-	return "lua_to_"..to_lower_underline_case(name);
+	return "lua_to_"..name;
+end
+
+function lua_size_function_name(name)
+	return name.."_size";
 end
 -------------------------------------
 --定义基本数据类型的映射表--

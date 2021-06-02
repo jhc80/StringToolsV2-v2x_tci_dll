@@ -24,6 +24,8 @@ for _,idl_class in ipairs(all_idl_classes) do
 	printnl("");
 	code_lua_to_struct(idl_class);
 	printnl("");
+	code_size(idl_class);
+	printnl("");
 	
 	if save_path and save_path~="" then
 		local file_name = FileManager.ToAbsPath(

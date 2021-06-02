@@ -81,3 +81,6 @@ IdlHelper.Var.GetIndex = function(var)
 	return IdlHelper.Class.FindHintValue(var,"index");
 end
 
+IdlHelper.Var.GetFullSize = function(var)
+	return IdlHelper.Class.FindHintValue(var,"size");
+end
