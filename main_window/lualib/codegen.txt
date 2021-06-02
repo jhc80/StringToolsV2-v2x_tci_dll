@@ -175,7 +175,8 @@ class FileBase{
 	
 	status_t PutZeroEndString(string str);
 	string GetZeroEndString();
-
+	
+	fsize_t Skip(fsize_t size);
 }
 
 class Mem{
