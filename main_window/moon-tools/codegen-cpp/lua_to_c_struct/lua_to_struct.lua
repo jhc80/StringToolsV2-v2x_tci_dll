@@ -114,7 +114,7 @@ function code_lua_to_struct(idl_class)
 		printfnl("    end");
 		
 		if info.full_size then
-			printfnl("    file:FillBlock((%s-%s)*%s());",
+			printfnl("    file:FillBlock((%s-%s)*%s(),0);",
 				info.full_size,info.array_size,
 				lua_size_function_name(info.type.name)
 			);
@@ -153,7 +153,7 @@ function code_lua_to_struct(idl_class)
 		end	
 		
 		if info.full_size then
-			printfnl("    file:FillBlock((%s-%s)*SIZE_OF_%s);",
+			printfnl("    file:FillBlock((%s-%s)*SIZE_OF_%s,0);",
 				info.full_size,info.array_size,
 				string.upper(inner_type)
 			);
