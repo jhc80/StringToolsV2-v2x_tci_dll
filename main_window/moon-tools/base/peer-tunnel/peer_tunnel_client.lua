@@ -172,8 +172,8 @@ end
 function PeerTunnelClient:StartListeningLocalPort(local_port)
     TcpSocket.NewTcpAcceptor(local_port,function(event,new_socket)
         if event == EVENT_STOP then
-            exit("listening tcp port %d fail",local_port);
-            return
+            printfnl("listening tcp port %d fail",local_port);
+            return App.QuitMainLoop();
         end
 
         if event == EVENT_NEW_CLIENT then
@@ -215,6 +215,7 @@ function PeerTunnelClient:OnNewLocalClient(new_socket)
 
         printfnl("connect remote %s:%d success.", self.remote_server,self.remote_port);
         local connection = LocalConnection.new(self,new_socket,ret.value.handle);
+        connection.peer_name = self:GetDestPeerName();
         self.local_connections[ret.value.handle] = connection;
         connection:StartForwarding();
     end
