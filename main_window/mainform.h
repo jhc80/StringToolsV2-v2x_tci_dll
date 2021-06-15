@@ -69,6 +69,7 @@ public:
     CMenu *mitem_r_help;
 
 public:
+	status_t UpdateTrayIconTooltip(const char *title);
 	status_t SetTitle(const wchar_t *title);
 	status_t OnIconify();
 	status_t OnChooseFile();

@@ -1177,6 +1177,22 @@ status_t CMainForm::SetTitle(const wchar_t *title)
 {
 	ASSERT(title);
 	this->SetText(title);
-	m_TrayIcon->SetToolTip(title);
 	return OK;
 }
+
+status_t CMainForm::UpdateTrayIconTooltip(const char *title)
+{
+	ASSERT(title);
+	
+	//must be static
+	static char buf[LBUF_SIZE];
+
+	CMem tmp;
+	tmp.SetRawBuf(buf,sizeof(buf),false);
+	tmp.SetSize(0);
+	tmp.Puts(title);
+    CEncoder::EncodingConvert(ENCODING_UTF8,ENCODING_UNICODE,&tmp);
+	m_TrayIcon->SetToolTip(tmp.CStrW());
+	return OK;
+}
+

@@ -42,6 +42,7 @@ public:
     CScreenBuffer m_ScreenBuffer;
     CPeerGlobals m_PeerGlobals;
 public:
+	CIndexTreeNode *GetRunningIndexTreeNode();
 	status_t ShowLuaPatternHelp();
 	status_t GetHelpPath(CMem *path);
 	status_t ShowLuaDoc();

@@ -291,8 +291,12 @@ status_t CLuaThread::OnThreadBegin()
 	m_TaskMgr.Callback()->SetParamPointer(10,this);
 	m_Epoll.Init();
     
+	ASSERT(p_TreeNode);
+	
+	LOCAL_MEM(mem);
+	mem.Printf("%s: lua vm is running!",p_TreeNode->GetNameStr());
     GLOBAL_MAIN_FORM(main_form);    
-    main_form->SetStatusText(0,"lua vm is running");
+    main_form->SetStatusText(0,mem.CStr());
 
     this->SwitchToPageText();
     m_ThreadId = crt_get_current_thread_id();   

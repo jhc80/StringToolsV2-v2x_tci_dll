@@ -310,6 +310,8 @@ status_t CGlobals::StartLuaThread()
 	m_PrintBuffer.StartAutoSyncTimer(30);
     m_ScreenBuffer.DestroyImageBuffer();
 
+	m_MainForm.UpdateTrayIconTooltip(p_CurTreeNode->GetNameStr());
+
     this->SetUserStopped(false);
     m_LuaThread.Init();
     m_LuaThread.SetIndexTreeNode(p_CurTreeNode);
@@ -604,3 +606,9 @@ status_t CGlobals::ShowLuaPatternHelp()
     eb.SetText(help.CStrW());
     return OK;
 }
+
+CIndexTreeNode *CGlobals::GetRunningIndexTreeNode()
+{
+	return m_LuaThread.p_TreeNode;
+}
+
