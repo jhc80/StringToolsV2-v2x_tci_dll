@@ -1,0 +1,512 @@
+[BasicType DiasV2xRecvSendDataType_e=int32_t]
+class DiasV2xServiceParam{
+    DiasV2xRecvSendDataType_e eDataType;
+    uint32_t u32RecvMsgFlag;
+    uint32_t u32RawAidListNum;
+    [size=DIAS_V2X_AID_LIST_MAX_NUM]
+    uint32_t u32RawAidList[_obj.u32RawAidListNum];
+    int_ptr_t pfnRecvCallBack;
+}
+
+[BasicType DiasV2xMsgType_e=int32_t]
+class DiasV2xSendInfo
+{
+    uint8_t bIsEvent;
+    DiasV2xMsgType_e eMsgType;
+    uint32_t u32Aid;
+    uint32_t u32Priority;
+    uint32_t u32Reserved;
+}
+
+///////////////////////////////////////////////////////////////////
+
+class ItsPosition3D {
+    int32_t latitude;
+    int32_t longitude;
+    int32_t elevation;
+}
+
+[BasicType ItsPositionConfidence_e=int32_t]
+[BasicType ItsElevationConfidence_e=int32_t]
+class ItsPositionConfidenceSet {   
+    ItsPositionConfidence_e pos; 
+    ItsElevationConfidence_e elevation;
+}
+
+class ItsPositionalAccuracy {   
+    long	 semiMajor;
+	long	 semiMinor;
+	long	 orientation;
+}
+
+[BasicType ItsSpeedConfidence_e=int32_t]
+[BasicType ItsHeadingConfidence_e=int32_t]
+[BasicType ItsSteeringWheelAngleConfidence_e=int32_t]
+class ItsMotionConfidenceSet {
+	[optional] ItsSpeedConfidence_e	speedCfd;
+	[optional] ItsHeadingConfidence_e headingCfd;
+	[optional] ItsSteeringWheelAngleConfidence_e steerCfd;
+}
+
+class ItsAccelerationSet4Way {
+	int16_t	 Long;
+	int16_t	 lat; 
+	int16_t	 vert; 
+	int16_t	 yaw;
+}
+
+
+[BasicType ItsBrakeSystemStatus=int32_t]
+[BasicType ItsBrakePedalStatus_e=int32_t]
+[BasicType ItsBrakeAppliedStatus_e=int32_t]
+[BasicType ItsTractionControlStatus_e=int32_t]
+[BasicType ItsAntiLockBrakeStatus_e=int32_t]
+[BasicType ItsStabilityControlStatus_e=int32_t]
+[BasicType ItsBrakeBoostApplied_e=int32_t]
+[BasicType ItsAuxiliaryBrakeStatus_e=int32_t]
+class ItsBrakeSystemStatus {
+	[optional] ItsBrakePedalStatus_e	brakePadel;
+	[optional] ItsBrakeAppliedStatus_e	wheelBrakes;
+	[optional] ItsTractionControlStatus_e	traction;
+	[optional] ItsAntiLockBrakeStatus_e	abs;
+	[optional] ItsStabilityControlStatus_e	scs;
+	[optional] ItsBrakeBoostApplied_e	brakeBoost;
+	[optional] ItsAuxiliaryBrakeStatus_e	auxBrakes;
+}
+
+class ItsVehicleSize {
+	uint16_t	 width; 
+	uint16_t	 length;
+	[optional]   uint16_t	height;
+}
+
+/////////////////////////////////////
+///////      BSM               //////
+/////////////////////////////////////
+
+class ItsVehicleClassification {
+	uint16_t	 classification;
+	[optional]   uint16_t	fuelType;
+} 
+
+class ItsPathHistoryPointSet{
+    int32_t latitude;
+    int32_t longitute;
+    int32_t elevationOffset;
+    uint16_t timeOffset;
+    uint16_t speed;
+    uint8_t positionConfidence;
+    uint8_t elevationConfidence;
+    uint8_t coarseHeading;
+} 
+
+class ItsDDateTime {
+    [optional] long year;
+    [optional] long month;
+    [optional] long day;
+    [optional] long hour;
+    [optional] long minute;
+    [optional] long second;
+    [optional] long offset;
+}
+
+class ItsFullPositionVector {
+    [optional] ItsDDateTime   utcTime;
+    long            longitute;
+    long            latitude;
+    [optional] uint16_t        elevation;
+    [optional] long            heading;
+    [optional] uint16_t        speed;
+    [optional] uint32_t        posAccuracy;
+    [optional] long            timeConfidence;
+    [optional] uint8_t         posConfidence;
+    [optional] uint8_t         speedConfidence;
+    [optional] uint8_t         headingConfidence;
+    [optional] uint8_t         steerConfidence;
+    [optional] uint8_t         transmission;
+} 
+
+class ItsPathHistory {
+	[optional] ItsFullPositionVector	initialPosition;
+    [optional] uint8_t	currGPSstatus;
+	[optional] long	itemCnt;
+
+    [size=PATH_HISTORY_POINTS_MAX]
+    ItsPathHistoryPointSet pointSets[_obj.itemCnt];
+}
+
+class ItsPathPrediction {
+	uint16_t	 radiusOfCurve;
+	uint16_t	 confidence;
+} 
+
+[BasicType ItsVehicleEventFlags_e=int32_t]
+[BasicType ItsExteriorLights_e=int32_t]
+class ItsVehicleSafetyExtensions {
+	[optional] ItsVehicleEventFlags_e events;
+	[optional] ItsExteriorLights_e lights;
+	[optional] ItsPathHistory	pathHistory;
+	[optional] ItsPathPrediction	pathPrediction;
+}
+
+[BasicType ItsResponseType_e=int32_t]
+[BasicType ItsSirenInUse_e=int32_t]
+[BasicType ItsLightbarInUse_e=int32_t]
+class ItsVehicleEmergencyExtensions {
+    ItsResponseType_e responseType;
+    ItsSirenInUse_e sirenUse;
+    ItsLightbarInUse_e lightsUse;
+} 
+
+[BasicType ItsTimeConfidence_e=int32_t]
+[BasicType ItsTransmissionState_e=int32_t]
+class ItsBasicSafetyMessage {
+	uint8_t msgCnt;	
+    [binary] uint8_t id[VEHICLE_ID_LEN];
+    uint8_t plateLen; 
+    [optional,binary,size=16] 
+    uint8_t  plateNo[_obj.plateLen];
+	
+    [optional] uint32_t timeStamp;
+	[optional] ItsTimeConfidence_e	timeConfidence;
+	ItsPosition3D	 pos;
+	[optional] ItsPositionalAccuracy	posAccuracy;
+	[optional] ItsPositionConfidenceSet	posConfidence;
+	ItsTransmissionState_e	 transmission;
+	uint16_t Speed;
+    uint16_t Heading;
+    int16_t angle;    
+	[optional] ItsMotionConfidenceSet	motionCfd;
+	ItsAccelerationSet4Way	 accelSet;
+	ItsBrakeSystemStatus	 brakes;
+	ItsVehicleSize	 size;
+	ItsVehicleClassification	 vehicleClass;
+    [optional] ItsVehicleSafetyExtensions safetyExt; 
+    [optional] ItsVehicleEmergencyExtensions emergencyExt;
+} 
+
+/////////////////////////////////////
+///////      RSI               //////
+/////////////////////////////////////
+/////////////////////////////RSI//////////////////////////////
+class ItsReferenceLink {
+    uint16_t upRegionID;
+    uint16_t upNodeID;
+    uint16_t downRegionID;
+    uint16_t downNodeID;
+    uint16_t refenenceLanes;
+}
+
+class ItsPathPoint {
+    int32_t lat;
+    int32_t lon;
+    int32_t elev;
+}
+
+class ItsReferencePath {
+    uint16_t    pathRadius;
+    uint8_t     pathPointNum;
+    
+    [size=MAX_PATHPOINT_NUMBER] 
+    ItsPathPoint pathPoint[_obj.pathPointNum];
+}
+
+class ItsRts {
+    uint8_t  rtsId;
+    uint8_t  signType;
+    uint8_t  referencePathNum;
+    uint8_t  referenceLinkNum;
+    int32_t  latitude;
+    int32_t  longitude;
+    int32_t  elevation;
+    uint32_t startTime;
+    uint32_t endTime;
+    uint8_t  endTimeCfd;
+    uint8_t  priority;
+    uint8_t  descriptType;
+    uint8_t  descriptLength;
+    
+    [size=MAX_REFERENCEPATH_COUNT]
+    ItsReferencePath referencePath[_obj.referencePathNum];
+
+    [size=MAX_REFERENCELINK_COUNT]
+    ItsReferenceLink referenceLink[_obj.referenceLinkNum];
+    
+    [size=MAX_DESCRIPTION_LENGTH,string]
+    int8_t description[_obj.descriptLength];
+}
+
+class ItsRte {
+    uint8_t  rteId;
+    uint8_t  eventSource;
+    uint8_t  referencePathNum;
+    uint8_t  referenceLinkNum;
+    uint32_t eventType;
+    int32_t  latitude;  
+    int32_t  longitude; 
+    int32_t  elevation; 
+    int32_t  eventRadius;
+    uint8_t  descriptType;
+    uint8_t  descriptLength;
+    uint32_t startTime;
+    uint32_t endTime;
+    uint8_t  endTimeCfd;
+    uint8_t  priority;
+    uint8_t  eventCfd;
+
+    [size=MAX_REFERENCEPATH_COUNT]
+    ItsReferencePath referencePath[_obj.referencePathNum];
+    
+    [size=MAX_REFERENCELINK_COUNT]
+    ItsReferenceLink referenceLink[_obj.referenceLinkNum];
+    
+    [size=MAX_DESCRIPTION_LENGTH,string]
+    int8_t description[_obj.descriptLength];
+} 
+
+class ItsRsa {
+    uint8_t   msgCnt;
+    uint8_t   rtesNum;
+    uint8_t   rtssNum;
+    uint32_t  moy;    
+    uint64_t  id;
+    int32_t   latitude; 
+    int32_t   longitude;
+    int32_t   elevation;
+    [size=MAX_RTE_COUNT] 
+    ItsRte  rtes[_obj.rtesNum];
+    
+    [size=MAX_RTS_COUNT] 
+    ItsRts  rtss[_obj.rtssNum];
+}
+/////////////////////////////////////
+///////      MAP               //////
+/////////////////////////////////////
+class ItsIntersectionReferenceId
+{
+    uint32_t region;
+    uint32_t intersectionId;
+}
+class ItsMapPosition3D
+{
+    int32_t lat;
+    int32_t lon;
+    int32_t elev;
+}
+class ItsLaneTypeAttributes
+{
+    uint8_t present; 
+    uint16_t value;  
+}
+class ItsLaneAttributes
+{
+    uint8_t laneDirection; 
+    uint16_t sharedWith; 
+    ItsLaneTypeAttributes laneType;   
+}
+class ItsMapSpeedLimit
+{
+    uint8_t  type;
+    uint32_t value;
+}
+class ItsRoadPoint
+{
+    uint8_t offsetLLPresent;  
+	int pointLat;
+    int pointLon;
+    uint8_t offsetVPresent;  
+    int pointElv;
+    uint8_t attributesLocalPointCount;
+    [size=MaxPointAttributesNum] 
+    long attributesLocalPoint[_obj.attributesLocalPointCount];
+}
+class ItsComputedLane
+{
+    uint32_t referenceLandId;  
+    int32_t offsetXaxis;  
+    int32_t offsetYaxis;  
+}
+class ItsPointList
+{
+    int pointCount;  
+    int present; 
+    [size=MaxPointNum]ItsRoadPoint points[_obj.pointCount];
+    ItsComputedLane computedLane;
+}
+class ItsConnectingLane
+{
+    uint32_t laneId;
+    uint16_t maueuvers; 
+}
+class ItsConnection
+{
+    ItsIntersectionReferenceId remoteIntersectionId;
+    ItsConnectingLane connectingLane;
+    uint32_t signalGroupId;
+}
+class ItsLane   
+{
+    uint8_t laneId;
+    ItsLaneAttributes laneAttributes;
+    uint16_t maneuvers;
+    uint16_t laneWidth;
+    ItsPointList pointList;
+    uint8_t connectCount;
+    [size=MaxConnectionsNum]ItsConnection 
+    connections[_obj.connectCount];
+	uint8_t laneSpeedLimitCount;
+    [size=MaxSpeedLimitNum]ItsMapSpeedLimit 
+    laneSpeedLimitSet[_obj.laneSpeedLimitCount];
+}
+class ItsMovement
+{
+    ItsIntersectionReferenceId downstreamIntersectionId;
+	uint8_t phaseId;
+}
+class ItsLink
+{
+    ItsIntersectionReferenceId upstreamNodeId;
+    uint32_t linkWidth;
+    uint8_t speedLimitCount;
+    [size=MaxSpeedLimitNum]ItsMapSpeedLimit 
+    speedLimitSet[_obj.speedLimitCount];
+    uint32_t inlaneCount;
+    [size=MaxInLaneNum]ItsLane 
+    inlaneSet[_obj.inlaneCount];
+	uint8_t linkPointCount;
+	[size=MaxLinkPointNum]ItsRoadPoint 
+    linkPointSet[_obj.linkPointCount];
+	uint8_t movementCount;
+	[size=MaxMovementNum]ItsMovement 
+    movementSet[_obj.movementCount];
+}
+class ItsIntersection
+{
+    ItsIntersectionReferenceId id;  
+    uint32_t revision; 
+    ItsMapPosition3D refPoint; 
+    uint8_t linkCount;   
+    [size=MaxLinkNum]ItsLink linkSet[_obj.linkCount];   //国标 all link enter this intersection
+}
+class ItsMap
+{
+    uint8_t standardId;
+    uint32_t msgCount;   
+    uint32_t layerId;
+    long layerType;
+	uint32_t timestamp;    
+    uint32_t intersectionCount;   
+    [size=MaxIntersectionGeometryNum]ItsIntersection 
+    intersections[_obj.intersectionCount]; 
+}
+/////////////////////////////////////
+///////         RSM           ///////
+/////////////////////////////////////
+class ItsParticipant {
+    uint8_t    ptcType;
+    uint16_t   ptcId;
+    uint8_t    source;
+    uint64_t   id;
+    uint16_t   timestamp;
+    uint8_t    posPresent;
+    int32_t    latitude;
+    int32_t    longitude;
+    int32_t    elevation;
+    uint8_t    posCfd;
+    uint8_t    eleCfd;
+    uint8_t    transmission;
+    uint16_t   speed;
+    uint16_t   heading;
+    int8_t     angle;
+    uint8_t    speedCfd;
+    uint8_t    headingCfd;
+    uint8_t    steerCfd;
+    int16_t    longAccel;
+    int16_t    latAccel;
+    int8_t     vertAccel;
+    int16_t    yawRate;
+    uint8_t    height;
+    uint16_t   width;
+    uint16_t   length;
+    uint8_t    classfication;
+    uint8_t    fuelType;
+}
+class ItsPsm {
+    uint8_t    msgCnt;
+    uint8_t    participantNum;
+    uint64_t   id;
+    int32_t    latitude;
+    int32_t    longitude;
+    int32_t    elevation;
+    [size=MAX_PARTICIPANT_NUMBER]
+    ItsParticipant participants[_obj.participantNum];
+}
+/////////////////////////////////////
+///////         SPAT          ///////
+/////////////////////////////////////
+
+[BasicType ItsTimeConfidence_e=uint32_t]
+class ItsTimeCountingDown {
+	uint32_t	startTime;
+	[optional] uint32_t	minEndTime;
+	[optional] uint32_t	maxEndTime	                ;
+	uint32_t	likelyEndTime;
+	[optional] ItsTimeConfidence_e	timeConfidence	;
+	[optional] uint32_t	nextStartTime	            ;
+	[optional] uint32_t	nextDuration	            ;
+}
+
+[BasicType ItsTimeConfidence_e=uint32_t]
+class ItsUTCTiming {
+	uint32_t	 startTime;
+	[optional] uint32_t	minEndTime	                ;
+	[optional] uint32_t	maxEndTime	                ;
+	uint32_t	 likelyEndTime;
+	[optional] ItsTimeConfidence_e	timeConfidence	;
+	[optional] uint32_t	nextStartTime	            ;
+	[optional] uint32_t	nextEndTime	                ;
+}
+
+[BasicType ItsLightState_e=uint32_t]
+[BasicType ItsTimeChangeDetails_e=uint32_t]
+class ItsPhaseState {
+	ItsLightState_e light;
+    ItsTimeChangeDetails_e timingFlag;
+	[optional] ItsTimeCountingDown timing;	       
+	[optional] ItsUTCTiming	utcTiming;	                
+}
+
+class ItsPhase {
+	uint8_t	 id;                                    
+    uint8_t  phaseStateCnt;                        
+	[size=16]ItsPhaseState 
+    phaseStates[_obj.phaseStateCnt];
+}
+
+class ItsIntersectionState_id {
+    [optional] uint16_t region_id;                 
+    uint16_t id;                                   
+}
+
+[BasicType ItsIntersectionStatusObject=uint32_t]
+class ItsIntersectionState {
+    ItsIntersectionState_id intersectionId;	
+	ItsIntersectionStatusObject status;
+	[optional] uint32_t moy;                       
+	[optional] uint32_t timeStamp;                  
+    [optional] ItsTimeConfidence_e timeConfidence   ;
+    uint8_t signalGroupsCnt;                       
+	[size=SIGNAL_GROUPS_NUMBER]ItsPhase	 
+    states[_obj.signalGroupsCnt];	
+}
+
+class ItsSpat {
+    uint8_t     msgCnt;                            
+	uint32_t    moy;                              
+	[optional] uint32_t	timeStamp;                  
+    [string,optional]
+	uint8_t	    name[MAX_NAME_LEN]; 
+    uint8_t intersectionCnt;
+	[size=MAX_INTERSECTION_NUMBER]
+    ItsIntersectionState intersections[_obj.intersectionCnt];
+}
