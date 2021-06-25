@@ -69,7 +69,7 @@ int CMainForm::InitBasic()
 	this->menu_tools = NULL;
 	this->mitem_choose_file = NULL;
 	this->mitem_choose_folder = NULL;
-
+	this->m_PreventShowDialog = 0;
     return OK;
 }
 int CMainForm::Init()
@@ -304,11 +304,11 @@ int CMainForm::CreateMenu()
 	this->menu_tools->Create();
 	NEW(this->mitem_choose_file,CMenu);
 	this->mitem_choose_file->Init();
-	this->mitem_choose_file->SetName(L"Choose &file");
+	this->mitem_choose_file->SetName(L"Choose &file (F1)");
 	this->mitem_choose_file->Create();
 	NEW(this->mitem_choose_folder,CMenu);
 	this->mitem_choose_folder->Init();
-	this->mitem_choose_folder->SetName(L"Choose Fo&lder");
+	this->mitem_choose_folder->SetName(L"Choose Fo&lder (F2)");
 	this->mitem_choose_folder->Create();
 
 
@@ -822,6 +822,39 @@ int CMainForm::PreTransMsg(MSG *msg)
         simple_keymanager_clear_all();
     }
 
+	if(!m_PreventShowDialog)
+	{
+		m_PreventShowDialog = 1;
+		if(simple_keymanager_is_keydown(VK_F1))
+		{
+			GLOBAL_WND_PROPERTY(wnd_property);
+			if(wnd_property && GetForegroundWindow() == wnd_property->hwnd)
+			{
+				wnd_property->OnInsertFileName();
+			}
+			else
+			{
+				this->OnChooseFile();
+			}
+		}
+		
+		if(simple_keymanager_is_keydown(VK_F2))
+		{
+			GLOBAL_WND_PROPERTY(wnd_property);
+			if(wnd_property && GetForegroundWindow() == wnd_property->hwnd)
+			{
+				wnd_property->OnInsertPathName();
+			}
+			else
+			{
+				this->OnChooseFolder();    
+			}
+		}
+		
+		simple_keymanager_clear_all();
+		m_PreventShowDialog = 0;
+	}
+
 	GLOBAL_WND_SEARCH(wnd_search);
 	if(wnd_search->hwnd)
 	{
@@ -1080,7 +1113,6 @@ status_t CMainForm::ShowEmbeddedUIWindow(int height)
 	int pos = r.bottom-height;
 	ASSERT(pos > 0);
 
-
 	NEW(this->m_WndSplit_V,CWndSplit);
 	this->m_WndSplit_V->Init(false);
 	this->m_WndSplit_V->Registe();
@@ -1140,7 +1172,7 @@ status_t CMainForm::OnChooseFile()
     LOCAL_MEM(filename);
 	HWND focus = ::GetFocus();
 	status_t ret = CWinMisc::GetAFileName(hwnd,&filename,L"All files\0*.*\0\0");
-    if(!ret) return ERROR;
+	if(!ret) return ERROR;
 	if(CWinMisc::IsEditBox(focus))
 	{
 		CEditBox eb;
@@ -1155,7 +1187,7 @@ status_t CMainForm::OnChooseFolder()
     LOCAL_MEM(filename);
 	HWND focus = ::GetFocus();
     status_t ret = CWinMisc::FolderSelect(hwnd,&filename);
-    if(!ret) return ERROR;
+	if(!ret) return ERROR;
 	if(CWinMisc::IsEditBox(focus))
 	{
 		CEditBox eb;

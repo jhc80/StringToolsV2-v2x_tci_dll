@@ -29,6 +29,7 @@ public:
 	CWndEmbeddedUI *m_WndEmbeddedUI;
 	int m_EmbeddedUIWindowHeight;
 	CTrayIcon *m_TrayIcon;
+	int m_PreventShowDialog;
 	//////////////////////////////////
     CMenu *menu_file;
     CMenu *mitem_open;

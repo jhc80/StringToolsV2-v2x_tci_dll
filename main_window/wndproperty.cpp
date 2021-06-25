@@ -586,3 +586,8 @@ status_t CWndProperty::OpenTheFolder()
 {
     return g_globals.OpenTheFolder();
 }
+
+bool CWndProperty::IsShown()
+{
+	return this->hwnd != NULL;
+}

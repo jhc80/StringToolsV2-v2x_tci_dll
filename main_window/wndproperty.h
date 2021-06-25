@@ -58,6 +58,7 @@ public:
     int OnSize(WPARAM wparam, LPARAM lparam);
     int OnCommand(WPARAM wparam, LPARAM lparam);
     int PreTransMsg(MSG *msg);
+	bool IsShown();
 };
 
 #endif
