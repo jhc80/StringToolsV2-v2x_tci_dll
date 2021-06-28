@@ -128,7 +128,7 @@ class ItsFullPositionVector {
 
 class ItsPathHistory {
 	[optional] ItsFullPositionVector	initialPosition;
-    [optional] uint8_t	currGPSstatus;
+    [optional] uint16_t	currGPSstatus;
 	[optional] long	itemCnt;
 
     [size=PATH_HISTORY_POINTS_MAX]
@@ -160,7 +160,7 @@ class ItsVehicleEmergencyExtensions {
 
 [BasicType ItsTimeConfidence_e=int32_t]
 [BasicType ItsTransmissionState_e=int32_t]
-class ItsBasicSafetyMessage {
+class ItsBsm {
 	uint8_t msgCnt;	
     [binary] uint8_t id[VEHICLE_ID_LEN];
     uint8_t plateLen; 

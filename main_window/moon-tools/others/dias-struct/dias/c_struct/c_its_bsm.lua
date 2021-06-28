@@ -1,4 +1,4 @@
-function ItsBasicSafetyMessage_to_lua(data)
+function ItsBsm_to_lua(data)
     local _obj={};
     _obj.msgCnt = data:GetUInt8();
 
@@ -32,7 +32,7 @@ function ItsBasicSafetyMessage_to_lua(data)
     return _obj;
 end
 
-function lua_to_ItsBasicSafetyMessage(_obj,file)
+function lua_to_ItsBsm(_obj,file)
     file:PutUInt8(_obj.msgCnt);
 
     local _size = SIZE_OF_UINT8*VEHICLE_ID_LEN;
@@ -76,7 +76,7 @@ function lua_to_ItsBasicSafetyMessage(_obj,file)
     lua_to_ItsVehicleEmergencyExtensions(_obj.emergencyExt,file);
 end
 
-function ItsBasicSafetyMessage_size()
+function ItsBsm_size()
     local _size = 0;
     _size = _size + SIZE_OF_UINT8;  --msgCnt
     _size = _size + VEHICLE_ID_LEN*SIZE_OF_UINT8;  --id

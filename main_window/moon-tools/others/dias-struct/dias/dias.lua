@@ -8,7 +8,7 @@ require("c_its_position_confidence_set")
 require("c_its_acceleration_set4_way")
 require("c_its_map")
 require("c_its_psm")
-require("c_its_basic_safety_message")
+require("c_its_bsm")
 require("c_its_map_position3_d")
 require("c_its_reference_link")
 require("c_its_brake_system_status")
@@ -71,14 +71,6 @@ function dias_init_client(client_name, msg_type)
     return r;
 end
 
-function dias_default_init_client(client_name)
-    return dias_init_client(client_name, DIAS_INIT_MSG_TYPE_STRUCT)
-end
-
-function dias_init_stream_client(client_name) 
-    return dias_init_client(client_name, DIAS_INIT_MSG_TYPE_ASN1_ENCODED)
-end
-
 function dias_find_first_client_name()
     for i=1,LteArray.GetLen(),1 do 
         local name = LteArray.GetClientName(i-1);
@@ -88,7 +80,6 @@ function dias_find_first_client_name()
         end
     end
 end
-
 
 function dias_send_encoded_asn1_stream(client_name, tp, mem)
     local sendInfo={
@@ -102,28 +93,3 @@ function dias_send_encoded_asn1_stream(client_name, tp, mem)
     lua_to_DiasV2xSendInfo(sendInfo,bin_sendInfo);
     Dias.V2xSendData(client_name,bin_sendInfo,mem);
 end
-
-function dias_send_rsi_message(client_name, rsi)
-    local sendInfo={
-        bIsEvent = 0,
-        eMsgType = DIAS_V2X_MSG_TYPE_RSI,
-        u32Aid = 17,
-        u32Priority = 0,
-        u32Reserved = 0
-    };
-    
-    local bin_sendInfo = new_mem();
-    lua_to_DiasV2xSendInfo(sendInfo,bin_sendInfo);
-
-    if type(rsi) == "table" then
-        local bin_rsi = new_mem(1024*1024);
-        lua_to_ItsRsa(rsi,bin_rsi);
-        Dias.V2xSendData(client_name,bin_sendInfo,bin_rsi);
-        bin_rsi:Destroy();
-    else
-        Dias.V2xSendData(client_name,bin_sendInfo,rsi);
-    end
-
-    bin_sendInfo:Destroy();
-end
-
