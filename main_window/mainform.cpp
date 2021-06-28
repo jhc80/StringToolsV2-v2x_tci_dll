@@ -717,6 +717,12 @@ status_t simple_keymanager_clear_all()
     return OK;
 }
 
+status_t simple_keymanager_clear_key(int vk)
+{
+	ASSERT(vk >= 0  && vk <= 256);
+	all_keys[vk] = 0;
+	return OK;
+}
 //////////////////////////////
 
 static bool is_ctrl_key_down()
@@ -783,7 +789,7 @@ int CMainForm::PreTransMsg(MSG *msg)
 	{
 		is_return_down = 0;
 	}
-	
+
     static int is_ctrl_a_down = 0;
 	if(is_ctrl_key_down() && simple_keymanager_is_keydown('A'))
 	{		
@@ -851,7 +857,8 @@ int CMainForm::PreTransMsg(MSG *msg)
 			}
 		}
 		
-		simple_keymanager_clear_all();
+		simple_keymanager_clear_key(VK_F2);
+		simple_keymanager_clear_key(VK_F1);
 		m_PreventShowDialog = 0;
 	}
 
