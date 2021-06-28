@@ -28,7 +28,7 @@ local function escape_lua_string(str)
 end
 
 local function escape_lua_key(k)
-    if string.find(k,"%-") then
+    if string.find(k,"[%- ]") then
         return string.format("[\"%s\"]",k);
     else
         return k;
@@ -37,7 +37,7 @@ end
 
 local function lua_table_to_lua_inner(lua_table,pbuf)
     if not lua_table then return end
-    for k,v in pairs(lua_table) do    
+    for k,v in pairs_ordered(lua_table) do    
         if type(v) == "table" then
             pbuf:Tab();
             pbuf:Printf("%s =",escape_lua_key(k));
