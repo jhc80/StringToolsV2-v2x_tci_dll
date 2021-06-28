@@ -28,7 +28,9 @@ local function escape_lua_string(str)
 end
 
 local function escape_lua_key(k)
-    if string.find(k,"[%- ]") then
+    if type(k) == "number" then
+        return string.format("[%s]",tostring(k));
+    elseif string.find(k,"[%- ]") then
         return string.format("[\"%s\"]",k);
     else
         return k;
