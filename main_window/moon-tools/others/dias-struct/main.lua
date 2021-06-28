@@ -1,6 +1,7 @@
 require("common");
 require("user");
 require("dias");
+require("lua_to_lua");
 
 function string_to_global(str)
 	return string_to_table(str);
@@ -38,11 +39,11 @@ App.ClearScreen();
 local name = struct_name.."_size";
 local size_func = string_to_global(name);
 if size_func then
-	printfnl("%s = %d",name,size_func());
+	printfnl("%s = %d;",name,size_func());
 end
 
 printnl("");
-printfnl("%s = ",struct_name);
+printf("%s = ",struct_name);
 
 local name = struct_name.."_to_lua";
 local to_lua = string_to_global(name);
@@ -54,4 +55,4 @@ end
 binary_data:Seek(0);
 local t = to_lua(binary_data);
 
-print_table(t);
+printnl(lua_table_to_lua(t));

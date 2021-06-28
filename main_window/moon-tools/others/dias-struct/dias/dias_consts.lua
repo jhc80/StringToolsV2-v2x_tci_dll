@@ -45,3 +45,16 @@ AID_SPAT = 3619;
 DIAS_INIT_MSG_TYPE_STRUCT = 0
 DIAS_INIT_MSG_TYPE_ASN1_STRUCT = 1
 DIAS_INIT_MSG_TYPE_ASN1_ENCODED = 2
+
+MaxMapCount                  = 5
+MaxIntersectionGeometryNum   = 8
+MaxLinkNum                   = 8
+MaxLinkPointNum              = 31
+MaxSpeedLimitNum             = 4
+MaxInLaneNum                 = 16
+MaxConnectionsNum            = 8
+MaxPointNum                  = 31 
+MaxPointAttributesNum        = 8
+MaxMovementNum               = 8
+MapSavePeriod                = 5
+

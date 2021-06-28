@@ -37,7 +37,7 @@ basic_type_table={
 	{"intptr_t","Int64"},
 	{"char","Int8"},
 	{"short","Int16"},
-	{"long","Int32"},
+	{"long","Int64"},
 	{"uint_t","UInt32"},
 	{"uint8_t","UInt8"},
 	{"uint16_t","UInt16"},
@@ -45,7 +45,7 @@ basic_type_table={
 	{"uint64_t","UInt64"},
 	{"uchar","UInt8"},
 	{"ushort","UInt16"},
-	{"ulong","UInt32"},
+	{"ulong","UInt64"},
 	{"float","Double"},
 	{"double","Double"},
 };

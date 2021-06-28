@@ -3,7 +3,7 @@ function ItsMap_to_lua(data)
     _obj.standardId = data:GetUInt8();
     _obj.msgCount = data:GetUInt32();
     _obj.layerId = data:GetUInt32();
-    _obj.layerType = data:GetInt32();
+    _obj.layerType = data:GetInt64();
     _obj.timestamp = data:GetUInt32();
     _obj.intersectionCount = data:GetUInt32();
 
@@ -20,7 +20,7 @@ function lua_to_ItsMap(_obj,file)
     file:PutUInt8(_obj.standardId);
     file:PutUInt32(_obj.msgCount);
     file:PutUInt32(_obj.layerId);
-    file:PutInt32(_obj.layerType);
+    file:PutInt64(_obj.layerType);
     file:PutUInt32(_obj.timestamp);
     file:PutUInt32(_obj.intersectionCount);
 
@@ -36,7 +36,7 @@ function ItsMap_size()
     _size = _size + SIZE_OF_UINT8;  --standardId
     _size = _size + SIZE_OF_UINT32;  --msgCount
     _size = _size + SIZE_OF_UINT32;  --layerId
-    _size = _size + SIZE_OF_INT32;  --layerType
+    _size = _size + SIZE_OF_INT64;  --layerType
     _size = _size + SIZE_OF_UINT32;  --timestamp
     _size = _size + SIZE_OF_UINT32;  --intersectionCount
     _size = _size + MaxIntersectionGeometryNum*ItsIntersection_size();  --intersections
