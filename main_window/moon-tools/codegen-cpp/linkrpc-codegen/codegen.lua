@@ -150,6 +150,9 @@ function param_to_string(param)
     elseif param.is_string then
         str = str.."CMem *_"..param.name;
     else
+        if param.type.namespace then
+            str = str..param.type.namespace.."::";
+        end                
         str = str..c_class_name(param.type.name).." *_"..param.name;
     end
    
