@@ -145,7 +145,7 @@ status_t CTaskRunner::AddClosureAndWait(CClosure *closure, int timeout, int *run
             XLOG(LOG_MODULE_COMMON,LOG_LEVEL_ERROR,
                 "taskrunner: wait closure too long time.");
         }        
-        crt_msleep(10);
+        crt_msleep(1);
     }
 
     if(!is_breaked)
@@ -165,7 +165,11 @@ int CTaskRunner::Schedule()
 
     for(int i = 0; i < m_ClosureList.GetLen(); i++)
     {
+        m_Mutex.Lock();   
         CClosure *closure = m_ClosureList.GetElem(i);
+        m_Mutex.Unlock();
+        
+        ASSERT(closure);
         struct closure_extra_info *ex_info = (struct closure_extra_info *)closure->user_data;
         ASSERT(ex_info);
 
