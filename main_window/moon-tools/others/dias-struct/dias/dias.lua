@@ -71,14 +71,45 @@ function dias_init_client(client_name, msg_type)
     return r;
 end
 
-function dias_find_first_client_name()
+function dias_get_clients_count()
+    local k = 0;
     for i=1,LteArray.GetLen(),1 do 
         local name = LteArray.GetClientName(i-1);
         local opt = LteArray.GetClientOptions(i-1);
         if opt&LTE_OPT_USE_DIAS_API ~= 0 then
-            return name;
+            k = k + 1;
         end
     end
+    return k;
+end
+
+function dias_init_all_clients(msg_type)
+    local k = 1;
+    for i=1,LteArray.GetLen(),1 do 
+        local name = LteArray.GetClientName(i-1);
+        local opt = LteArray.GetClientOptions(i-1);
+        if opt&LTE_OPT_USE_DIAS_API ~= 0 then
+            dias_init_client(name,msg_type);
+        end
+    end
+end
+
+function dias_find_client_name_by_index(index)
+    local k = 1;
+    for i=1,LteArray.GetLen(),1 do 
+        local name = LteArray.GetClientName(i-1);
+        local opt = LteArray.GetClientOptions(i-1);
+        if opt&LTE_OPT_USE_DIAS_API ~= 0 then
+            if k == index then
+                return name;
+            end
+            k = k + 1;
+        end
+    end
+end
+
+function dias_find_first_client_name()
+    return dias_find_client_name_by_index(1);
 end
 
 function dias_send_encoded_asn1_stream(client_name, tp, mem)
@@ -92,4 +123,16 @@ function dias_send_encoded_asn1_stream(client_name, tp, mem)
     local bin_sendInfo = new_mem();
     lua_to_DiasV2xSendInfo(sendInfo,bin_sendInfo);
     Dias.V2xSendData(client_name,bin_sendInfo,mem);
+end
+
+function dias_for_each_client(callback)
+    local k = 0;
+    for i=1,LteArray.GetLen(),1 do 
+        local name = LteArray.GetClientName(i-1);
+        local opt = LteArray.GetClientOptions(i-1);
+        if opt&LTE_OPT_USE_DIAS_API ~= 0 then
+            callback(k,name);
+            k = k + 1;
+        end
+    end
 end

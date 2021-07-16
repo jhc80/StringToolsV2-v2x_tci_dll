@@ -58,3 +58,13 @@ MaxPointAttributesNum        = 8
 MaxMovementNum               = 8
 MapSavePeriod                = 5
 
+MAX_INTERSECTION_NUMBER = 32; --最大十字路口数量
+MAX_SIGNAL_GROUPS_NUMBER = 255; --最大信号灯数量
+MAX_NAME_LEN = 1;
+SIGNAL_GROUPS_NUMBER = 20 --相位数量(每个路口有多少组信号灯)
+INTERSECTION_NUMBER = 32 --十字路口数量(每组数据包含多少个十字路口信息)
+
+VEHICLE_ID_LEN = 8
+PATH_HISTORY_POINTS_MAX	= 23
+
+
