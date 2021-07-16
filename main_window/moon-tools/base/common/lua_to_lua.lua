@@ -37,7 +37,7 @@ local function escape_lua_key(k)
     end
 end
 
-local function lua_table_to_lua_inner(lua_table,pbuf)
+local function lua_table_to_lua_inner(lua_table,pbuf,convert_userdata)
     if not lua_table then return end
     for k,v in pairs_ordered(lua_table) do    
         if type(v) == "table" then
@@ -55,18 +55,25 @@ local function lua_table_to_lua_inner(lua_table,pbuf)
             pbuf:Tab();
             pbuf:Printf(escape_lua_key(k));
             pbuf:Printf(" = ");
-            pbuf:Printf(tostring(v));
+            if type(v) == "userdata" then
+                if convert_userdata then
+                    convert_userdata(v,pbuf);
+                end
+            else
+                pbuf:Printf(tostring(v));
+            end
+
             pbuf:Printf(",");
             pbuf:Eol();
         end
     end       
 end
 
-function lua_table_to_lua(lua_table)
+function lua_table_to_lua(lua_table,convert_userdata)
     local pbuf = PrintBuffer.new();
     pbuf:Log("{");
     pbuf:IncLogLevel(1);
-    lua_table_to_lua_inner(lua_table,pbuf);
+    lua_table_to_lua_inner(lua_table,pbuf,convert_userdata);
     pbuf:IncLogLevel(-1);
     pbuf:Log("}");
     return pbuf:GetText();    

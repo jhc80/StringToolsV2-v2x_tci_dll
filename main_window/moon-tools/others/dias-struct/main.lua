@@ -55,4 +55,14 @@ end
 binary_data:Seek(0);
 local t = to_lua(binary_data);
 
-printnl(lua_table_to_lua(t));
+function convert_mem(mem,pbuf)
+    pbuf:Printf("_binary(\"");
+    mem:Seek(0);
+	while not mem:IsEnd() do
+		local ch = (mem:Getc()&0xff);
+		pbuf:Printf("%02x",ch);
+	end
+    pbuf:Printf("\")");
+end
+
+printnl(lua_table_to_lua(t,convert_mem));

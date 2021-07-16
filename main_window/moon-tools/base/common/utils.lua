@@ -261,3 +261,12 @@ function maybe_printnl(str)
 	if not str then return end
 	printnl(str);
 end
+
+function _binary(hex_str)
+    local tmp_hex = Mem.new();
+    tmp_hex:SetRawBuf(hex_str);
+    local mem = new_mem(tmp_hex:GetSize()/2);
+    hex_file_to_bin_file(tmp_hex,mem);
+    return mem;
+end
+
