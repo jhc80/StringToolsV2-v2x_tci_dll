@@ -57,6 +57,7 @@ SRCEXTS := .cpp .c
 # If it is a C and C++ merging program, set these flags for the C parts.
 CFLAGS := -O2 -Wall 
 CFLAGS += -I.
+CFLAGS += -I../../main_window
 CFLAGS += -I../../main_window/share 
 CFLAGS += -I../../main_window/lua 
 CFLAGS += -I../../main_window/common

@@ -15,6 +15,7 @@ in_offset = 0;
 2 - V2X 国标 2019版
 3 - V2X 国标 2020版
 4 - 高新兴 OBU 通讯协议
+5 - V2X 国标 2020 Day2 版 
 --]]
 message_type = 3;
 

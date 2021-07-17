@@ -43,6 +43,9 @@ elseif message_type == 3 then
 elseif message_type == 4 then
     require("asn1_gxx_obu");
     ASN1 = Asn1GxxObu;
+elseif message_type == 5 then
+    require("asn1_v2x_gb2020_day2");
+    ASN1 = Asn1V2xGb2020Day2;
 end
 
 if not ASN1 then
