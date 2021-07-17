@@ -56,7 +56,6 @@ class ItsAccelerationSet4Way {
 }
 
 
-[BasicType ItsBrakeSystemStatus=int32_t]
 [BasicType ItsBrakePedalStatus_e=int32_t]
 [BasicType ItsBrakeAppliedStatus_e=int32_t]
 [BasicType ItsTractionControlStatus_e=int32_t]

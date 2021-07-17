@@ -24,7 +24,7 @@ function ItsBsm_to_lua(data)
     _obj.angle = data:GetInt16();
     _obj.motionCfd = ItsMotionConfidenceSet_to_lua(data);
     _obj.accelSet = ItsAccelerationSet4Way_to_lua(data);
-    _obj.brakes = data:GetInt32();
+    _obj.brakes = ItsBrakeSystemStatus_to_lua(data);
     _obj.size = ItsVehicleSize_to_lua(data);
     _obj.vehicleClass = ItsVehicleClassification_to_lua(data);
     _obj.safetyExt = ItsVehicleSafetyExtensions_to_lua(data);
@@ -69,7 +69,7 @@ function lua_to_ItsBsm(_obj,file)
     file:PutInt16(_obj.angle);
     lua_to_ItsMotionConfidenceSet(_obj.motionCfd,file);
     lua_to_ItsAccelerationSet4Way(_obj.accelSet,file);
-    file:PutInt32(_obj.brakes);
+    lua_to_ItsBrakeSystemStatus(_obj.brakes,file);
     lua_to_ItsVehicleSize(_obj.size,file);
     lua_to_ItsVehicleClassification(_obj.vehicleClass,file);
     lua_to_ItsVehicleSafetyExtensions(_obj.safetyExt,file);
@@ -93,7 +93,7 @@ function ItsBsm_size()
     _size = _size + SIZE_OF_INT16;  --angle
     _size = _size + ItsMotionConfidenceSet_size();  --motionCfd
     _size = _size + ItsAccelerationSet4Way_size();  --accelSet
-    _size = _size + SIZE_OF_INT32;  --brakes
+    _size = _size + ItsBrakeSystemStatus_size();  --brakes
     _size = _size + ItsVehicleSize_size();  --size
     _size = _size + ItsVehicleClassification_size();  --vehicleClass
     _size = _size + ItsVehicleSafetyExtensions_size();  --safetyExt
