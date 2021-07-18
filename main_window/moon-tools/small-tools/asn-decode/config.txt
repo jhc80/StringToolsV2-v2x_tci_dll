@@ -1,1 +1,1 @@
-name=ASN1解析
+name=ASN.1解析
