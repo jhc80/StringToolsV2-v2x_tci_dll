@@ -102,7 +102,9 @@ function dump_map_message_points_2017(messageFrame)
                         for _,connectTo in ipairs(lane.connectsTo) do
                             printfnl("      *remoteIntersection=%d",connectTo.remoteIntersection.id);
                             printfnl("      *connectingLane=%d",connectTo.connectingLane.lane);
-                            printfnl("      *phaseId=%d",connectTo.phaseId);
+                            if connectTo.phaseId then
+                                printfnl("      *phaseId=%d",connectTo.phaseId);
+                            end
                         end
 
                         if lane.points then
