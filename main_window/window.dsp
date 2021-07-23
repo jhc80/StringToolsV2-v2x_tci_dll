@@ -218,6 +218,14 @@ SOURCE=.\common\filebase.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\common\common_time.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\common_time.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\fileutils.cpp
 # End Source File
 # Begin Source File
@@ -1231,6 +1239,14 @@ SOURCE=.\lualib\lualib_xmlnode.cpp
 # Begin Source File
 
 SOURCE=.\lualib\lualib_xmlnode.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\lualib\lualib_commontime.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\lualib\lualib_commontime.h
 # End Source File
 # Begin Source File
 

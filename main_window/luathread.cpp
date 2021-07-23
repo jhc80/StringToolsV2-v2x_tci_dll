@@ -44,6 +44,7 @@
 #include "lualib_serial.h"
 #include "lualib_queuefile.h"
 #include "lualib_peerproxy.h"
+#include "lualib_commontime.h"
 
 extern "C" int _lua_running_flag;
 
@@ -225,6 +226,7 @@ status_t CLuaThread::InitLuaVm()
     luaopen_serial(L);
     luaopen_queuefile(L);
 	luaopen_peerproxy(L);
+	luaopen_commontime(L);
 
     const char *work_folder = g_globals.GetWorkFolder();
 
