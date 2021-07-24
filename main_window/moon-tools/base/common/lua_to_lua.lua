@@ -50,7 +50,7 @@ local function lua_table_to_lua_inner(lua_table,pbuf,convert_userdata)
             pbuf:IncLogLevel(-1);
             pbuf:Log("},");
         elseif type(v) == "string" then
-            pbuf:Log("%s = %s,",k,escape_lua_string(v)); 
+            pbuf:Log("%s = %s,",escape_lua_key(k),escape_lua_string(v)); 
         else
             pbuf:Tab();
             pbuf:Printf(escape_lua_key(k));
