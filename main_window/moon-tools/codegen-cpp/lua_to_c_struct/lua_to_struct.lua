@@ -95,7 +95,7 @@ function code_struct_to_lua(idl_class)
 				info.array_size,info.full_size,
 				info.array_size,info.full_size);
 				
-				printfnl("    for i=1_arr_size,1 do");
+				printfnl("    for i=1,_arr_size,1 do");
 				printfnl("        _obj.%s[i] = data:Get%s();", info.var.name, inner_type);	
 				printfnl("    end");
 				
