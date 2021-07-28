@@ -100,9 +100,9 @@ function code_struct_to_lua(idl_class)
 				printfnl("    end");
 				
 				if info.full_size then
-					printfnl("    data:Skip((%s-_arr_size)*%s());",
+					printfnl("    data:Skip((%s-_arr_size)*SIZE_OF_%s);",
 						info.full_size,
-						lua_size_function_name(info.type.name)
+						string.upper(inner_type)
 					);
 				end
 			else
