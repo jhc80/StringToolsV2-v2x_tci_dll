@@ -34,16 +34,27 @@ function code_struct_to_lua(idl_class)
 
 	function code_for_array_object(info)
 		printnl("");
-		printfnl("    _obj.%s={}",info.var.name);
-		printfnl("    for i=1,%s,1 do",info.array_size);
-		printfnl("        _obj.%s[i] = %s(data);", info.var.name, struct_to_lua_function_name(info.type.name));	
-		printfnl("    end");
+		printfnl("    _obj.%s={};",info.var.name);
+		
+		if info.full_size and info.array_size~= info.full_size then
+			printfnl("    local _arr_size = (%s<%s) and %s or %s;",
+				info.array_size,info.full_size,
+				info.array_size,info.full_size);
+			
+			printfnl("    for i=1,_arr_size,1 do");
+			printfnl("        _obj.%s[i] = %s(data);", info.var.name, struct_to_lua_function_name(info.type.name));	
+			printfnl("    end");
 
-		if info.full_size then
-			printfnl("    data:Skip((%s-%s)*%s());",
-				info.full_size,info.array_size,
-				lua_size_function_name(info.type.name)
-			);
+			if info.full_size then
+				printfnl("    data:Skip((%s-_arr_size)*%s());",
+					info.full_size,
+					lua_size_function_name(info.type.name)
+				);
+			end
+		else
+			printfnl("    for i=1,%s,1 do",info.array_size);
+			printfnl("        _obj.%s[i] = %s(data);", info.var.name, struct_to_lua_function_name(info.type.name));	
+			printfnl("    end");
 		end
 		
 		printnl("");
@@ -59,25 +70,47 @@ function code_struct_to_lua(idl_class)
 			printfnl("    local _size = SIZE_OF_%s*%s;",string.upper(inner_type),info.array_size);
 			printfnl("    _obj.%s = new_mem(_size);",info.var.name);	
 			printfnl("    data:Read(_obj.%s,_size);",info.var.name);
+			if info.full_size then
+				printfnl("    data:Skip((%s-%s)*SIZE_OF_%s);",
+					info.full_size,info.array_size,
+					string.upper(inner_type)
+				);
+			end
 		elseif as_string then
 			printfnl("    local _size = SIZE_OF_%s*%s;",string.upper(inner_type),info.array_size);
 			printfnl("    local _tmp = new_mem(_size);",info.var.name);	
 			printfnl("    data:Read(_tmp,_size);");
 			printfnl("    _obj.%s = _tmp:CStr();",info.var.name);
+			if info.full_size then
+				printfnl("    data:Skip((%s-%s)*SIZE_OF_%s);",
+					info.full_size,info.array_size,
+					string.upper(inner_type)
+				);
+			end
 		else			
-			printfnl("    _obj.%s={}",info.var.name);
-			printfnl("    for i=1,%s,1 do",info.array_size);
-			printfnl("        _obj.%s[i] = data:Get%s();", info.var.name, inner_type);	
-			printfnl("    end");
+			printfnl("    _obj.%s={};",info.var.name);
+			
+			if info.full_size and info.array_size~= info.full_size then
+				printfnl("    local _arr_size = (%s<%s) and %s or %s;",
+				info.array_size,info.full_size,
+				info.array_size,info.full_size);
+				
+				printfnl("    for i=1_arr_size,1 do");
+				printfnl("        _obj.%s[i] = data:Get%s();", info.var.name, inner_type);	
+				printfnl("    end");
+				
+				if info.full_size then
+					printfnl("    data:Skip((%s-_arr_size)*%s());",
+						info.full_size,
+						lua_size_function_name(info.type.name)
+					);
+				end
+			else
+				printfnl("    for i=%s,1 do",info.array_size);
+				printfnl("        _obj.%s[i] = data:Get%s();", info.var.name, inner_type);	
+				printfnl("    end");
+			end
 		end
-		
-		if info.full_size then
-			printfnl("    data:Skip((%s-%s)*SIZE_OF_%s);",
-				info.full_size,info.array_size,
-				string.upper(inner_type)
-			);
-		end
-		
 		printnl("");
 	end
 	
@@ -109,15 +142,26 @@ end
 function code_lua_to_struct(idl_class)	
 	function code_for_array_object(info)
 		printnl("");
-		printfnl("    for i=1,%s,1 do",info.array_size);
-		printfnl("        %s(_obj.%s[i],file);",lua_to_struct_function_name(info.type.name),info.var.name);	
-		printfnl("    end");
 		
-		if info.full_size then
-			printfnl("    file:FillBlock((%s-%s)*%s(),0);",
-				info.full_size,info.array_size,
-				lua_size_function_name(info.type.name)
-			);
+		if info.full_size and info.array_size~= info.full_size then
+			printfnl("    local _arr_size = (#_obj.%s<%s) and #_obj.%s or %s;",
+				info.var.name,info.full_size,
+				info.var.name,info.full_size);
+				
+			printfnl("    for i=1,_arr_size,1 do");
+			printfnl("        %s(_obj.%s[i],file);",lua_to_struct_function_name(info.type.name),info.var.name);	
+			printfnl("    end");
+			
+			if info.full_size then
+				printfnl("    file:FillBlock((%s-_arr_size)*%s(),0);",
+					info.full_size,
+					lua_size_function_name(info.type.name)
+				);
+			end
+		else
+			printfnl("    for i=1,%s,1 do",info.array_size);
+			printfnl("        %s(_obj.%s[i],file);",lua_to_struct_function_name(info.type.name),info.var.name);	
+			printfnl("    end");
 		end
 		
 		printnl("");
@@ -138,6 +182,13 @@ function code_lua_to_struct(idl_class)
 			printfnl("            file:FillBlock(_size-_obj.%s:GetSize(),0);",info.var.name);
 			printfnl("        end");
 			printfnl("    end");
+			
+			if info.full_size then
+				printfnl("    file:FillBlock((%s-%s)*SIZE_OF_%s,0);",
+					info.full_size,info.array_size,
+					string.upper(inner_type)
+				);
+			end
 		elseif as_string then						
 			printfnl("    local _mem = Mem.new();");
 			printfnl("    _mem:SetRawBuf(_obj.%s);",info.var.name);
@@ -146,19 +197,28 @@ function code_lua_to_struct(idl_class)
 			printfnl("    if _size > _mem:GetSize() then");
 			printfnl("        file:FillBlock(_size-_mem:GetSize(),0);");
 			printfnl("    end");
+			if info.full_size then
+				printfnl("    file:FillBlock((%s-%s)*SIZE_OF_%s,0);",
+					info.full_size,info.array_size,
+					string.upper(inner_type)
+				);
+			end
 		else						
-			printfnl("    for i=1,%s,1 do",info.array_size);
-			printfnl("        file:Put%s(_obj.%s[i]);",inner_type,info.var.name);	
-			printfnl("    end");
+			if info.full_size and info.array_size~= info.full_size then
+				printfnl("    local _arr_size = (#_obj.%s<%s) and #_obj.%s or %s;",
+					info.var.name,info.full_size,
+					info.var.name,info.full_size);
+				
+				printfnl("    for i=1,_arr_size,1 do");
+				printfnl("        file:Put%s(_obj.%s[i]);",inner_type,info.var.name);	
+				printfnl("    end");
+			else
+				printfnl("    for i=1,%s,1 do",info.array_size);
+				printfnl("        file:Put%s(_obj.%s[i]);",inner_type,info.var.name);	
+				printfnl("    end");
+			end
 		end	
-		
-		if info.full_size then
-			printfnl("    file:FillBlock((%s-%s)*SIZE_OF_%s,0);",
-				info.full_size,info.array_size,
-				string.upper(inner_type)
-			);
-		end
-		
+
 		printnl("");
 	end
 	
