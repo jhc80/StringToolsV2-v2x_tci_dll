@@ -10,7 +10,7 @@
 #include "BIT_STRING.h"
 #include "NativeEnumerated.h"
 #include "constr_SEQUENCE_OF.h"
-
+#include "NumericString.h"
 
 CAsnDescriptor::CAsnDescriptor()
 {
@@ -97,6 +97,36 @@ bool CAsnDescriptor::IsAsnChoice()
 {
     return m_def->op == &asn_OP_CHOICE;
 }
+int CAsnDescriptor::GetAsnOpenTypePresent(const void *open_type_ptr)
+{
+    ASSERT(IsAsnOpenType());
+    ASSERT(open_type_ptr);
+    asn_CHOICE_specifics_t *spec = (asn_CHOICE_specifics_t*)m_def->specifics;
+    ASSERT(spec);
+    ASSERT(sizeof(int) == spec->pres_size);
+    int p = 0xffffffff;
+    memcpy(&p,(char*)open_type_ptr + spec->pres_offset,spec->pres_size);
+    return p;
+}
+int CAsnDescriptor::GetAsnOpenTypeMemberIndex(int present)
+{
+    RASSERT(present > 0,-1);
+    asn_CHOICE_specifics_t *spec = (asn_CHOICE_specifics_t*)m_def->specifics;
+    ASSERT(spec);
+    for(uint32_t i = 0; i < spec->tag2el_count; i++)
+    {
+        if(spec->tag2el[i].el_no+1 == (uint32_t)present)
+            return spec->tag2el[i].el_no;
+    }
+    return -1;
+}
+int CAsnDescriptor::GetAsnOpenTypeMemberIndex(void const *choice_ptr)
+{
+    RASSERT(choice_ptr,-1);
+    RASSERT(this->IsAsnOpenType(),-1);
+    int present = this->GetAsnOpenTypePresent(choice_ptr);
+    return this->GetAsnChoiceMemberIndex(present);
+}
 
 int CAsnDescriptor::GetAsnChoicePresent(const void *choice_ptr)
 {
@@ -162,6 +192,22 @@ bool CAsnDescriptor::IsAsnSequenceOf()
 {
     return m_def->op == &asn_OP_SEQUENCE_OF;
 }
+
+bool CAsnDescriptor::IsAsnNumericString()
+{
+    return m_def->op == &asn_OP_NumericString;
+}
+
+bool CAsnDescriptor::IsAsnOpenType()
+{
+    return m_def->op == &asn_OP_OPEN_TYPE;
+}
+
+bool CAsnDescriptor::IsBoolean()
+{
+    return m_def->op == &asn_OP_BOOLEAN;
+}
+
 status_t CAsnDescriptor::GetAsnEnumeratedValue(long enum_value,CMem *out)
 {
     ASSERT(out);
@@ -207,3 +253,10 @@ asn_SET_OF_specifics_t *CAsnDescriptor::GetSetOfSpecifics()
     ASSERT(this->IsAsnSequenceOf());
     return (asn_SET_OF_specifics_t*)m_def->specifics;
 }
+
+asn_CHOICE_specifics_t *CAsnDescriptor::GetOpenTypeSpecifics()
+{
+    ASSERT(this->IsAsnOpenType());
+    return (asn_CHOICE_specifics_t*)m_def->specifics;
+}
+

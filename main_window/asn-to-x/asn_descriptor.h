@@ -7,6 +7,9 @@
 #include "constr_CHOICE.h"
 #include "constr_SEQUENCE.h"
 #include "constr_SET_OF.h"
+#include "OPEN_TYPE.h"
+#include "BOOLEAN.h"
+#include "OPEN_TYPE.h"
 
 class CAsnMember;
 class CAsnDescriptor{
@@ -32,9 +35,16 @@ public:
     int GetMembersCount();
     status_t GetMember(int index,CAsnMember *member);
     bool IsAsnChoice();
+    bool IsAsnOpenType();
+
+    int GetAsnOpenTypePresent(const void *open_type_ptr);
+    int GetAsnOpenTypeMemberIndex(int present);
+    int GetAsnOpenTypeMemberIndex(void const *choice_ptr);
+
     int GetAsnChoicePresent(const void *choice_ptr);
     int GetAsnChoiceMemberIndex(int present);
     int GetAsnChoiceMemberIndex(const void *choice_ptr);
+
     status_t GetAsnEnumeratedValue(long enum_value,CMem *out);
     bool IsAsnSequence();
     bool IsAsnInteger();
@@ -43,7 +53,10 @@ public:
     bool IsAsnEnumerated();
     bool IsAsnSequenceOf();
     bool IsAsnIA5String();
+    bool IsAsnNumericString();    
+    bool IsBoolean();
 
+    asn_CHOICE_specifics_t *GetOpenTypeSpecifics();
     asn_CHOICE_specifics_t *GetChoiceSpecifics();
     asn_SEQUENCE_specifics_t *GetSequenceSpecifics();
     asn_SET_OF_specifics_t *GetSetOfSpecifics();

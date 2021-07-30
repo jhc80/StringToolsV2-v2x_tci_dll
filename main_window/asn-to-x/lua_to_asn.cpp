@@ -9,8 +9,9 @@
 #include "misc.h"
 #include "asn_helper.h"
 #include "asn_SEQUENCE_OF.h"
+#include "NumericString.h"
 
-//LOGE("alloc:%s:%d:%s",descriptor->GetName(),sizeof(type)*items,#ptr);\
+//LOGE("alloc:%s:%d:%s",descriptor->GetName(),sizeof(type)*items,#ptr);
 
 #define ASN_ZALLOC(ptr,type,items) do{\
 ZALLOC(ptr,type,items);\
@@ -195,6 +196,27 @@ status_t lua_to_asn_ia5_string(LUA_TO_ASN_PARAM_DEF)
     return OK;
 }
 
+status_t lua_to_asn_numeric_string(LUA_TO_ASN_PARAM_DEF)
+{
+    if((*out) == NULL)
+    {        
+        ASN_ZALLOC((*out),uint8_t,sizeof(NumericString_t));
+    }
+    size_t len = 0;
+    const char *str = lua_tolstring(L,idx,&len);
+    const char *key = "numeric_string:";
+    size_t key_len = 15;
+
+    ASSERT(len > key_len);
+    ASSERT(memcmp(str,key,key_len) == 0);
+    NumericString_t v;
+    size_t num_size = len - key_len;
+    ALLOC_OCTET_STRING(v, num_size);    
+    memcpy(v.buf, str + key_len, num_size);
+    memcpy((*out),&v,sizeof(NumericString_t));
+    return OK;
+}
+
 status_t lua_to_asn_enumerated(LUA_TO_ASN_PARAM_DEF)
 {
     if((*out) == NULL)
@@ -280,6 +302,54 @@ status_t lua_to_asn_sequence_of(LUA_TO_ASN_PARAM_DEF)
     return OK;
 }
 
+status_t lua_to_asn_open_type(LUA_TO_ASN_PARAM_DEF)
+{
+    ASSERT(descriptor && L && out);
+    asn_CHOICE_specifics_t *specifics = descriptor->GetOpenTypeSpecifics();
+    ASSERT(specifics);
+    int struct_size = specifics->struct_size;
+    ASSERT(struct_size > 0);
+
+    if((*out) == NULL)
+    {        
+        ASN_ZALLOC((*out),uint8_t,struct_size);
+    }
+
+    int top = lua_gettop(L);
+    lua_pushstring(L,"present");
+    lua_gettable(L,idx);    
+    top++;
+
+    ASSERT(lua_isinteger(L,top));
+    int32_t present = (int32_t)lua_tointeger(L,top);
+    lua_pop(L,1);
+
+    ASSERT(specifics->pres_size == sizeof(present));
+    memcpy((*out)+specifics->pres_offset,&present,sizeof(present));
+
+    int index = descriptor->GetAsnChoiceMemberIndex(present);
+
+    if(index >= 0)
+    {
+        CAsnMember m;
+        descriptor->GetMember(index,&m);
+        CREATE_ASN_MEMBER(m);
+    }
+    return OK;
+}
+
+status_t lua_to_asn_boolean(LUA_TO_ASN_PARAM_DEF)
+{
+    if((*out) == NULL)
+    {
+        ASN_ZALLOC((*out),uint8_t,sizeof(int));
+    }
+
+    int value = (int)lua_toboolean(L,idx);
+    memcpy((*out),&value,sizeof(int));
+    return OK;
+}
+
 status_t lua_to_asn(LUA_TO_ASN_PARAM_DEF)
 {
     ASSERT(descriptor && L && out);
@@ -318,6 +388,18 @@ status_t lua_to_asn(LUA_TO_ASN_PARAM_DEF)
     else if(descriptor->IsAsnSequenceOf())
     {
         lua_to_asn_sequence_of(CALL_LIST);
+    }
+    else if(descriptor->IsAsnNumericString())
+    {
+        lua_to_asn_numeric_string(CALL_LIST);
+    }
+    else if(descriptor->IsAsnOpenType())
+    {
+        lua_to_asn_open_type(CALL_LIST);
+    }
+    else if(descriptor->IsBoolean())
+    {
+        lua_to_asn_boolean(CALL_LIST);
     }
     else
     {

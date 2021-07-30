@@ -6,6 +6,8 @@
 #include "asn_helper.h"
 #include "constr_SET_OF.h"
 #include "asn_SET_OF.h"
+#include "NumericString.h"
+#include "BOOLEAN.h"
 
 int asn_to_lua_alloc_id()
 {
@@ -178,6 +180,53 @@ static status_t asn_sequence_of_to_lua(ASN_TO_LUA_PARAM_DEF)
     return OK;
 }
 
+status_t asn_numeric_string_to_lua(ASN_TO_LUA_PARAM_DEF)
+{
+    ASSERT(obj_ptr);
+    NumericString_t *str = (NumericString_t*)obj_ptr;
+    out->Printf("_numeric_string(\"");    
+    for(unsigned int i = 0; i < str->size; i++)
+    {
+        out->Putc(str->buf[i]);
+    }
+    out->Printf("\")");
+    SET_PENDING_COMMA();
+    return OK;
+}
+
+status_t asn_boolean_to_lua(ASN_TO_LUA_PARAM_DEF)
+{
+    ASSERT(obj_ptr);
+    BOOLEAN_t *bool_ptr = (BOOLEAN_t *)obj_ptr;
+    out->Printf(*bool_ptr? "true": "false");
+    return OK;
+}
+
+status_t asn_open_type_to_lua(ASN_TO_LUA_PARAM_DEF)
+{
+    ASSERT(obj_ptr);
+    out->Printf("{");
+    out->Eol();
+    out->IncLogLevel(1);    
+    out->Log("[\"present\"] = %d,",descriptor->GetAsnOpenTypePresent(obj_ptr));
+    int index = descriptor->GetAsnOpenTypeMemberIndex(obj_ptr);
+    if(index >= 0)
+    {
+        CAsnMember m;
+        descriptor->GetMember(index,&m);
+        CAsnDescriptor d;
+        m.GetDescriptor(&d);
+        if(!asn_to_lua(&d,&m,(char*)obj_ptr+m.GetOffset(),level+1,out,pending_comma))
+        {
+            return ERROR;
+        }       
+    }
+    out->IncLogLevel(-1);    
+    out->Eol();out->Tab();
+    out->Printf("}");
+    SET_PENDING_COMMA();   
+    return OK;
+}
 
 #define CALL_LIST descriptor,member,obj_ptr,level+1,out,pending_comma
 status_t asn_to_lua(ASN_TO_LUA_PARAM_DEF)
@@ -234,6 +283,18 @@ status_t asn_to_lua(ASN_TO_LUA_PARAM_DEF)
     else if(descriptor->IsAsnIA5String())
     {
         asn_ia5_string_to_lua(CALL_LIST);
+    }
+    else if(descriptor->IsAsnNumericString())
+    {
+        asn_numeric_string_to_lua(CALL_LIST);
+    }
+    else if(descriptor->IsBoolean()) 
+    {
+        asn_boolean_to_lua(CALL_LIST);
+    }
+    else if(descriptor->IsAsnOpenType()) 
+    {
+        asn_open_type_to_lua(CALL_LIST);
     }
     else 
     {

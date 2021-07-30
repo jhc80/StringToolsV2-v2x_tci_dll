@@ -42,7 +42,7 @@ SRCDIRS += ../../main_window/share
 SRCDIRS += ../../main_window/lua 
 SRCDIRS += ../../main_window/common
 SRCDIRS += ../../main_window/asn-to-x
-SRCDIRS += asn
+SRCDIRS += ./asn
 
 # The source file types (headers excluded).
 # At least one type should be specified.
