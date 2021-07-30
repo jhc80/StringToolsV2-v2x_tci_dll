@@ -1,0 +1,222 @@
+TciNetworkLayerFrame
+DEFINITIONS AUTOMATIC TAGS ::=
+
+BEGIN
+
+IMPORTS
+;
+
+/*
+ * 网络层TCI消息.
+ */
+TciNetworkLayer ::= SEQUENCE{
+    version     INTEGER (2),
+    msgNo       NumericString (SIZE(10..20)),
+    msgFrame    TciMsgFrame,
+    ...
+}
+
+TciMsgFrame ::= CHOICE{
+    request         [0] Request,
+    response        [1] Response,
+    indication      [2] Indication,
+    exceptionInfo   [3] Exception,
+    ...
+}
+
+/*
+ * TCI请求消息.
+ */
+Request ::=  SEQUENCE {
+    msgId   MESSAGE-ID-AND-TYPE.&id({MessageTypes}),
+    value   MESSAGE-ID-AND-TYPE.&Type({MessageTypes}{@.msgId}),
+    ...
+}
+
+MESSAGE-ID-AND-TYPE ::= CLASS {
+    &id    MsgID UNIQUE,
+    &Type
+} WITH SYNTAX {&Type IDENTIFIED BY &id}
+
+/*
+ * TCI消息类型.
+ */
+MessageTypes MESSAGE-ID-AND-TYPE ::= {
+    { SetInitialState 		IDENTIFIED BY setInitialState} |
+    { StartDsmTx 			IDENTIFIED BY startDsmTx} |
+    { StopDsmTx 			IDENTIFIED BY stopDsmTx} |
+    { StartDsmRx 			IDENTIFIED BY startDsmRx} |
+    { StopDsmRx 			IDENTIFIED BY stopDsmRx} |
+    { SetMibInfo 		    IDENTIFIED BY setMibInfo}
+}
+
+setInitialState			MsgID ::= 0
+startDsmTx				MsgID ::= 1
+stopDsmTx				MsgID ::= 2
+startDsmRx 				MsgID ::= 3
+stopDsmRx				MsgID ::= 4
+setMibInfo 		        MsgID ::= 5
+
+/* 
+ * DUT初始化请求.
+ */
+SetInitialState ::= BOOLEAN (TRUE)
+
+/* 
+ * TS控制DUT开始发送DSM消息.
+ */
+StartDsmTx ::= SEQUENCE {
+    aid				Aid,
+    repeatRate      RepeatRate,
+    payload         DsmData OPTIONAL,
+    ...
+}
+
+/* 
+ * TS控制DUT停止发送DSM消息.
+ */
+StopDsmTx ::= SEQUENCE {
+    aid				Aid,
+    ...
+}
+
+/* 
+ * TS控制DUT开始接收DSM消息.
+ */
+StartDsmRx ::= SEQUENCE {
+    aid				Aid,
+    eventHandling	EventHandling,
+    ...
+}
+
+/* 
+ * TS控制DUT停止接收DSM消息.
+ */
+StopDsmRx ::= SEQUENCE {
+    aid				Aid,
+    ...
+}
+
+MsgID ::=  INTEGER(0..255)
+Aid ::= INTEGER(0..MAX)
+RepeatRate ::= INTEGER(0..255) --每5秒传输的消息数. 当值为0, 则表示消息仅传输1次.
+
+/* 
+ * TCI应答消息.
+ */
+Response ::= SEQUENCE {
+    msgId               MsgID,
+    resultCode          ResultCode,
+    exception           Exception OPTIONAL,
+    ...
+}
+
+/* 
+ * TCI应答状态码.
+ */
+ResultCode ::= ENUMERATED {
+    rcSuccess (0),	--成功.
+    rcFailure (1)	--失败.
+}
+
+/* 
+ * TCI异常信息.
+ */
+Exception ::= SEQUENCE {
+    eType          ExceptionType,
+    eId            ExceptionId,
+    eModule        Module OPTIONAL,    
+    eDescription   ExceptionText OPTIONAL,
+    ...
+}
+
+ExceptionType ::= ENUMERATED {
+    info,       --提示类异常
+    warning,    --警告类异常
+    error       --错误类异常
+}
+
+Module ::= UTF8String (SIZE(0..255)) --出现异常的模块或功能.
+
+ExceptionId ::= ENUMERATED {
+	criticalError				(1),	--关键错误.
+	incorrectParameterValue		(2),	--参数错误.
+	missingParameter			(3),	--缺失参数错误.
+	radioInterfaceUnavailable 	(4),	--无线接口不可用.
+	incorrectDsmMaxLength 	    (5),	--DSM消息长度非法.
+	...
+}
+
+ExceptionText ::= UTF8String (SIZE(0..1200)) --异常描述信息.
+
+/* 
+ * DUT接收DSM消息时事件处理参数.
+ */
+EventHandling   ::= SEQUENCE {
+    rxFlag          RxFlag,
+    ...
+}
+
+/* 
+ * DUT接收标识参数.
+ * 注：此版本中仅使用'recvAidMatch(0)'
+ */
+RxFlag ::= ENUMERATED {
+    recvAidMatch        (0),	--仅接收与AID匹配的消息.
+    recvAllMsg          (1), 	--接收所有消息.
+    ...
+}
+
+/* 
+ * 用于DUT向TS上报DUT已接收到的V2X消息或DUT被触发了相关事件内容.
+ * 当'event=eDsmRx(0)'时, networkLayerFrame参数必须存在;
+ * 当'event=exceptionReport(1)'时, exceptionInfo参数必须存在.
+ */
+Indication ::= SEQUENCE { 	
+	event					Event,
+	networkLayerFrame		NetworkLayerFrame OPTIONAL,
+	exceptionInfo			Exception OPTIONAL,
+	...
+}
+
+/* 
+ * 事件信息.
+ */
+Event ::= ENUMERATED {
+	eDsmRx					(0), 	--DUT接收到了DSM消息.
+	exceptionReport			(1) 	--DUT出错.
+}
+
+/* 
+ * DUT接收到的网络层消息帧内容.
+ */
+NetworkLayerFrame ::= SEQUENCE {
+    protocolType    ProtocolType,
+    dsmFrame        DsmFrame
+}
+
+/* 
+ * DSM消息帧内容.
+ */
+DsmFrame ::= SEQUENCE {
+    dsmpVersion                INTEGER(0..7),	--DSMP版本.
+	dsmpExtensionIndicator     INTEGER(0..1),	--DSMP扩展域指示.
+    aid                        Aid,				--应用标识.
+	dsmLength                  DsmMaxLength,	--数据长度.
+    dsmData                    DsmData,			--DSM数据.
+	...
+}
+
+
+ProtocolType ::= INTEGER(0..255)	--协议类型.
+
+DsmMaxLength ::= INTEGER(0..65535)
+
+DsmData ::= OCTET STRING(SIZE(0..65535))
+
+SetMibInfo ::= CHOICE {
+    dsmMaxLength   [1] DsmMaxLength,
+    ...
+}
+
+END

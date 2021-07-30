@@ -1,0 +1,229 @@
+TciSecMsgFrame DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+IMPORTS;
+
+--LTE-V2X通信安全TCI消息.
+TciSecMsg ::= SEQUENCE{
+    version     INTEGER (2),                    --此版本值为：2
+    msgNo       NumericString (SIZE(10..20)),
+    msgFrame    TciMsgFrame,
+    ...
+}
+
+TciMsgFrame ::= CHOICE{
+    request         [0] Request,
+    response        [1] Response,
+    indication      [2] Indication,
+    exceptionInfo   [3] Exception,
+    certInterface   [4] CertInterface,
+    ...
+}
+
+--TCI请求消息.
+Request ::=  SEQUENCE {
+    msgId   MESSAGE-ID-AND-TYPE.&id({MessageTypes}),
+    value   MESSAGE-ID-AND-TYPE.&Type({MessageTypes}{@.msgId}),
+    ...
+}
+
+MESSAGE-ID-AND-TYPE ::= CLASS {
+    &id    MsgID UNIQUE,
+    &Type
+} WITH SYNTAX {&Type IDENTIFIED BY &id}
+
+MessageTypes MESSAGE-ID-AND-TYPE ::= {
+    { SetInitialState       IDENTIFIED BY setInitialState} |
+    { StartSpduTx           IDENTIFIED BY startSpduTx} |
+    { StopSpduTx            IDENTIFIED BY stopSpduTx} |
+    { StartSpduRx           IDENTIFIED BY startSpduRx} |
+    { StopSpduRx            IDENTIFIED BY stopSpduRx}
+}
+
+setInitialState         MsgID ::= 0
+startSpduTx             MsgID ::= 1
+stopSpduTx              MsgID ::= 2
+startSpduRx             MsgID ::= 3
+stopSpduRx              MsgID ::= 4
+
+--DUT初始化请求.
+SetInitialState ::= BOOLEAN (TRUE)
+
+--TS控制DUT开始发送SPDU消息.
+StartSpduTx ::= SEQUENCE {
+    appType         ApplicationType,
+    signerType      SignerIdentifierType,
+    repeatRate      RepeatRate,
+    data            Opaque,
+    ...
+}
+
+--TS控制DUT停止发送SPDU消息.
+StopSpduTx ::= SEQUENCE {
+    appType        ApplicationType,
+    ...
+}
+
+--TS控制DUT开始接收SPDU消息.
+StartSpduRx ::= SEQUENCE {
+    appType         ApplicationType,
+    eventHandling   EventHandling,
+    ...
+}
+
+--TS控制DUT停止接收SPDU消息.
+StopSpduRx ::= SEQUENCE {
+    appType         ApplicationType,
+    ...
+}
+
+Opaque ::= OCTET STRING
+
+MsgID ::=  INTEGER(0..255)
+
+--V2X应用领域
+--参考《基于LTE的车联网无线通信技术 应用标识分配及映射》
+ApplicationType ::= ENUMERATED {
+    dsa                         (0),        --DSA发送
+    bsm-general                 (1),        --车车基本安全应用-普通车辆状态
+    bsm-events                  (2),        --车车基本安全应用-普通车辆关键事件提醒
+    emergency-bsm-general       (3),        --车车基本安全应用-紧急车辆状态
+    emergency-bsm-events        (4),        --车车基本安全应用-紧急车辆关键事件提醒
+    vehicle-after               (5),        --车车基本安全应用-后装车载终端
+    map                         (6),        --地图类应用
+    spat                        (7),        --信号灯类应用
+    rsi-static                  (8),        --道路信息-静态类应用
+    rsi-semistatic              (9),        --道路信息-半静态类应用
+    rsi-dynamics                (10),       --道路信息-动态类应用
+    rsm                         (11),       --道路提醒类应用
+    vehicle-test                (12),       --测试车辆发送
+    rsu-test1                   (13),       --测试路侧发送#1
+    rsu-test2                   (14),       --测试路侧发送#2
+    ...
+}
+
+--密钥材料类型
+SignerIdentifierType ::= ENUMERATED{
+    digest                      (0),        --digest（摘要）
+    certificate                 (1),        --certificate（证书）
+    ...
+}
+
+--每5秒传输的消息数. 当值为0, 则表示消息仅传输1次.
+RepeatRate ::= INTEGER(0..255)
+
+--DUT向TS反馈的TCI应答消息.
+Response ::= SEQUENCE {
+    msgId               MsgID,
+    resultCode          ResultCode,
+    exception           Exception OPTIONAL,
+    ...
+}
+
+--TCI应答状态码.
+ResultCode ::= ENUMERATED {
+    rcSuccess       (0),      --成功.
+    rcFailure       (1),      --失败.
+    noCertificate   (2),      --DUT不存在可用安全证书.
+    ...
+}
+
+--异常信息.
+Exception ::= SEQUENCE {
+    eType          ExceptionType,
+    eId            ExceptionId OPTIONAL,
+    eModule        Module OPTIONAL,    
+    eDescription   ExceptionText OPTIONAL,
+    ...
+}
+
+ExceptionType ::= ENUMERATED {
+    info,       --提示类异常
+    warning,    --警告类异常
+    error       --错误类异常
+}
+
+ExceptionId ::= ENUMERATED {
+    critical-error              (1),    --关键错误.
+    incorrect-parameter-value   (2),    --参数错误.
+    missing-parameter           (3),    --缺失参数错误.
+    radio-interface-unavailable (4),    --无线接口不可用.
+    ...
+}
+
+Module ::= UTF8String (SIZE(0..255)) --出现异常的模块或功能.
+
+ExceptionText ::= UTF8String (SIZE(0..1200)) --异常描述信息.
+
+--DUT接收DSM消息时事件处理参数.
+EventHandling   ::= SEQUENCE {
+    rxFlag          RxFlag,
+    ...
+}
+
+--DUT接收标识参数.
+RxFlag ::= ENUMERATED {
+    recvAidMatch        (0),
+    ...
+}
+
+--用于DUT向TS上报DUT已接收到的V2X消息或DUT被触发了相关事件内容.
+Indication ::= SEQUENCE {   
+    event               Event,
+    exceptionInfo       Exception OPTIONAL,
+    ...
+}
+
+--事件信息.
+Event ::= CHOICE{
+    availableSpdu       AvailableSpdu,  --接收到SPDU消息有效
+    incorrectSpdu       IncorrectSpdu   --接收到了无效的SPDU消息
+}
+
+--DUT接收到的SPDU中待签数据信息.
+AvailableSpdu ::= SEQUENCE{
+    itsAid      INTEGER,                         --DUT接收到待签数据中的itsAid信息
+    data        OCTET STRING (SIZE(0..MAX)),     --DUT接收到待签数据中的data信息
+    ...
+}
+
+--无效的SPDU消息描述.
+IncorrectSpdu ::= SEQUENCE {
+    secCode SecurityResultCode,    --安全验证结果码
+    ...
+}
+
+--安全验证结果码.
+SecurityResultCode ::= ENUMERATED {
+    unknown                             (0),     --未知.
+    incorrectSecureMessageVersion       (1),     --安全消息版本号信息非法.
+    incorrectSignerType                 (2),     --签名者信息中签名方式非法.
+    incorrectCertVersion                (3),     --数字证书版本号信息非法..
+    incorrectCertIssueDigest            (4),     --数字证书签发者信息非法.
+    incorrectCertSubjectInfo            (5),     --数字证书中待签主题信息非法.
+    incorrectCertSubjectAttribute       (6),     --数字证书中待签主题属性信息非法.
+    incorrectCertValidityPeriod         (7),     --数字证书中有效限定信息非法.
+    incorrectCertTimeStartAndEnd        (8),     --数字证书中有效时间信息非法.
+    incorrectSubcertAuthority           (9),     --数字证书父子关系非法.
+    incorrectCertChain                  (10),    --证书链非法.
+    incorrectCertSignature              (11),    --数字证书签名信息非法.
+    incorrectTbsDataGenTime             (12),    --待签数据中数据产生时间信息非法.
+    incorrectTbsDataHashAlg             (13),    --待签数据中杂凑算法信息非法.
+    incorrectTbsDataItsAid              (14),    --待签数据中AID信息非法.
+    incorrectSignedMessageSignature     (15),    --安全消息中签名信息非法.
+    ...
+}
+
+--DUT安全证书申请相关接口
+CertInterface ::= CHOICE {
+    sendCertReq         SendCertReq,            --TS控制DUT发送授权证书申请请求
+    certRequest         CertRequest,            --DUT发送的授权证书申请请求,HTTP/HTTPS应答体信息
+    certAck             CertAck,                --证书申请请求的确认信息,HTTP/HTTPS应答体信息
+    certDownload        CertDownload,           --DUT发送的证书下载请求,HTTP/HTTPS请求体信息
+    ...
+}
+SendCertReq ::= BOOLEAN (TRUE)
+CertRequest ::= OCTET STRING
+CertAck ::= OCTET STRING
+CertDownload ::= OCTET STRING
+
+END

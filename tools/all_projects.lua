@@ -27,5 +27,13 @@ g_all_dll_projects ={
         path="asn1/v2x_gb2020_day2_dll",
         dll_name="asn1_v2x_gb2020_day2.dll",
         src_dll_name="test.dll",     
+    },{
+        path="asn1/v2x_gb2020_security_dll",
+        dll_name="asn1_v2x_gb2020_security.dll",
+        src_dll_name="test.dll",     
+    },{
+        path="asn1/v2x_tci_dll",
+        dll_name="asn1_v2x_tci.dll",
+        src_dll_name="test.dll",     
     }
 };

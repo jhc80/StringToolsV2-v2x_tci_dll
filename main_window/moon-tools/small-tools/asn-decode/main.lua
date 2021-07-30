@@ -1,7 +1,6 @@
 require("common");
 require("user");
 
-
 local binary_data;
 
 if not in_binary_file or in_binary_file=="" then
@@ -46,6 +45,12 @@ elseif message_type == 4 then
 elseif message_type == 5 then
     require("asn1_v2x_gb2020_day2");
     ASN1 = Asn1V2xGb2020Day2;
+elseif message_type == 6 then
+    require("asn1_v2x_gb2020_security");
+    ASN1 = Asn1V2xGb2020Security;
+elseif message_type == 7 then
+    require("asn1_v2x_tci");
+    ASN1 = Asn1V2xTci;        
 end
 
 if not ASN1 then

@@ -41,6 +41,29 @@ cd %ROOT_PATH%/v2x_gb2020_day2_dll
 make clean
 make
 
+if %ERRORLEVEL% NEQ 0 (
+    echo "run make fail."
+    goto END
+)
+
+cd %ROOT_PATH%/v2x_gb2020_security_dll
+make clean
+make
+
+if %ERRORLEVEL% NEQ 0 (
+    echo "run make fail."
+    goto END
+)
+
+cd %ROOT_PATH%/v2x_tci_dll
+make clean
+make
+
+if %ERRORLEVEL% NEQ 0 (
+    echo "run make fail."
+    goto END
+)
+
 echo "SUCCESS"
 
 :END
