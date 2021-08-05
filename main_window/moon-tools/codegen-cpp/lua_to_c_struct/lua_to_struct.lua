@@ -212,6 +212,13 @@ function code_lua_to_struct(idl_class)
 				printfnl("    for i=1,_arr_size,1 do");
 				printfnl("        file:Put%s(_obj.%s[i]);",inner_type,info.var.name);	
 				printfnl("    end");
+				
+				if info.full_size then
+					printfnl("    file:FillBlock((%s-_arr_size)*SIZE_OF_%s,0);",
+						info.full_size,
+						string.upper(inner_type)
+					);
+				end
 			else
 				printfnl("    for i=1,%s,1 do",info.array_size);
 				printfnl("        file:Put%s(_obj.%s[i]);",inner_type,info.var.name);	
